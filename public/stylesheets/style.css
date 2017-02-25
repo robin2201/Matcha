@@ -1,0 +1,16 @@
+body {
+  background-color: red;
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif; }
+
+a {
+  color: #00B7FF; }
+
+p {
+  color: brown; }
+
+#title {
+  border: 1px solid green;
+  border-radius: 5px; }
+
+/*# sourceMappingURL=style.css.map */

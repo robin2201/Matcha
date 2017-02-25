@@ -1,0 +1,9 @@
+extends ../index
+
+block login
+    .container
+        form.form-signin(action="/users/login", method="post")
+            h2.form-signin-heading Sign in
+            input.input-block-level(type="text", name="firstname", placeholder="Name")
+            input.input-block-level(type="password", name="password", placeholder="Password")
+            button.btn.btn-large.btn-primary(type="submit") Sign in

@@ -1,0 +1,10 @@
+extends layout
+include tools
+
+block content
+    .container
+    h1 Modifier mes Informations
+    form.formUserData(action="/users/add", method="post")
+        input.input-block-level(type="textarea", name="bioUser", placeholder="Hey add some text to describe you")
+        button.btn.btn-large.btn-primary(type="submit") Ajouter Une description
+
