@@ -7,9 +7,8 @@ const schemaValidator = require('../models/validatorSchema');
 const bcrypt = require('bcrypt')
 const UserM = require('../models/user')
 const objectId = require('mongodb').ObjectID
+
 module.exports = {
-
-
 
     logout: (req, res) => {
         req.session.destroy((err) => {
@@ -133,7 +132,7 @@ module.exports = {
         console.log("Add data to my user")
         console.log(data)
         console.log(userId)
-        mongoUtil.connectToServer((err) => {
+        /*mongoUtil.connectToServer((err) => {
             if (err)
                 return res.send(err)
             let db = mongoUtil.getDb();
@@ -147,6 +146,7 @@ module.exports = {
                     db.close()
                 })
             res.send("Totu c'est bien passé")
-        })
+        })*/
+        res.send(data)
     }
 };
