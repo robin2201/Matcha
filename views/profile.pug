@@ -19,6 +19,7 @@ block content
                     input#pw.form-control(type='password', placeholder="Password (8 to 20)" name='password')
                 div.form-group
                     label.control-label Gender
+                    .row
                         label.radio-inline Male
                             input#male(type='radio', name="gender", value='1')
                         label.radio-inline Female
@@ -29,7 +30,14 @@ block content
                 div.form-group
                     label.control-label Where are you living
                     input.form-control(type="city", name="city", placeholder="Paris")
-                button.btn-large.btn-primary(type='submit') Modifier
+                button.btn-large.btn-primary(type='submit') Modifier mes Informations
+
+        .row
+            h2.center Ajouter une photo à mon profil
+            form.form-control(action="/users/upload", method="post", enctype="multipart/form-data")
+                input(type="text", name="title")
+                input(type="file", multiple, name="image", accept="images/*")
+                button(type="submit", value="Upload") Upload File
 
 
 

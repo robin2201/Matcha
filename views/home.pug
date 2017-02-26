@@ -29,12 +29,5 @@ block content
     each  elem  in user
         li=  elem
 
-    form.AddnewInfo(action="/users/add", method="post")
-        +input-simple('text', 'FirstnameChange', 'Changer de pseudo')
-        +input-simple('text', 'LastnameChange', 'Changer de Lastname')
-        +input-simple('password', 'passChange', 'Changer de password')
-        +input-simple('text', 'AddBio', 'Ajoute une petite histoire sur toi')
-        +input-simple('email', 'EmailChange', "Changer d'adresse email")
-        +checkbox("test", "jeTest")
-        +submit('Submit', 'send', 'SendChange') Send
+
 
