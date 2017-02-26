@@ -35,8 +35,8 @@ block content
         .row
             h2.center Ajouter une photo à mon profil
             form.form-control(action="/users/upload", method="post", enctype="multipart/form-data")
-                input(type="text", name="title")
                 input(type="file", multiple, name="image", accept="images/*")
+                input(type="submit", value="submit")
                 button(type="submit", value="Upload") Upload File
 
 
