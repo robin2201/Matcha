@@ -1,19 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const mongoUtil = require('../config/db');
-
 const home = require('../controllers/UserController')
-/*
- let isAuthenticated = (req, res, next) => {
- console.log('herrre')
- console.log(req)
- if (req.session.user_id){
- // res.render('home', {user: req.session.user_id})
- return next()
- }
- res.redirect('/users/register')
- };
- */
+const upload = multer({dest: '/uplaods'})
+
+let isAuthenticated = (req, res, next) => {
+    console.log(req)
+    if (req.session.user) {
+        next()
+    } else {
+        let err = new Error('Please logIn before')
+        next(err)
+    }
+}
+
 /* GET users listing. */
 router.get('/', (req, res, next) => {
     let user = req.session.user
@@ -47,18 +47,32 @@ router.get('/', (req, res, next) => {
     })
 
     .post('/add', (req, res) => {
-        if (req.body) {
-            home.AddDataToUser(req, res)
-        }
-        res.redirect('/')
+        home.AddDataToUser(req, res)
     })
 
-    .get('/users/:userId', (req, res, next) => {
+    .post('/upload', (req, res) => {
+
+        console.log(req.body)
+        console.log(req.file)
+        //split the url into an array and then get the last chunk and render it out in the send req.
+        /*
+        res.send(util.format(' Task Complete \n uploaded %s (%d Kb) to %s as %s'
+            , req.files.image.name
+            , req.files.image.size / 1024 | 0
+            , req.files.image.path
+            , req.body.title
+            , req.files.image
+            , '<img src="uploads/' + pathArray[(pathArray.length - 1)] + '">'
+        ));*/
+    })
+
+    .get('/:userId', (req, res, next) => {
 
     })
+
 
     .get('*', (req, res) => {
-        res.render('index');
+        res.render('index')
     });
 
 module.exports = router;
