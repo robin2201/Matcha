@@ -1,10 +1,57 @@
 extends layout
-include tools
 
 block content
-    .container
-    h1 Modifier mes Informations
-    form.formUserData(action="/users/add", method="post")
-        input.input-block-level(type="textarea", name="bioUser", placeholder="Hey add some text to describe you")
-        button.btn.btn-large.btn-primary(type="submit") Ajouter Une description
+    .main.container
+        .row
+            h2 Modifier mes informations
+            form.form-horizontal(method='POST', action='/users/add')
+                div.form-group
+                    input#nickname.form-control(type='text', placeholder='Nickname' name='nickname')
+                div.form-group
+                    input#firstname.form-control(type='text', placeholder='Firstname' name='firstname')
+                div.form-group
+                    input#lastname.form-control(type='text', placeholder='LastName' name='lastname')
+                div.form-group
+                    input#email.form-control(type='email', placeholder='name@email.com' name='email')
+                div.form-group
+                    input#birthday.form-control(type='date', placeholder='dd/mm/yy' name='birthday')
+                div.form-group
+                    input#pw.form-control(type='password', placeholder="Password (8 to 20)" name='password')
+                div.form-group
+                    label.control-label Gender
+                        label.radio-inline Male
+                            input#male(type='radio', name="gender", value='1')
+                        label.radio-inline Female
+                            input#female(type='radio', name="gender", value='0')
+                div.form-group
+                    label.control-label Add some words about you
+                    input.form-control(type="textarea", name="bio", placeholder="Hy .....")
+                div.form-group
+                    label.control-label Where are you living
+                    input.form-control(type="city", name="city", placeholder="Paris")
+                button.btn-large.btn-primary(type='submit') Modifier
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
