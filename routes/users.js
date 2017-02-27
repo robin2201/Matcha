@@ -1,22 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const mongoUtil = require('../config/db');
 const home = require('../controllers/UserController')
-const multer = require('multer')
 const Upload = require('../config/MulterUpload')
 
-let storage = multer.diskStorage({
-    destination: (req, file, callback) => {
-        callback(null, './uploads');
-    },
-    filename: (req, file, callback) => {
-        callback(null, file.fieldname + '-' + Date.now());
-    }
-});
-
-let upload = multer({storage: storage}).single('image');
-
-
+/*
 let isAuthenticated = (req, res, next) => {
     console.log(req)
     if (req.session.user) {
@@ -26,7 +13,7 @@ let isAuthenticated = (req, res, next) => {
         next(err)
     }
 }
-
+*/
 /* GET users listing. */
 router.get('/', (req, res, next) => {
     let user = req.session.user
@@ -34,7 +21,7 @@ router.get('/', (req, res, next) => {
         res.render('home', user)
     }
     res.redirect('/')
-})
+    })
 
     .post('/login', (req, res) => {
         home.signinUser(req, res)
@@ -68,7 +55,9 @@ router.get('/', (req, res, next) => {
             if (err) {
                 return res.end("Error uploading file. " + err);
             }
-            console.log(req.file)
+            
+            console.log(req.file.path)
+            console.log(req.file.filename)
             res.end("File is uploaded");
         })
     })
@@ -76,7 +65,6 @@ router.get('/', (req, res, next) => {
     .get('/:userId', (req, res, next) => {
 
     })
-
 
     .get('*', (req, res) => {
         res.render('index')
