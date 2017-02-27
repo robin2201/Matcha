@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongoUtil = require('../config/db');
 const home = require('../controllers/UserController')
-const multer = require('multer')
+const upload = require('multer')
 
 let isAuthenticated = (req, res, next) => {
     console.log(req)
@@ -50,10 +50,11 @@ router.get('/', (req, res, next) => {
         home.AddDataToUser(req, res)
     })
 
-    .post('/upload', multer({ dest: '../uploads/'}).single('upl'), (req, res) => {
+    .post('/upload', (req, res) => {
 
+        console.log(req)
         console.log(req.body)
-        console.log(req.file)
+        console.log(req.files)
         //split the url into an array and then get the last chunk and render it out in the send req.
         /*
          res.send(util.format(' Task Complete \n uploaded %s (%d Kb) to %s as %s'
