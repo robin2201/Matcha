@@ -17,10 +17,10 @@ const Upload = require('../config/MulterUpload')
 /* GET users listing. */
 router.get('/', (req, res, next) => {
     let user = req.session.user
-    if (user) {
-        res.render('home', user)
-    }
-    res.redirect('/')
+        if (user) {
+            res.render('home', user)
+        }
+        res.redirect('/')
     })
 
     .post('/login', (req, res) => {
@@ -54,8 +54,6 @@ router.get('/', (req, res, next) => {
         Upload(req, res, (err) => {
             if (err) return res.end("Error uploading file. " + err);
             else {
-                console.log(req.session.userId)
-                console.log(req.file.path)
                 home.AddPicToDb(req, res)
             }
         })
