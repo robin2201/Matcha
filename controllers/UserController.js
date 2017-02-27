@@ -49,10 +49,12 @@ module.exports = {
                                         if (err) return res.send(err)
                                         else {
                                             const {ops, insertedCount} = result
-                                            req.session.user = ops[0]
-                                            req.session.userId = ops[0]._id
-                                            user.SendActivationMail(req, res);
-                                            res.render('home', {user: req.session.user})
+                                            if (insertedCount > 0) {
+                                                req.session.user = ops[0]
+                                                req.session.userId = ops[0]._id
+                                                user.SendActivationMail(req, res)
+                                                res.render('home', {user: req.session.user})
+                                            }
                                         }
                                     })
                                 })
@@ -98,8 +100,6 @@ module.exports = {
     valideToken: (req, res) => {
         let {id, token} = req.params
 
-        console.log(id.substr(1))
-        console.log(token.substr(1))
         mongoUtil.connectToServer((err) => {
             if (err) return res.send(err)
             let dbUsers = mongoUtil.getDb().collection('Users')
@@ -133,20 +133,44 @@ module.exports = {
         console.log(data)
         console.log(userId)
         /*mongoUtil.connectToServer((err) => {
-            if (err)
-                return res.send(err)
-            let db = mongoUtil.getDb();
-            db.collection('Users').findOneAndUpdate({
-                    "_id": userId
-                },
-                {$set: {"bio": data.bioUser}},
-                (err, result) => {
-                    if (err) return res.send(err)
-                    console.log(result)
-                    db.close()
-                })
-            res.send("Totu c'est bien passé")
-        })*/
+         if (err)
+         return res.send(err)
+         let db = mongoUtil.getDb();
+         db.collection('Users').findOneAndUpdate({
+         "_id": userId
+         },
+         {$set: {"bio": data.bioUser}},
+         (err, result) => {
+         if (err) return res.send(err)
+         console.log(result)
+         db.close()
+         })
+         res.send("Totu c'est bien passé")
+         })*/
         res.send(data)
+    },
+
+    AddPicToDb: (req, res) => {
+
+        let id = req.session.userId
+        mongoUtil.connectToServer((err) => {
+            if (err) return res.sendStatus(500)
+            let dbUsers = mongoUtil.getDb().collection('Users')
+            dbUsers.findOneAndUpdate({
+                    _id: objectId(id)
+                },
+                {
+                    $set: {
+                        "pics": {
+                            "picpath": req.file.path
+                        }
+                    }
+                },
+                (err, result) => {
+                    if (err) return res.sendStatus(500).json(err)
+                    if (result) return res.json(result)
+                    else return res.sendStatus(404)
+                })
+        })
     }
 };

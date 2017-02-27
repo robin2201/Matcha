@@ -4,16 +4,16 @@ const home = require('../controllers/UserController')
 const Upload = require('../config/MulterUpload')
 
 /*
-let isAuthenticated = (req, res, next) => {
-    console.log(req)
-    if (req.session.user) {
-        next()
-    } else {
-        let err = new Error('Please logIn before')
-        next(err)
-    }
-}
-*/
+ let isAuthenticated = (req, res, next) => {
+ console.log(req)
+ if (req.session.user) {
+ next()
+ } else {
+ let err = new Error('Please logIn before')
+ next(err)
+ }
+ }
+ */
 /* GET users listing. */
 router.get('/', (req, res, next) => {
     let user = req.session.user
@@ -21,7 +21,7 @@ router.get('/', (req, res, next) => {
         res.render('home', user)
     }
     res.redirect('/')
-    })
+})
 
     .post('/login', (req, res) => {
         home.signinUser(req, res)
@@ -52,13 +52,13 @@ router.get('/', (req, res, next) => {
 
     .post('/upload', (req, res) => {
         Upload(req, res, (err) => {
-            if (err) {
-                return res.end("Error uploading file. " + err);
+            if (err) return res.end("Error uploading file. " + err);
+            else {
+                console.log(req.session.userId)
+                console.log(req.file.path)
+                home.AddPicToDb(req, res)
+                //res.end("File is uploaded");
             }
-            
-            console.log(req.file.path)
-            console.log(req.file.filename)
-            res.end("File is uploaded");
         })
     })
 
