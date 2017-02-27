@@ -34,7 +34,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(validator());
 app.use(cookieParser());
 app.use(sess);
-//app.use(isAuthenticated());
 app.use(require('node-sass-middleware')({
   src: path.join(__dirname, 'public'),
   dest: path.join(__dirname, 'public'),

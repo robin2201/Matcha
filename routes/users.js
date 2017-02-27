@@ -2,7 +2,20 @@ const express = require('express');
 const router = express.Router();
 const mongoUtil = require('../config/db');
 const home = require('../controllers/UserController')
-const upload = require('multer')
+const multer = require('multer')
+const Upload = require('../config/MulterUpload')
+
+let storage = multer.diskStorage({
+    destination: (req, file, callback) => {
+        callback(null, './uploads');
+    },
+    filename: (req, file, callback) => {
+        callback(null, file.fieldname + '-' + Date.now());
+    }
+});
+
+let upload = multer({storage: storage}).single('image');
+
 
 let isAuthenticated = (req, res, next) => {
     console.log(req)
@@ -21,7 +34,7 @@ router.get('/', (req, res, next) => {
         res.render('home', user)
     }
     res.redirect('/')
-    })
+})
 
     .post('/login', (req, res) => {
         home.signinUser(req, res)
@@ -51,20 +64,13 @@ router.get('/', (req, res, next) => {
     })
 
     .post('/upload', (req, res) => {
-
-        console.log(req)
-        console.log(req.body)
-        console.log(req.files)
-        //split the url into an array and then get the last chunk and render it out in the send req.
-        /*
-         res.send(util.format(' Task Complete \n uploaded %s (%d Kb) to %s as %s'
-         , req.files.image.name
-         , req.files.image.size / 1024 | 0
-         , req.files.image.path
-         , req.body.title
-         , req.files.image
-         , '<img src="uploads/' + pathArray[(pathArray.length - 1)] + '">'
-         ));*/
+        Upload(req, res, (err) => {
+            if (err) {
+                return res.end("Error uploading file. " + err);
+            }
+            console.log(req.file)
+            res.end("File is uploaded");
+        })
     })
 
     .get('/:userId', (req, res, next) => {
