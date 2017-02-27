@@ -21,7 +21,7 @@ router.get('/', (req, res, next) => {
         res.render('home', user)
     }
     res.redirect('/')
-})
+    })
 
     .post('/login', (req, res) => {
         home.signinUser(req, res)
@@ -57,7 +57,6 @@ router.get('/', (req, res, next) => {
                 console.log(req.session.userId)
                 console.log(req.file.path)
                 home.AddPicToDb(req, res)
-                //res.end("File is uploaded");
             }
         })
     })

@@ -5,17 +5,17 @@ block register
         .row
             form.form-horizontal(method='POST', action='/users/register')
                 div.form-group
-                    label.(for='name') FirstName:
-                    input#name.form-control(type='text', placeholder='first' name='firstname')
+                    label(for='firstname') FirstName:
+                    input#firstname.form-control(type='text', placeholder='first' name='firstname')
                 div.form-group
-                    label(for='name') LastName:
-                    input#name.form-control(type='text', placeholder='first' name='lastname')
+                    label(for='lastname') LastName:
+                    input#lastname.form-control(type='text', placeholder='first' name='lastname')
                 div.form-group
                     label(for='email') Email:
                     input#email.form-control(type='email', placeholder='name@email.com' name='email')
                 div.form-group
-                    label(for='') Birthday:
-                    input#email.form-control(type='email', placeholder='name@email.com' name='email')
+                    label(for='birthday') Birthday:
+                    input#birthday.form-control(type='date', placeholder='name@email.com' name='birthday')
                 div.form-group
                     label(for='pw') Password:
                     input#pw.form-control(type='password' name='password')
