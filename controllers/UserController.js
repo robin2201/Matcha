@@ -17,7 +17,7 @@ module.exports = {
     },
 
     registerUser: (req, res) => {
-
+        console.log(req.body)
         req.checkBody(schemaValidator)
         req.checkBody('cPassword', 'Not same pass').equals(req.body.password);
         let errors = req.validationErrors()
@@ -37,9 +37,9 @@ module.exports = {
                     if (err) return res.send(err)
                     if (result) {
                         if (result.firstname === firstname)
-                            return res.send('Sorry this Username is already take')
+                            return res.send('Sorry this Username is already taken')
                         else if (result.email === email)
-                            return res.send('Sorry this Email is already take')
+                            return res.send('Sorry this Email is already taken')
                     } else {
                         bcrypt.hash(password, 10, (err, hash) => {
                             if (err) res.send(err)
@@ -126,28 +126,47 @@ module.exports = {
     },
 
     AddDataToUser: (req, res) => {
-        let userId = objectId(req.session.userId)
-        let data = req.body
-        console.log(req.session)
-        console.log("Add data to my user")
-        console.log(data)
-        console.log(userId)
-        /*mongoUtil.connectToServer((err) => {
-         if (err)
-         return res.send(err)
-         let db = mongoUtil.getDb();
-         db.collection('Users').findOneAndUpdate({
-         "_id": userId
-         },
-         {$set: {"bio": data.bioUser}},
-         (err, result) => {
-         if (err) return res.send(err)
-         console.log(result)
-         db.close()
-         })
-         res.send("Totu c'est bien passé")
-         })*/
-        res.send(data)
+        let {nickname, firstname, lastname, email, birthday, password, gender, bio, city} = req.body
+
+        mongoUtil.connectToServer((err) => {
+            if (err)
+                return res.send(err)
+            console.log(nickname)
+            console.log(firstname)
+            console.log(lastname)
+            console.log(email)
+            console.log(birthday)
+            console.log(password)
+            console.log(gender)
+            console.log(bio)
+            console.log(city)
+            console.log(req.session.userId)
+
+            let dbUsers = mongoUtil.getDb().collection('Users');
+            dbUsers.findOneAndUpdate({
+                    _id: objectId(req.session.userId)
+                },
+                {
+                    $set: {
+                        'nickname': nickname,
+                        'firstname': firstname,
+                        'lastname': lastname,
+                        'email': email,
+                        'birthday': birthday,
+                        'gender': gender,
+                        'bio': bio,
+                        'city': city
+                    }
+                },
+                (err, result) => {
+                    if (err || result.value === undefined) return res.send(err)
+                    console.log(result)
+                    console.log(result.value._id)
+                    req.session.userId = result.value._id
+                    res.render('home', {user : result.value})
+                })
+            res.send("Totu c'est bien passé")
+        })
     },
 
     AddPicToDb: (req, res) => {

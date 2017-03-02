@@ -50,6 +50,9 @@ let schema = {
             errorMessage: 'Must be between 2 and 8 chars long'
         },
         // equals: (req.body.cPassword, 'not same value')
+    },
+    'birthday': {
+
     }
 }
 

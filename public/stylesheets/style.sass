@@ -1,62 +1,252 @@
-.mainbody
-  background: #f0f0f0
+@import url(https://fonts.googleapis.com/css?family=Montserrat:700)
 
-/* Special class on .container surrounding .navbar, used for positioning it into place.
-
-.navbar-wrapper
-  position: fixed
-  top: 0
-  left: 0
-  right: 0
-  z-index: 20
-  margin-left: -15px
-  margin-right: -15px
-  .container
-    padding-left: 0
-    padding-right: 0
-  .navbar
-    padding-left: 15px
-    padding-right: 15px
-
-/* Flip around the padding for proper display in narrow viewports
-
-.navbar-content
-  width: 320px
-  padding: 15px
-  padding-bottom: 0px
-  &:before, &:after
-    display: table
-    content: ""
-    line-height: 0
-
-.navbar-nav.navbar-right:last-child
-  margin-right: 15px !important
-
-.navbar-footer
-  background-color: #DDD
-
-.navbar-footer-content
-  padding: 15px 15px 15px 15px
-
-.dropdown-menu
-  padding: 0px
-  overflow: hidden
-
-.brand_network
-  color: #9D9D9D
-  float: left
-  position: absolute
-  left: 70px
-  top: 30px
-  font-size: smaller
-
-.post-content
-  margin-left: 58px
-
-.badge-important
-  margin-top: 3px
-  margin-left: 25px
-  position: absolute
+html
+  width: 100%
+  height: 100%
 
 body
-  background-color: #e8e8e8
+  width: 100%
+  height: 100%
+  font-family: 'Montserrat','Helvetica Neue',Arial,sans-serif
+  color: #001A33
+  webkit-tap-highlight-color: #222
+  top: 0
+  &.modal-open
+    padding-right: 0 !important
+
+/* workaround modal-open padding issue
+
+hr
+  max-width: 120px
+  border-width: 3px
+  opacity: 0.08
+  margin-top: 25px
+  margin-bottom: 25px
+  &.light
+    border-color: #fff
+    opacity: 1
+  &.primary
+    border-color: #007FFF
+    opacity: 1
+
+a
+  color: #007FFF
+  -webkit-transition: all .35s
+  -moz-transition: all .35s
+  transition: all .35s
+  &:hover, &:focus
+    color: #222
+    outline: 0
+
+p
+  font-size: 17px
+  line-height: 1.7
+  margin-bottom: 20px
+  font-family: 'Helvetica Neue',Arial,sans-serif
+
+.text-normal
+  font-family: 'Helvetica Neue',Arial,sans-serif
+
+.wide-space
+  letter-spacing: 1.6px
+
+.icon-lg
+  font-size: 50px
+  line-height: 18px
+
+.bg-primary
+  background-color: #007FFF
+
+.bg-alt
+  background-color: #fff
+
+.text-faded
+  color: rgba(245, 245, 245, 0.7)
+
+.text-dark
+  color: #001A33
+
+.text-light
+  color: #fff
+  &:hover, &:focus
+    color: #eee
+    text-decoration: none
+
+.text-primary
+  color: #007FFF
+
+section
+  padding: 70px 0
+
+aside
+  padding: 45px 0
+
+footer
+  padding: 45px
+  padding-top: 40px
+  background-color: #e0e0e3
+  h4, h6
+    color: #fff
+
+.navbar
+  border-color: rgba(35, 35, 35, 0.05)
+  background-color: #fff
+  -webkit-transition: all .4s
+  -moz-transition: all .4s
+  transition: all .4s
+
+.navbar-brand
+  color: #007FFF
+  padding: 1px
+  line-height: 1.90em
+  -webkit-transition: padding .2s ease-in
+  -moz-transition: padding .2s ease-in
+  transition: padding .2s ease-in
+  float: none
+  &:hover, &:focus
+    color: #007FFF
+
+.navbar .navbar-toggle:focus, .navbar-default .navbar-toggle:hover
+  background-color: #001A33
+
+.navbar .navbar-toggle, .navbar-default .navbar-collapse
+  border-color: transparent
+
+.navbar .navbar-nav
+  > li > a
+    font-size: 12px
+    color: #001A33
+    text-transform: uppercase
+    &:focus
+      font-size: 12px
+      color: #001A33
+      text-transform: uppercase
+    &:hover, &:focus:hover
+      color: #007FFF
+  .nav-link.active
+    color: #007FFF !important
+    background-color: transparent
+    &:focus
+      color: #007FFF !important
+      background-color: transparent
+
+/* responsive nav
+@media (max-width: 48em)
+  .navbar .navbar-nav
+    > .nav-item
+      float: none
+      margin-left: .1rem
+    float: none !important
+
+@media (min-width: 48em)
+  .navbar
+    border-color: transparent
+    background-color: #fff
+    min-height: 60px
+  .navbar-brand
+    color: #007FFF
+    float: left
+    padding-left: 1px
+  .navbar
+    .navbar-brand
+      &:hover, &:focus
+        color: #001A33
+    .navbar-nav > li > a
+      color: #001A33
+      letter-spacing: 1.1px
+      &:focus
+        color: #001A33
+        letter-spacing: 1.1px
+      &:hover, &:focus:hover
+        color: #001A33
+  #topNav
+    background-color: #fff
+
+header
+  position: relative
+  min-height: auto
+  text-align: center
+  color: #001A33
+  width: 100%
+  background-color: #fff
+  .header-content
+    position: relative
+    width: 100%
+    padding: 100px 15px
+    text-align: center
+    z-index: 2
+    .inner
+      h1
+        margin-top: 0
+        margin-bottom: 0
+      p
+        margin-bottom: 50px
+        font-size: 16px
+        font-weight: 300
+        color: #222
+
+@media (min-width: 34em)
+  .icon-lg
+    font-size: 80px
+  header
+    min-height: 100%
+    .header-content
+      position: absolute
+      top: 50%
+      padding: 0 50px
+      -webkit-transform: translateY(-50%)
+      -ms-transform: translateY(-50%)
+      transform: translateY(-50%)
+      .inner
+        margin-right: auto
+        margin-left: auto
+        max-width: 1000px
+        h1
+          font-size: 53px
+        p
+          margin-right: auto
+          margin-left: auto
+          max-width: 80%
+          font-size: 18px
+  section
+    min-height: 600px
+    padding: 100px 0
+
+.list-group-item, .card-footer
+  background-color: transparent
+
+textarea
+  resize: none
+
+.call-to-action h2
+  margin: 0 auto 20px
+
+.btn.btn-primary
+  background-color: transparent
+  border: 1px solid #007FFF
+  -webkit-transition: all .35s
+  -moz-transition: all .35s
+  transition: all .35s
+  color: #007FFF
+  &:hover
+    opacity: 0.7
+
+.btn-primary-outline
+  border-color: #007FFF
+  color: #007FFF
+  &:hover
+    background-color: #007FFF
+
+.btn-xl
+  padding: 15px 30px
+  font-size: 20px
+
+\::-moz-selection, ::selection
+  text-shadow: none
+  color: #fff
+  background: #222
+
+img
+  &::selection, &::-moz-selection
+    color: #fff
+    background: 0 0

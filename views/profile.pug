@@ -1,22 +1,43 @@
 extends layout
 
 block content
+    include partials/navbar
     .main.container
         .row
             h2 Modifier mes informations
-            form.form-horizontal(method='POST', action='/users/add')
+
+
+            form.form-horizontal(method='POST', action='/profile/me')
                 div.form-group
                     input#nickname.form-control(type='text', placeholder='Nickname' name='nickname')
+                button(type="submit", value="Upload") Nickname
+
+            form.form-horizontal(method='POST', action='/profile/me')
                 div.form-group
                     input#firstname.form-control(type='text', placeholder='Firstname' name='firstname')
+                button(type="submit", value="Upload") Firstname
+
+            form.form-horizontal(method='POST', action='/profile/me')
                 div.form-group
                     input#lastname.form-control(type='text', placeholder='LastName' name='lastname')
+                button(type="submit", value="Upload") lastname
+
+            form.form-horizontal(method='POST', action='/profile/email')
                 div.form-group
                     input#email.form-control(type='email', placeholder='name@email.com' name='email')
+                button(type="submit", value="Upload") Email
+
+            form.form-horizontal(method='POST', action='/profile/me')
                 div.form-group
                     input#birthday.form-control(type='date', placeholder='dd/mm/yy' name='birthday')
+                button(type="submit", value="Upload") BirthDate
+
+            form.form-horizontal(method='POST', action='/profile/password')
                 div.form-group
                     input#pw.form-control(type='password', placeholder="Password (8 to 20)" name='password')
+                button(type="submit", value="Upload") Password
+
+            form.form-horizontal(method='POST', action='/profile/gender')
                 div.form-group
                     label.control-label Gender
                     .row
@@ -24,13 +45,19 @@ block content
                             input#male(type='radio', name="gender", value='1')
                         label.radio-inline Female
                             input#female(type='radio', name="gender", value='0')
+                        button(type="submit", value="Upload") Upload File
+
+            form.form-horizontal(method='POST', action='/profile/bio')
                 div.form-group
                     label.control-label Add some words about you
                     input.form-control(type="textarea", name="bio", placeholder="Hy .....")
+                button(type="submit", value="Upload") Bio
+
+            form.form-horizontal(method='POST', action='/profile/city')
                 div.form-group
                     label.control-label Where are you living
                     input.form-control(type="city", name="city", placeholder="Paris")
-                button.btn-large.btn-primary(type='submit') Modifier mes Informations
+                button.btn-large.btn-primary(type='submit') Location
 
         .row
             h2.center Ajouter une photo à mon profil

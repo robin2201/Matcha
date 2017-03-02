@@ -1,7 +1,22 @@
-extends ../index
+.row
+    nav#topNav.navbar.fixed-top.navbar-toggleable-sm
+        .container
+            button.navbar-toggler.hidden-md-up.float-right(type='button', data-toggle='collapse', data-target='#collapsingNavbar')  &#x2630;
+            |
+            a.navbar-brand.page-scroll(href='/home') Matcha
+            #collapsingNavbar.collapse.navbar-collapse
+                ul.navbar-nav
+                    li.nav-item
+                        a.nav-link.page-scroll(href='/profile') My Profile
+                    li.nav-item
+                        a.nav-link.page-scroll(href='/home') Home
+                    li.nav-item
+                        a.nav-link.page-scroll(href='/logout') Logout
+                    li.nav-item
+                        a.nav-link.page-scroll(href='#four') More
+                ul.nav.navbar-nav.ml-auto
+                    li.nav-item
+                        a.nav-link.page-scroll(data-toggle='modal', title='A free Bootstrap theme', href='#aboutModal') About
 
-block test
-    .test
-        p Je test le fc
 
 
