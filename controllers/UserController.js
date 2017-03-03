@@ -131,16 +131,6 @@ module.exports = {
         mongoUtil.connectToServer((err) => {
             if (err)
                 return res.send(err)
-            console.log(nickname)
-            console.log(firstname)
-            console.log(lastname)
-            console.log(email)
-            console.log(birthday)
-            console.log(password)
-            console.log(gender)
-            console.log(bio)
-            console.log(city)
-            console.log(req.session.userId)
 
             let dbUsers = mongoUtil.getDb().collection('Users');
             dbUsers.findOneAndUpdate({
