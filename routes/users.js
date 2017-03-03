@@ -39,13 +39,6 @@ router.get('/', (req, res, next) => {
         home.valideToken(req, res)
     })
 
-    .get('/profile', (req, res) => {
-        let user = req.session.user
-        if (user) {
-            res.render('profile', user)
-        }
-    })
-
     .post('/add', (req, res) => {
         home.AddDataToUser(req, res)
     })

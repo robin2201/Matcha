@@ -35,5 +35,9 @@ module.exports = {
                 )
             })
         }
+    },
+
+    ModifyEmail: (req, res) => {
+
     }
 }

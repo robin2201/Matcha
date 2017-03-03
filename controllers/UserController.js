@@ -160,7 +160,6 @@ module.exports = {
     },
 
     AddPicToDb: (req, res) => {
-
         let id = req.session.userId
         mongoUtil.connectToServer((err) => {
             if (err) return res.sendStatus(500)
