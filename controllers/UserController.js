@@ -168,15 +168,18 @@ module.exports = {
                     _id: objectId(id)
                 },
                 {
-                    $set: {
+                    $addToSet: {
                         "pics": {
-                            "picpath": req.file.path
+                            'pic': req.file.path
                         }
                     }
                 },
                 (err, result) => {
                     if (err) return res.sendStatus(500).json(err)
-                    if (result) return res.json(result)
+                    if (result) {
+                        req.session.user =  result.value
+                        res.redirect('/profile')
+                    }
                     else return res.sendStatus(404)
                 })
         })
