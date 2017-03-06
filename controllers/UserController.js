@@ -125,40 +125,6 @@ module.exports = {
         })
     },
 
-    AddDataToUser: (req, res) => {
-        let {nickname, firstname, lastname, email, birthday, password, gender, bio, city} = req.body
-
-        mongoUtil.connectToServer((err) => {
-            if (err)
-                return res.send(err)
-
-            let dbUsers = mongoUtil.getDb().collection('Users');
-            dbUsers.findOneAndUpdate({
-                    _id: objectId(req.session.userId)
-                },
-                {
-                    $set: {
-                        'nickname': nickname,
-                        'firstname': firstname,
-                        'lastname': lastname,
-                        'email': email,
-                        'birthday': birthday,
-                        'gender': gender,
-                        'bio': bio,
-                        'city': city
-                    }
-                },
-                (err, result) => {
-                    if (err || result.value === undefined) return res.send(err)
-                    console.log(result)
-                    console.log(result.value._id)
-                    req.session.userId = result.value._id
-                    res.render('home', {user : result.value})
-                })
-            res.send("Totu c'est bien passé")
-        })
-    },
-
     AddPicToDb: (req, res) => {
         let id = req.session.userId
         mongoUtil.connectToServer((err) => {
@@ -177,7 +143,7 @@ module.exports = {
                 (err, result) => {
                     if (err) return res.sendStatus(500).json(err)
                     if (result) {
-                        req.session.user =  result.value
+                        req.session.user = result.value
                         res.redirect('/profile')
                     }
                     else return res.sendStatus(404)

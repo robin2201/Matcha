@@ -17,11 +17,11 @@ const Upload = require('../config/MulterUpload')
 /* GET users listing. */
 router.get('/', (req, res, next) => {
     let user = req.session.user
-        if (user) {
-            res.render('home', user)
-        }
-        res.redirect('/')
-    })
+    if (user) {
+        res.render('home', user)
+    }
+    res.redirect('/')
+})
 
     .post('/login', (req, res) => {
         home.signinUser(req, res)
@@ -37,10 +37,6 @@ router.get('/', (req, res, next) => {
 
     .get('/activation/:id/:token', (req, res) => {
         home.valideToken(req, res)
-    })
-
-    .post('/add', (req, res) => {
-        home.AddDataToUser(req, res)
     })
 
     .post('/upload', (req, res) => {
