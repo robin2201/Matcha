@@ -18,14 +18,19 @@ block content
                         h3
                             strong Bio
                         p
+                            | #{user.nickname}
                             | #{user.bio}
                         h3
                             strong Location
-                        p #{user.city}
+                        p
+                            | #{user.city}
                         hr
                         h3
                             strong Gender
-                        p #{user.gender}
+                            if user.gender === 0
+                                p female
+                            else
+                                p male
                         hr
                         h3
                             strong Birthday
