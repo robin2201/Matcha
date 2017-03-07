@@ -11,6 +11,10 @@ router.get('/', (req, res) => {
     .post('/me', (req, res) => {
        profil.ModifyNickname(req, res)
     })
+
+    .post('/Addtags', (req, res) => {
+
+    })
 ;
 
 module.exports = router;

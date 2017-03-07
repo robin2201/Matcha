@@ -22,7 +22,7 @@ module.exports = {
         req.checkBody('cPassword', 'Not same pass').equals(req.body.password);
         let errors = req.validationErrors()
         if (errors) return res.send(errors)
-        let {firstname, lastname, password, email, gender} = req.body
+        let {firstname, lastname, password, email, gender, birthday} = req.body
 
         mongoUtil.connectToServer((err) => {
             if (err) return res.send(err)
@@ -43,7 +43,7 @@ module.exports = {
                     } else {
                         bcrypt.hash(password, 10, (err, hash) => {
                             if (err) res.send(err)
-                            UserM.create({firstname, lastname, hash, email, gender},
+                            UserM.create({firstname, lastname, hash, email, gender, birthday},
                                 (user) => {
                                     dbUsers.insertOne(user.data, (err, result) => {
                                         if (err) return res.send(err)
@@ -135,9 +135,7 @@ module.exports = {
                 },
                 {
                     $addToSet: {
-                        "pics": {
-                            'pic': req.file.path
-                        }
+                        "pics": req.file.path
                     }
                 },
                 (err, result) => {

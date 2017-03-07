@@ -4,10 +4,6 @@ include tools
 block content
     include partials/navbar
 
-    a(href="/home") Home
-    a(href="/users/logout") Logout
-    a(href="/profile") Profile
-
     each  elem  in user
         li=  elem
 
@@ -16,23 +12,28 @@ block content
             .panel-body
                 .media
                     div(align='center')
-                        img.thumbnail.img-responsive(src='https://lut.im/7JCpw12uUT/mY0Mb78SvSIcjvkf.png', width='300px', height='300px')
+                        img.thumbnail.img-responsive(src='uploads/image-1488880231767.jpeg', width='300px', height='300px')
                     .media-body
                         hr
                         h3
                             strong Bio
                         p
-                            | Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur vel gravida metus, non ultrices sapien. Morbi odio metus, dapibus non nibh id amet.
-                        hr
+                            | #{user.bio}
                         h3
                             strong Location
                         p Earth
                         hr
                         h3
                             strong Gender
-                        p Unknown
+                        p #{user.gender}
                         hr
                         h3
                             strong Birthday
-                        p January 01 1901
+                        p #{user.birthday}
+                        hr
+
+                        h3
+                            strong Name
+                        p #{user.firstname}
+                        hr
 

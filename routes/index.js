@@ -25,7 +25,8 @@ router.get('/', (req, res) => {
         res.render('partials/login')
     })
     .get('/home', (req, res, next) => {
-        let {user} = req.session.user
+        console.log(req.session)
+        let user = req.session.user
         res.render('home', {user: user})
     })
     .get('/logout', (req, res) => {

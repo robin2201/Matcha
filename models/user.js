@@ -52,14 +52,27 @@ class User {
         this.data.email = email
     }
 
-    static create({firstname, lastname, hash, email}, callback) {
+    GetGender() {
+        return this.data.gender
+    }
+
+    SetGender() {
+        this.data.gender = gender
+    }
+
+    SetBirthday(){
+        this.data.birthdate = birthday
+    }
+    static create({firstname, lastname, hash, email, gender, birthday}, callback) {
         let token = base64url(crypto.randomBytes(42))
         let UserToConstruct = {
             firstname,
             lastname,
             hash,
             email,
-            token
+            token,
+            gender,
+            birthday
         }
         callback(new User(UserToConstruct))
     }
