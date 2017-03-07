@@ -38,7 +38,7 @@ block content
                     input.form-control(type="textarea", name="bio", placeholder="Hy .....")
                 button(type="submit", value="Upload") Bio
 
-            form.form-horizontal(method='POST', action='/profile/city')
+            form.form-horizontal(method='POST', action='/profile/me')
                 div.form-group
                     label.control-label Where are you living
                     input.form-control(type="city", name="city", placeholder="Paris")
@@ -51,8 +51,14 @@ block content
                 input.form-control(type="submit", value="submit")
                 button(type="submit", value="Upload") Upload File
 
-
-
+        form#form-interests.hidden
+            .input-group.input-group-sm
+                input.form-control.input-interest(list='list-interests', type='text', placeholder='New interest')
+                datalist#list-interests
+                |
+                span.input-group-btn
+                    button#new-interest.btn.btn-warning(type='button') SEND
+                        span.glyphicon.glyphicon-plus-sign(aria-hidden='true')
 
 
 

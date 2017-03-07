@@ -11,7 +11,6 @@ module.exports = {
     ModifyNickname: (req, res) => {
         let value = req.body
         let id = req.session.userId
-        console.log(req.session)
         if (value) {
             mongoUtil.connectToServer((err) => {
                 if (err) return res.sendStatus(500)
@@ -26,9 +25,10 @@ module.exports = {
                     (err, result) => {
                         if (err) return res.sendStatus(500)
                         if (result && result.ok === 1) {
-                            console.log(result)
                             req.session.user = result.value
                             req.session.userId = result.value._id
+                            console.log(req.session)
+
                             res.redirect('/profile')
                         }
                     }
