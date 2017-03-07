@@ -9,7 +9,6 @@ router.get('/', (req, res) => {
         res.render('profile')
 })
     .post('/me', (req, res) => {
-        console.log('Heeeeeeuuuuuuuuu')
        profil.ModifyNickname(req, res)
     })
 ;

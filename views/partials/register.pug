@@ -17,6 +17,13 @@ block register
                     label(for='birthday') Birthday:
                     input#birthday.form-control(type='date', placeholder='name@email.com' name='birthday')
                 div.form-group
+                    label.control-label Gender
+                    .row
+                        label.radio-inline Male
+                            input#male(type='radio', name="gender", value='1')
+                        label.radio-inline Female
+                            input#female(type='radio', name="gender", value='0')
+                div.form-group
                     label(for='pw') Password:
                     input#pw.form-control(type='password' name='password')
                 div.form-group

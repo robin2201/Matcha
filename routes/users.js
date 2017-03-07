@@ -31,10 +31,6 @@ router.get('/', (req, res, next) => {
         home.registerUser(req, res)
     })
 
-    .get('/logout', (req, res) => {
-        home.logout(req, res)
-    })
-
     .get('/activation/:id/:token', (req, res) => {
         home.valideToken(req, res)
     })

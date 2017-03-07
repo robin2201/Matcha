@@ -28,6 +28,9 @@ router.get('/', (req, res) => {
         let {user} = req.session.user
         res.render('home', {user: user})
     })
+    .get('/logout', (req, res) => {
+        home.logout(req, res)
+    })
 
 ;
 

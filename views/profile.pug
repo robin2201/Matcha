@@ -22,32 +22,17 @@ block content
                     input#lastname.form-control(type='text', placeholder='LastName' name='lastname')
                 button(type="submit", value="Upload") lastname
 
-            form.form-horizontal(method='POST', action='/profile/email')
+            form.form-horizontal(method='POST', action='/profile/me')
                 div.form-group
                     input#email.form-control(type='email', placeholder='name@email.com' name='email')
                 button(type="submit", value="Upload") Email
-
-            form.form-horizontal(method='POST', action='/profile/me')
-                div.form-group
-                    input#birthday.form-control(type='date', placeholder='dd/mm/yy' name='birthday')
-                button(type="submit", value="Upload") BirthDate
 
             form.form-horizontal(method='POST', action='/profile/password')
                 div.form-group
                     input#pw.form-control(type='password', placeholder="Password (8 to 20)" name='password')
                 button(type="submit", value="Upload") Password
 
-            form.form-horizontal(method='POST', action='/profile/gender')
-                div.form-group
-                    label.control-label Gender
-                    .row
-                        label.radio-inline Male
-                            input#male(type='radio', name="gender", value='1')
-                        label.radio-inline Female
-                            input#female(type='radio', name="gender", value='0')
-                        button(type="submit", value="Upload") Upload File
-
-            form.form-horizontal(method='POST', action='/profile/bio')
+            form.form-horizontal(method='POST', action='/profile/me')
                 div.form-group
                     label.control-label Add some words about you
                     input.form-control(type="textarea", name="bio", placeholder="Hy .....")
