@@ -44,6 +44,7 @@ module.exports = {
         if (regex.test(email)) {
             mongoUtil.connectToServer((err) => {
                 if (err) res.sendStatus(500)
+                let dbUser = mongoUtil.getDb().collection('Users')
                 dbUser.findOneAndUpdate(
                     {
                         _id: objectId(id)
@@ -53,10 +54,10 @@ module.exports = {
                     },
                     (err, result) => {
                         if (err) return res.sendStatus(500)
-                        else
+                        else {
                             req.session.user = result.value
-                        req.session.userId = result.value.id
-                        res.render('profile')
+                            req.session.userId = result.value.id
+                        }
                     })
             })
         } else {
@@ -65,6 +66,7 @@ module.exports = {
             req.session.user = user
             res.render('profile')
         }
+        res.render('profile')
     },
 
     AddLocation: (req, res) => {
