@@ -37,11 +37,21 @@ module.exports = {
 
     ModifyEmail: (req, res) => {
         let email = req.body.email
+        let id = req.session.userId
+        let user = req.session.user
         const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
         if(regex.test(email)){
-            console.log('Good Email')
+            mongoUtil.connectToServer((err) => {
+                if (err) res.sendStatus(500)
+                dbUser.findOneAndUpdate(
+                    {
+                        _id: objectId(id)
+                    },
+            })
         }else{
             console.log("Error wrong email")
+            req.session.userId = id
+            req.session.user = user
             res.render('profile')
         }
     },
@@ -74,6 +84,8 @@ module.exports = {
                         (err, result) => {
                             if (err) return res.sendStatus(500)
                             if (result) {
+                                req.session.user = result.value
+                                req.session.userId = result.value.id
                                 console.log(result)
                             }
                         }
