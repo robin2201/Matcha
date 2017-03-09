@@ -6,7 +6,7 @@ const objectId = require('mongodb').ObjectID
 const NodeGeocoder = require('node-geocoder')('google')
 
 module.exports = {
-    ModifyNickname: (req, res) => {
+    ModifyInfoUser: (req, res) => {
         let value = req.body
         let id = req.session.userId
         if (value !== '') {
@@ -39,7 +39,6 @@ module.exports = {
         let email = req.body.email
         let id = req.session.userId
         let user = req.session.user
-
         const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
         if(regex.test(email)){
             mongoUtil.connectToServer((err) => {
@@ -48,6 +47,16 @@ module.exports = {
                     {
                         _id: objectId(id)
                     },
+                    {
+                      $set: {"email": email}
+                    },
+                    (err, result) => {
+                        if (err) return res.sendStatus(500)
+                        else
+                            req.session.user = result.value
+                            req.session.userId = result.value.id
+                            res.render('profile')
+                    })
             })
         }else{
             console.log("Error wrong email")

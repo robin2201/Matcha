@@ -9,7 +9,7 @@ router.get('/', (req, res) => {
         res.render('profile')
 })
     .post('/me', (req, res) => {
-       profil.ModifyNickname(req, res)
+       profil.ModifyInfoUser(req, res)
     })
     .post('/email', (req, res) => {
         profil.ModifyEmail(req, res)
