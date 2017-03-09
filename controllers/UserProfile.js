@@ -4,6 +4,7 @@
 const mongoUtil = require('../config/db');
 const objectId = require('mongodb').ObjectID
 const NodeGeocoder = require('node-geocoder')('google')
+const ipLoc = require('satelize')
 
 module.exports = {
     ModifyInfoUser: (req, res) => {
@@ -40,7 +41,7 @@ module.exports = {
         let id = req.session.userId
         let user = req.session.user
         const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-        if(regex.test(email)){
+        if (regex.test(email)) {
             mongoUtil.connectToServer((err) => {
                 if (err) res.sendStatus(500)
                 dbUser.findOneAndUpdate(
@@ -48,17 +49,17 @@ module.exports = {
                         _id: objectId(id)
                     },
                     {
-                      $set: {"email": email}
+                        $set: {"email": email}
                     },
                     (err, result) => {
                         if (err) return res.sendStatus(500)
                         else
                             req.session.user = result.value
-                            req.session.userId = result.value.id
-                            res.render('profile')
+                        req.session.userId = result.value.id
+                        res.render('profile')
                     })
             })
-        }else{
+        } else {
             console.log("Error wrong email")
             req.session.userId = id
             req.session.user = user
@@ -73,7 +74,7 @@ module.exports = {
         console.log(ip)
         let id = req.session.userId
         console.log(req.session)
-        if(city !== undefined || city !== ""){
+        if (city !== undefined || city !== "") {
             NodeGeocoder.geocode(city, (err, resu) => {
                 let location = {}
                 location.long = resu[0].longitude
@@ -119,5 +120,49 @@ module.exports = {
 
     AddTags: (req, res) => {
 
+    },
+
+    FindAdressWithIP: (req, res) => {
+        let id = req.session.userId
+        ipLoc.satelize({ip: req.ip}, (err, payload) => {
+            if (err) return res.sendStatus(500)
+            else {
+                NodeGeocoder.reverse({
+                        lat: payload.latitude,
+                        lon: payload.longitude
+                    },
+                    (err, resu) => {
+                        if (err) return res.sendStatus(500)
+                        else {
+                            let location = {}
+                            location.long = resu[0].longitude
+                            location.lat = resu[0].latitude
+                            location.country = resu[0].country
+                            location.city = resu[0].city
+                            location.region = resu[0].administrativeLevels.level1short
+                            mongoUtil.connectToServer((err) => {
+                                if (err) return res.sendStatus(500)
+                                let dbUser = mongoUtil.getDb().collection('Users')
+                                dbUser.findOneAndUpdate({
+                                        _id: objectId(id)
+                                    },
+                                    {
+                                        $set: {"location": location}
+                                    },
+                                    (err, result) => {
+                                        if (err) return res.sendStatus(500)
+                                        else {
+                                            req.session.user = result.value
+                                            req.session.userId = result.value.id
+                                            res.render('profile')
+                                        }
+                                    })
+                            })
+                        }
+                    })
+            }
+        })
+
     }
+
 }

@@ -63,10 +63,11 @@ block content
 
 
         .panel-heading
-            h3.panel-title Location
-            button#update-location.btn.btn-warning.btn-xs(type='button')
-                span.glyphicon.glyphicon-refresh(aria-hidden='true')
-                |  Update
+            h3.panel-title Update Location
+            form.form-horizontal(method='POST', action='/profile/findMe')
+                div.form-group
+                    input.form-control(type="submit", value="submit")
+
 
 
 

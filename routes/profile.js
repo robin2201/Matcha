@@ -20,6 +20,9 @@ router.get('/', (req, res) => {
     .post('/location', (req, res) => {
         profil.AddLocation(req, res)
     })
+    .post('/findMe', (req, res) => {
+        profil.FindAdressWithIP(req, res)
+    })
 ;
 
 module.exports = router;
