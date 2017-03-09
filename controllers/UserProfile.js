@@ -97,7 +97,6 @@ module.exports = {
                             if (result) {
                                 req.session.user = result.value
                                 req.session.userId = result.value.id
-                                console.log(result)
                             }
                         }
                     )
@@ -119,7 +118,33 @@ module.exports = {
     },
 
     AddTags: (req, res) => {
+        let id = req.session.userId
+        let tag = req.body.tags
+        if (tag !== undefined || tag !== "") {
+            mongoUtil.connectToServer((err) => {
+                if (err) return res.sendStatus(500)
+                let dbUser = mongoUtil.getDb().collection('Users')
+                dbUser.findOneAndUpdate(
+                    {
+                        _id: objectId(id)
+                    },
+                    {
+                        $addToSet: {
+                            "tags": tag
+                        }
+                    },
+                    (err, result) => {
+                        if (err) return res.sendStatus(500)
+                        if (result && result.insertedId > 1) {
+                            req.session.user = result.value
+                            req.session.userId = result.value.id
 
+                        }
+                    })
+
+            })
+        }
+        res.render('profile')
     },
 
     FindAdressWithIP: (req, res) => {
