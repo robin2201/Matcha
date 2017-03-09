@@ -11,9 +11,14 @@ router.get('/', (req, res) => {
     .post('/me', (req, res) => {
        profil.ModifyNickname(req, res)
     })
-
-    .post('/Addtags', (req, res) => {
-
+    .post('/email', (req, res) => {
+        profil.ModifyEmail(req, res)
+    })
+    .post('/addTags', (req, res) => {
+        profil.AddTags(req, res)
+    })
+    .post('/location', (req, res) => {
+        profil.AddLocation(req, res)
     })
 ;
 

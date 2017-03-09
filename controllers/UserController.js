@@ -53,7 +53,7 @@ module.exports = {
                                                 req.session.user = ops[0]
                                                 req.session.userId = ops[0]._id
                                                 user.SendActivationMail(req, res)
-                                                res.render('home', {user: req.session.user})
+                                                res.render('index')
                                             }
                                         }
                                     })

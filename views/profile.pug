@@ -22,7 +22,7 @@ block content
                     input#lastname.form-control(type='text', placeholder='LastName' name='lastname')
                 button(type="submit", value="Upload") lastname
 
-            form.form-horizontal(method='POST', action='/profile/me')
+            form.form-horizontal(method='POST', action='/profile/email')
                 div.form-group
                     input#email.form-control(type='email', placeholder='name@email.com' name='email')
                 button(type="submit", value="Upload") Email
@@ -38,7 +38,7 @@ block content
                     input.form-control(type="textarea", name="bio", placeholder="Hy .....")
                 button(type="submit", value="Upload") Bio
 
-            form.form-horizontal(method='POST', action='/profile/me')
+            form.form-horizontal(method='POST', action='/profile/location')
                 div.form-group
                     label.control-label Where are you living
                     input.form-control(type="city", name="city", placeholder="Paris")
@@ -62,6 +62,11 @@ block content
 
 
 
+        .panel-heading
+            h3.panel-title Location
+            button#update-location.btn.btn-warning.btn-xs(type='button')
+                span.glyphicon.glyphicon-refresh(aria-hidden='true')
+                |  Update
 
 
 
