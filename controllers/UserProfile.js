@@ -45,8 +45,7 @@ module.exports = {
             mongoUtil.connectToServer((err) => {
                 if (err) res.sendStatus(500)
                 let dbUser = mongoUtil.getDb().collection('Users')
-                dbUser.findOneAndUpdate(
-                    {
+                dbUser.findOneAndUpdate({
                         _id: objectId(id)
                     },
                     {
@@ -72,8 +71,6 @@ module.exports = {
     AddLocation: (req, res) => {
         let city = req.body.city
         let user = req.session.user
-        let ip = req.ip
-        console.log(ip)
         let id = req.session.userId
         console.log(req.session)
         if (city !== undefined || city !== "") {
@@ -87,8 +84,7 @@ module.exports = {
                 mongoUtil.connectToServer((err) => {
                     if (err) return res.sendStatus(500)
                     let dbUser = mongoUtil.getDb().collection('Users')
-                    dbUser.findOneAndUpdate(
-                        {
+                    dbUser.findOneAndUpdate({
                             _id: objectId(id)
                         },
                         {
@@ -103,16 +99,13 @@ module.exports = {
                         }
                     )
                 })
-                req.session.user = user
-                req.session.userId = id
-                res.render('profile')
             })
         }
         else {
             req.session.user = user
             req.session.userId = id
-            res.render('profile')
         }
+        res.render('profile')
     },
 
     AddAge: (req, res) => {
@@ -126,8 +119,7 @@ module.exports = {
             mongoUtil.connectToServer((err) => {
                 if (err) return res.sendStatus(500)
                 let dbUser = mongoUtil.getDb().collection('Users')
-                dbUser.findOneAndUpdate(
-                    {
+                dbUser.findOneAndUpdate({
                         _id: objectId(id)
                     },
                     {
