@@ -1,7 +1,7 @@
 /**
  * Created by robin on 3/2/17.
  */
-const mongoUtil = require('../config/db');
+const mongoUtil = require('../config/db')
 const objectId = require('mongodb').ObjectID
 const NodeGeocoder = require('node-geocoder')('google')
 const ipLoc = require('satelize')

@@ -23,6 +23,13 @@ router.get('/', (req, res) => {
     .post('/findMe', (req, res) => {
         profil.FindAdressWithIP(req, res)
     })
+    .post('/search', (req, res) => {
+        let user = req.session.user
+        console.log(req.body)
+        //console.log(req.session.user)
+        req.session.user = user
+        res.render('home', {user: user})
+    })
 ;
 
 module.exports = router;

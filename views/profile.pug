@@ -56,11 +56,27 @@ block content
                 input#tags.form-control(type='text', placeholder='interests' name='tags')
             button(type="submit", value="Upload") Add interests
 
+        form.form-horizontal(method='POST', action='/profile/me')
+            div.form-group
+                label.control-label Orientation
+                .row
+                    label.radio-inline Male
+                        input#male(type='radio', name="orientation", value='1')
+                    label.radio-inline Female
+                        input#female(type='radio', name="orientation", value='0')
+                    label.radio-inline bisexual
+                        input#bisexual(type='radio', name="orientation", value='2')
+                    button(type="submit", value="orientation") Sexe preferences
+
+
+
+
         .panel-heading
             h3.panel-title Update Location
             form.form-horizontal(method='POST', action='/profile/findMe')
                 div.form-group
                     input.form-control(type="submit", value="submit")
+
 
 
 
