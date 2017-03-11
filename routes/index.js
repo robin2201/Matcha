@@ -18,6 +18,10 @@ router.get('/', (req, res) => {
         let user = req.session.user
         res.render('home', {user: user})
     })
+    .get('/profile', (req, res) => {
+        let user = req.session.user
+        res.render('profile', {user:user})
+    })
     .get('/logout', (req, res) => {
         home.logout(req, res)
     })

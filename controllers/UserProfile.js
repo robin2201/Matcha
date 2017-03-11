@@ -14,8 +14,7 @@ module.exports = {
             mongoUtil.connectToServer((err) => {
                 if (err) return res.sendStatus(500)
                 let dbUser = mongoUtil.getDb().collection('Users')
-                dbUser.findOneAndUpdate(
-                    {
+                dbUser.findOneAndUpdate({
                         _id: objectId(id)
                     },
                     {
@@ -27,13 +26,13 @@ module.exports = {
                             req.session.user = result.value
                             req.session.userId = result.value._id
                             console.log(req.session)
-
-                            res.redirect('/profile')
                         }
                     }
                 )
             })
         }
+        res.redirect('/profile')
+
     },
 
     ModifyEmail: (req, res) => {
@@ -56,6 +55,7 @@ module.exports = {
                         else {
                             req.session.user = result.value
                             req.session.userId = result.value.id
+                            res.render('profile', {user: req.session.user})
                         }
                     })
             })
@@ -63,9 +63,8 @@ module.exports = {
             console.log("Error wrong email")
             req.session.userId = id
             req.session.user = user
-            res.render('profile')
+            res.render('profile', {user: req.session.user})
         }
-        res.render('profile')
     },
 
     AddLocation: (req, res) => {
@@ -95,6 +94,7 @@ module.exports = {
                             if (result) {
                                 req.session.user = result.value
                                 req.session.userId = result.value.id
+                                res.render('profile', {user: req.session.user})
                             }
                         }
                     )
@@ -104,8 +104,8 @@ module.exports = {
         else {
             req.session.user = user
             req.session.userId = id
+            res.render('profile', {user: req.session.user})
         }
-        res.render('profile')
     },
 
     AddAge: (req, res) => {
@@ -114,6 +114,7 @@ module.exports = {
 
     AddTags: (req, res) => {
         let id = req.session.userId
+        let user = req.session.user
         let tag = req.body.tags
         if (tag !== undefined || tag !== "") {
             mongoUtil.connectToServer((err) => {
@@ -132,13 +133,14 @@ module.exports = {
                         if (result && result.insertedId > 1) {
                             req.session.user = result.value
                             req.session.userId = result.value.id
-
+                            res.render('profile', {user:req.session.user})
                         }
                     })
 
             })
         }
-        res.render('profile')
+        req.session.user = user
+        res.render('profile', {user:req.session.user})
     },
 
     FindAdressWithIP: (req, res) => {

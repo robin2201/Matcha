@@ -2,6 +2,12 @@ extends layout
 
 block content
     include partials/navbar
+
+
+
+
+
+
     .main.container
         .row
             h2 Modifier mes informations
@@ -80,7 +86,46 @@ block content
 
 
 
+        .col-lg-3.col-md-3.hidden-sm.hidden-xs
+            .panel.panel-default
+                each  elem  in user
+                    li=  elem
+                .panel-body
+                    .media
+                        div(align='center')
+                            img.thumbnail(src='http://scontent.cdninstagram.com/t51.2885-15/sh0.08/e35/p750x750/12599310_1708886962707478_1455150980_n.jpg?ig_cache_key=MTIyMjM2OTg4NDAzNTk1NzUyOA%3D%3D.2', width='300px', height='300px')
+                        .media-body
+                            hr
+                            h3
+                                strong Bio
+                            p
+                                | #{user.nickname}
+                                | #{user.bio}
+                            h3
+                                strong Location
+                            p
+                                | #{user.location.city}
+                                | #{user.location.country}
+                                | #{user.location.region}
+                                | #{user.location.long}
+                                | #{user.location.lat}
+                            hr
+                            h3
+                                strong Gender
+                                if user.gender === 0
+                                    p female
+                                else
+                                    p male
+                            hr
+                            h3
+                                strong Birthday
+                            p #{user.birthday}
+                            hr
 
+                            h3
+                                strong Name
+                            p #{user.firstname}
+                            hr
 
 
 

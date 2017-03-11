@@ -4,6 +4,7 @@
 const express = require('express')
 const router = express.Router()
 const profil = require('../controllers/UserProfile')
+const search = require('../controllers/SearchController')
 
 router.get('/', (req, res) => {
         res.render('profile')
@@ -24,11 +25,13 @@ router.get('/', (req, res) => {
         profil.FindAdressWithIP(req, res)
     })
     .post('/search', (req, res) => {
-        let user = req.session.user
-        console.log(req.body)
+      //  let user = req.session.user
+        search.SearchByNickname(req, res)
+        //let search = req.body
+       // console.log(req.body)
         //console.log(req.session.user)
-        req.session.user = user
-        res.render('home', {user: user})
+       // req.session.user = user
+       // res.render('home', {user: user})
     })
 ;
 
