@@ -3,11 +3,6 @@ extends layout
 block content
     include partials/navbar
 
-
-
-
-
-
     .main.container
         .row
             h2 Modifier mes informations
@@ -128,7 +123,7 @@ block content
                             hr
 
 
-
+                            img#geo-map(src='', data-latitude='#{user.location.lat}', data-longitude='#{user.location.long}')
 
 
 

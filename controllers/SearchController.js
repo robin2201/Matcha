@@ -14,11 +14,21 @@ module.exports = {
         mongoUtil.connectToServer((err) => {
             if (err) return res.sendStatus(500)
             let dbUser = mongoUtil.getDb().collection('Users')
-            console.log(dbUser)
-
-            //
+            let db = mongoUtil.getDb()
+            let findUser = {"location.region":"Île-de-France"}
+            let dbTest = db.collection('Users').find(findUser,
+                (err, result, cursor) => {
+                console.log(result)
+                    console.log(cursor)
+                })
+            console.log(dbTest)
+            //let mydc = dbTest.hasNext() ? dbTest.next() : null
+            //if(mydc){
+             //   console.log(mydc)
+            //}
+            req.session.user = user
         })
-        req.session.user = user
+
         res.render('home')
     },
     SearchByLocation: (req, res) => {
