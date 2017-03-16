@@ -10,17 +10,17 @@ block content
             div.form-group
                 label.control-label Orientation
                     label.radio-inline Male
-                        input#male(type='radio', name="orientation", value='1')
+                        input#male(type='radio', name="gender", value='1')
                     label.radio-inline Female
-                        input#female(type='radio', name="orientation", value='0')
+                        input#female(type='radio', name="gender", value='0')
                     label.radio-inline bisexual
-                        input#bisexual(type='radio', name="orientation", value='2')
+                        input#bisexual(type='radio', name="gender", value='2')
             div.form-group
                 .input-group.col-md-12
                     input.search-query.form-control(type='text', name="search", placeholder='Search')
 
             button.btn.btn-danger(type='button')
-
+    .row
         if (users)
             each elem in users
                 li= elem.firstname

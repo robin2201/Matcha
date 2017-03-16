@@ -4,33 +4,30 @@
 
 const mongoUtil = require('../config/db')
 const objectId = require('mongodb').ObjectID
-
 module.exports = {
     SearchByNickname: (req, res) => {
+        console.log(req.body)
         let user = req.session.user
+        let UsersSearch = {}
         mongoUtil.connectToServer((err) => {
             if (err) return res.sendStatus(500)
             let dbUser = mongoUtil.getDb().collection('Users')
-            let UsersSearch = []
-            //dbUser.find({}).each((err, result) => {
-            //  if (result) {
-            //    UsersSearch.push(result)
-            // }
-            //   console.log(UsersSearch)
-            //  req.session.user = user
-            //  res.render('gallery', {users: UsersSearch})
-            // })
-            dbUser.find({}, (err, data) => {
-                data.forEach((resU) => {
-                    UsersSearch.push(resU)
-                    console.log(UsersSearch)
-                })
+            dbUser.find({ }).toArray((err, dataUsers) => {
+                UsersSearch = dataUsers
                 req.session.user = user
-                res.render('gallery', {users: UsersSearch})
+                res.render('home', {users: UsersSearch})
             })
-            //req.session.user = user
-            //res.render('gallery', {users: data})
+            /*let geonear = dbUser.runCommand({
+                geoNear: "Users",
+                near: {
+                    type: "Point",
+                    coordinates: [ "location.long", "location.lat" ]
+                },
+                spherical: true,
+            })
+            console.log(geonear)*/
         })
+
     },
     SearchByLocation: (req, res) => {
 
