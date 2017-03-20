@@ -5,6 +5,20 @@ block content
     include partials/navbar
 
 
+
+
+
+
+
+
+
+
+    p Hellloooooooooooo
+    | How
+    | Are
+    | You
+    |?
+
     .row
         form.form-horizontal(method='POST', action='/profile/search')
             div.form-group
@@ -31,3 +45,44 @@ block content
                     li= 'female'
                 each tag in elem.tags
                     li= tag
+
+
+    .container
+        .row
+            .gallery.col-lg-12.col-md-12.col-sm-12.col-xs-12
+                h1.gallery-title Gallery
+            div(align='center')
+                button.btn.btn-default.filter-button.active(data-filter='all') All
+                |
+                button.btn.btn-default.filter-button(data-filter='hdpe') HDPE Pipes
+                |
+                button.btn.btn-default.filter-button(data-filter='sprinkle') Sprinkle Pipes
+                |
+                button.btn.btn-default.filter-button(data-filter='spray') Spray Nozzle
+                |
+                button.btn.btn-default.filter-button(data-filter='irrigation') Irrigation Pipes
+            br
+            .gallery_product.col-lg-4.col-md-4.col-sm-4.col-xs-6.filter.hdpe
+                img.img-responsive(src='../uploads/image-1488885210969.jpeg')
+            .gallery_product.col-lg-4.col-md-4.col-sm-4.col-xs-6.filter.sprinkle
+                img.img-responsive(src='http://fakeimg.pl/365x365/')
+            .gallery_product.col-lg-4.col-md-4.col-sm-4.col-xs-6.filter.hdpe
+                img.img-responsive(src='http://fakeimg.pl/365x365/')
+            .gallery_product.col-lg-4.col-md-4.col-sm-4.col-xs-6.filter.irrigation
+                img.img-responsive(src='http://fakeimg.pl/365x365/')
+            .gallery_product.col-lg-4.col-md-4.col-sm-4.col-xs-6.filter.spray
+                img.img-responsive(src='http://fakeimg.pl/365x365/')
+            .gallery_product.col-lg-4.col-md-4.col-sm-4.col-xs-6.filter.irrigation
+                img.img-responsive(src='http://fakeimg.pl/365x365/')
+            .gallery_product.col-lg-4.col-md-4.col-sm-4.col-xs-6.filter.spray
+                img.img-responsive(src='http://fakeimg.pl/365x365/')
+            .gallery_product.col-lg-4.col-md-4.col-sm-4.col-xs-6.filter.irrigation
+                img.img-responsive(src='http://fakeimg.pl/365x365/')
+            .gallery_product.col-lg-4.col-md-4.col-sm-4.col-xs-6.filter.irrigation
+                img.img-responsive(src='http://fakeimg.pl/365x365/')
+            .gallery_product.col-lg-4.col-md-4.col-sm-4.col-xs-6.filter.hdpe
+                img.img-responsive(src='http://fakeimg.pl/365x365/')
+            .gallery_product.col-lg-4.col-md-4.col-sm-4.col-xs-6.filter.spray
+                img.img-responsive(src='http://fakeimg.pl/365x365/')
+            .gallery_product.col-lg-4.col-md-4.col-sm-4.col-xs-6.filter.sprinkle
+                img.img-responsive(src='http://fakeimg.pl/365x365/')

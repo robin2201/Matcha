@@ -26,13 +26,13 @@ module.exports = {
                             req.session.user = result.value
                             req.session.userId = result.value._id
                             console.log(req.session)
+                            res.render('profile', {user: req.session.user})
+
                         }
                     }
                 )
             })
         }
-        res.redirect('/profile')
-
     },
 
     ModifyEmail: (req, res) => {
@@ -74,9 +74,9 @@ module.exports = {
         console.log(req.session)
         if (city !== undefined || city !== "") {
             NodeGeocoder.geocode(city, (err, resu) => {
+                if (err) res.sendStatus(500)
                 let location = {}
-                location.long = resu[0].longitude
-                location.lat = resu[0].latitude
+                location.coord = [resu[0].longitude, resu[0].latitude]
                 location.country = resu[0].country
                 location.city = resu[0].city
                 location.region = resu[0].administrativeLevels.level1short
@@ -133,14 +133,14 @@ module.exports = {
                         if (result && result.insertedId > 1) {
                             req.session.user = result.value
                             req.session.userId = result.value.id
-                            res.render('profile', {user:req.session.user})
+                            res.render('profile', {user: req.session.user})
                         }
                     })
 
             })
         }
         req.session.user = user
-        res.render('profile', {user:req.session.user})
+        res.render('profile', {user: req.session.user})
     },
 
     FindAdressWithIP: (req, res) => {
@@ -156,8 +156,7 @@ module.exports = {
                         if (err) return res.sendStatus(500)
                         else {
                             let location = {}
-                            location.long = resu[0].longitude
-                            location.lat = resu[0].latitude
+                            location.coord = [resu[0].longitude, resu[0].latitude]
                             location.country = resu[0].country
                             location.city = resu[0].city
                             location.region = resu[0].administrativeLevels.level1short

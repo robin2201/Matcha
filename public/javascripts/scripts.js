@@ -1,31 +1,19 @@
-/**
- * Created by robin on 3/1/17.
- */
-(function($) {
-    "use strict";
+$(document).ready(function(){
 
-    $('body').scrollspy({
-        target: '.fixed-top',
-        offset: 60
+    $(".filter-button").click(function(){
+        let value = $(this).attr('data-filter');
+
+        if(value === "all") {
+            //$('.filter').removeClass('hidden');
+            $('.filter').show('1000');
+        }
+        else {
+//          $('.filter[filter-item="'+value+'"]').removeClass('hidden');
+//          $(".filter").not('.filter[filter-item="'+value+'"]').addClass('hidden');
+            $(".filter").not('.'+value).hide('3000');
+            $('.filter').filter('.'+value).show('3000');
+
+        }
     });
 
-    new WOW().init();
-
-    $('a.page-scroll').bind('click', function(event) {
-        var $ele = $(this);
-        $('html, body').stop().animate({
-            scrollTop: ($($ele.attr('href')).offset().top - 60)
-        }, 1450, 'easeInOutExpo');
-        event.preventDefault();
-    });
-
-    $('#collapsingNavbar li a').click(function() {
-        /* always close responsive nav after click */
-        $('.navbar-toggler:visible').click();
-    });
-
-    $('#galleryModal').on('show.bs.modal', function (e) {
-        $('#galleryImage').attr("src",$(e.relatedTarget).data("src"));
-    });
-
-})(jQuery);
+});
