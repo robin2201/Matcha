@@ -20,25 +20,23 @@ module.exports = {
                 dbkey.gender = '0'
             }
         }
-        if (search !== undefined) {
+        if (search !== undefined && search !== '') {
             dbkey.tags = search
         }
-        let test = {"gender": "1"}
         let user = req.session.user
-        console.log("test")
-        console.log(test)
         let UsersSearch = []
         mongoUtil.connectToServer((err) => {
             if (err) return res.sendStatus(500)
             let dbUser = mongoUtil.getDb().collection('Users')
-            if (dbkey.gender === undefined && dbkey.tags === undefined) {
-                dbUser.find({}).toArray((err, dataUsers) => {
+            console.log(dbkey)
+            if (dbkey.gender !== undefined || dbkey.tags !== undefined) {
+                dbUser.find(dbkey).toArray((err, dataUsers) => {
                     UsersSearch = dataUsers
                     req.session.user = user
                     res.render('home', {users: UsersSearch})
                 })
             } else {
-                dbUser.find(dbkey).toArray((err, dataUsers) => {
+                dbUser.find({}).toArray((err, dataUsers) => {
                     UsersSearch = dataUsers
                     req.session.user = user
                     res.render('home', {users: UsersSearch})

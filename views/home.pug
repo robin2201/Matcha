@@ -18,24 +18,23 @@ block content
     | Are
     | You
     |?
-
-    .row
-        form.form-horizontal(method='POST', action='/profile/search')
-            div.form-group
-                label.control-label Orientation
-                    label.radio-inline Male
-                        input#male(type='radio', name="gender", value='1')
-                    label.radio-inline Female
-                        input#female(type='radio', name="gender", value='0')
-                    label.radio-inline bisexual
-                        input#bisexual(type='radio', name="gender", value='2')
-            div.form-group
-                .input-group.col-md-12
-                    input.search-query.form-control(type='text', name="search", placeholder='Search')
-
-            button.btn.btn-danger(type='button')
-
     .container
+        .row
+            form.form-horizontal(method='POST', action='/profile/search')
+                div.form-group
+                    label.control-label Orientation
+                        label.radio-inline Male
+                            input#male(type='radio', name="gender", value='1')
+                        label.radio-inline Female
+                            input#female(type='radio', name="gender", value='0')
+                        label.radio-inline bisexual
+                            input#bisexual(type='radio', name="gender", value='2')
+                div.form-group
+                    .input-group.col-md-12
+                        input.search-query.form-control(type='text', name="search", placeholder='Search')
+                button.btn.btn-primary(type='submit') Search
+
+
         .row
             .gallery.col-lg-12.col-md-12.col-sm-12.col-xs-12
                 h1.gallery-title Gallery
@@ -54,13 +53,13 @@ block content
                 each elem in users
                     .gallery_product.col-lg-4.col-md-4.col-sm-4.col-xs-6.filter.hdpe
                         li= elem.firstname
-                        li= elem.location.country
+                        li= elem.location.city
                         if (elem.gender === '1')
                             li= 'male'
                         else
                             li= 'female'
                         each tag in elem.tags
                             li= tag
-                        img.img-responsive(src='../uploads/image-1488885210969.jpeg')
+                        img(src='uploads/image-1488885210969.jpeg')
             script
                 include ../public/javascripts/scripts.js
