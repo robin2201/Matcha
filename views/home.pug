@@ -34,18 +34,6 @@ block content
                     input.search-query.form-control(type='text', name="search", placeholder='Search')
 
             button.btn.btn-danger(type='button')
-    .row
-        if (users)
-            each elem in users
-                li= elem.firstname
-                li= elem.location.country
-                if (elem.gender === '1')
-                    li= 'male'
-                else
-                    li= 'female'
-                each tag in elem.tags
-                    li= tag
-
 
     .container
         .row
@@ -62,27 +50,15 @@ block content
                 |
                 button.btn.btn-default.filter-button(data-filter='irrigation') Irrigation Pipes
             br
-            .gallery_product.col-lg-4.col-md-4.col-sm-4.col-xs-6.filter.hdpe
-                img.img-responsive(src='../uploads/image-1488885210969.jpeg')
-            .gallery_product.col-lg-4.col-md-4.col-sm-4.col-xs-6.filter.sprinkle
-                img.img-responsive(src='http://fakeimg.pl/365x365/')
-            .gallery_product.col-lg-4.col-md-4.col-sm-4.col-xs-6.filter.hdpe
-                img.img-responsive(src='http://fakeimg.pl/365x365/')
-            .gallery_product.col-lg-4.col-md-4.col-sm-4.col-xs-6.filter.irrigation
-                img.img-responsive(src='http://fakeimg.pl/365x365/')
-            .gallery_product.col-lg-4.col-md-4.col-sm-4.col-xs-6.filter.spray
-                img.img-responsive(src='http://fakeimg.pl/365x365/')
-            .gallery_product.col-lg-4.col-md-4.col-sm-4.col-xs-6.filter.irrigation
-                img.img-responsive(src='http://fakeimg.pl/365x365/')
-            .gallery_product.col-lg-4.col-md-4.col-sm-4.col-xs-6.filter.spray
-                img.img-responsive(src='http://fakeimg.pl/365x365/')
-            .gallery_product.col-lg-4.col-md-4.col-sm-4.col-xs-6.filter.irrigation
-                img.img-responsive(src='http://fakeimg.pl/365x365/')
-            .gallery_product.col-lg-4.col-md-4.col-sm-4.col-xs-6.filter.irrigation
-                img.img-responsive(src='http://fakeimg.pl/365x365/')
-            .gallery_product.col-lg-4.col-md-4.col-sm-4.col-xs-6.filter.hdpe
-                img.img-responsive(src='http://fakeimg.pl/365x365/')
-            .gallery_product.col-lg-4.col-md-4.col-sm-4.col-xs-6.filter.spray
-                img.img-responsive(src='http://fakeimg.pl/365x365/')
-            .gallery_product.col-lg-4.col-md-4.col-sm-4.col-xs-6.filter.sprinkle
-                img.img-responsive(src='http://fakeimg.pl/365x365/')
+            if (users)
+                each elem in users
+                    .gallery_product.col-lg-4.col-md-4.col-sm-4.col-xs-6.filter.hdpe
+                        li= elem.firstname
+                        li= elem.location.country
+                        if (elem.gender === '1')
+                            li= 'male'
+                        else
+                            li= 'female'
+                        each tag in elem.tags
+                            li= tag
+                        img.img-responsive(src='../uploads/image-1488885210969.jpeg')
