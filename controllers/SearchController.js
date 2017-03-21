@@ -13,14 +13,14 @@ module.exports = {
         let gender = req.body.gender
         let search = req.body.search
         let dbkey = {}
-        if(gender !== undefined || gender !== ''){
-            if(gender === '1'){
+        if (gender !== undefined || gender !== '') {
+            if (gender === '1') {
                 dbkey.gender = '1'
-            }else if(gender === '0'){
+            } else if (gender === '0') {
                 dbkey.gender = '0'
             }
         }
-        if (search !== undefined){
+        if (search !== undefined) {
             dbkey.tags = search
         }
         let test = {"gender": "1"}
@@ -31,14 +31,14 @@ module.exports = {
         mongoUtil.connectToServer((err) => {
             if (err) return res.sendStatus(500)
             let dbUser = mongoUtil.getDb().collection('Users')
-            if(dbkey.gender === undefined && dbkey.tags === undefined) {
-                dbUser.find( { } ).toArray((err, dataUsers) => {
+            if (dbkey.gender === undefined && dbkey.tags === undefined) {
+                dbUser.find({}).toArray((err, dataUsers) => {
                     UsersSearch = dataUsers
                     req.session.user = user
                     res.render('home', {users: UsersSearch})
                 })
             } else {
-                dbUser.find( dbkey ).toArray((err, dataUsers) => {
+                dbUser.find(dbkey).toArray((err, dataUsers) => {
                     UsersSearch = dataUsers
                     req.session.user = user
                     res.render('home', {users: UsersSearch})
@@ -54,34 +54,9 @@ module.exports = {
              spherical: true,
              })
              console.log(geonear)*/
-           /* dbUser.find({}).forEach( (dataUsers) => {
-                //if (dataUsers !== null) {
-                  //  console.log("LOL")
-                    UsersSearch.push(dataUsers)
-                //}
-                if(dataUsers === null){
-                    console.log("Paslol")
-                    req.session.user = user
-                    res.render('home', {users: UsersSearch} )
-                }
-                console.log('re')
-
-            })*/
 
             console.log('re1')
         })
-    },
-    SearchByLocation: (req, res) => {
-
-    },
-    SearchBySexe: (req, res) => {
-
-    },
-    SearchByAge: (req, res) => {
-
-    },
-    RenderProfilUsers: (req, res) => {
-
     }
 }
 
