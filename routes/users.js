@@ -3,18 +3,6 @@ const router = express.Router();
 const home = require('../controllers/UserController')
 const Upload = require('../config/MulterUpload')
 
-/*
- let isAuthenticated = (req, res, next) => {
- console.log(req)
- if (req.session.user) {
- next()
- } else {
- let err = new Error('Please logIn before')
- next(err)
- }
- }
- */
-/* GET users listing. */
 router.get('/', (req, res, next) => {
     let user = req.session.user
     if (user) {

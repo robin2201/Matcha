@@ -3,8 +3,6 @@
  */
 
 const mongoUtil = require('../config/db')
-const objectId = require('mongodb').ObjectID
-
 
 module.exports = {
 
@@ -25,34 +23,29 @@ module.exports = {
         }
         let user = req.session.user
         let UsersSearch = []
+        let out = {
+            hash:0,
+            email:0,
+            token:0,
+            lastname:0,
+        }
         mongoUtil.connectToServer((err) => {
             if (err) return res.sendStatus(500)
             let dbUser = mongoUtil.getDb().collection('Users')
             console.log(dbkey)
             if (dbkey.gender !== undefined || dbkey.tags !== undefined) {
-                dbUser.find(dbkey).toArray((err, dataUsers) => {
+                dbUser.find(dbkey, out).toArray((err, dataUsers) => {
                     UsersSearch = dataUsers
                     req.session.user = user
                     res.render('home', {users: UsersSearch})
                 })
             } else {
-                dbUser.find({}).toArray((err, dataUsers) => {
+                dbUser.find({}, out).toArray((err, dataUsers) => {
                     UsersSearch = dataUsers
                     req.session.user = user
                     res.render('home', {users: UsersSearch})
                 })
             }
-
-            /*let geonear = dbUser.runCommand({
-             geoNear: "Users",
-             near: {
-             type: "Point",
-             coordinates: [ "location.long", "location.lat" ]
-             },
-             spherical: true,
-             })
-             console.log(geonear)*/
-
             console.log('re1')
         })
     }

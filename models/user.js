@@ -64,7 +64,7 @@ class User {
         this.data.birthdate = birthday
     }
     static create({firstname, lastname, hash, email, gender, birthday}, callback) {
-        let token = base64url(crypto.randomBytes(42))
+        let token = this.GetRandomToken()
         let UserToConstruct = {
             firstname,
             lastname,

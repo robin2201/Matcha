@@ -6,6 +6,7 @@ const db = mongoUtil.getDb();
 const schemaValidator = require('../models/validatorSchema');
 const bcrypt = require('bcrypt')
 const UserM = require('../models/user')
+const verifyAndSetAge = require('../controllers/UserProfile').verifyAndSetAge
 const objectId = require('mongodb').ObjectID
 
 module.exports = {
@@ -24,6 +25,7 @@ module.exports = {
         if (errors) return res.send(errors)
         let {firstname, lastname, password, email, gender, birthday} = req.body
 
+        let birth = verifyAndSetAge(birthday)
         mongoUtil.connectToServer((err) => {
             if (err) return res.send(err)
             let dbUsers = mongoUtil.getDb().collection('Users');
@@ -43,7 +45,7 @@ module.exports = {
                     } else {
                         bcrypt.hash(password, 10, (err, hash) => {
                             if (err) res.send(err)
-                            UserM.create({firstname, lastname, hash, email, gender, birthday},
+                            UserM.create({firstname, lastname, hash, email, gender, birth},
                                 (user) => {
                                     dbUsers.insertOne(user.data, (err, result) => {
                                         if (err) return res.send(err)

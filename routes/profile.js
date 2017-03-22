@@ -21,17 +21,14 @@ router.get('/', (req, res) => {
     .post('/location', (req, res) => {
         profil.AddLocation(req, res)
     })
+    .post('/addAge', (req, res) => {
+        profil.verifyAndSetAge(req, res)
+    })
     .post('/findMe', (req, res) => {
         profil.FindAdressWithIP(req, res)
     })
     .post('/search', (req, res) => {
-      //  let user = req.session.user
         search.SearchByNickname(req, res)
-        //let search = req.body
-       // console.log(req.body)
-        //console.log(req.session.user)
-       // req.session.user = user
-       // res.render('home', {user: user})
     })
 ;
 

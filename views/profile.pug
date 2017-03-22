@@ -57,6 +57,13 @@ block content
                 input#tags.form-control(type='text', placeholder='interests' name='tags')
             button(type="submit", value="Upload") Add interests
 
+        form.form-horizontal(method='POST', action='/profile/addAge')
+            div.form-group
+                label(for='birthday') Birthday:
+                input#birthday.form-control(type='date', placeholder='birthday' name='birthday')
+                button(type="submit", value="Upload") Birth
+
+
         form.form-horizontal(method='POST', action='/profile/me')
             div.form-group
                 label.control-label Orientation
@@ -83,8 +90,9 @@ block content
 
         .col-lg-3.col-md-3.hidden-sm.hidden-xs
             .panel.panel-default
-                each  elem  in user
-                    li=  elem
+                if(user)
+                    each  elem  in user
+                        li=  elem
                 .panel-body
                     .media
                         div(align='center')
@@ -127,7 +135,8 @@ block content
 
 
 
-
+                if(message)
+                    p #{message}
 
 
 
