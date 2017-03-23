@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const home = require('../controllers/UserController')
 const Upload = require('../config/MulterUpload')
+const userToShow = require('../controllers/SearchController').showOneUser
+
 
 router.get('/', (req, res, next) => {
     let user = req.session.user
@@ -25,18 +27,15 @@ router.get('/', (req, res, next) => {
 
     .post('/upload', (req, res) => {
         Upload(req, res, (err) => {
-            if (err) return res.end("Error uploading file. " + err);
+            if (err) return res.end("Error uploading file. " + err)
             else {
                 home.AddPicToDb(req, res)
             }
         })
     })
 
-    .get('/view/:id', (req, res, next) => {
-        let user = req.session.user
-        console.log(req.params)
-        req.session.user = user
-        res.render('home', {users:user})
+    .get('/view/:id', (req, res) => {
+        userToShow(req, res)
     })
 
     .get('*', (req, res) => {
