@@ -5,4 +5,8 @@ block content
     include partials/navbar
 
     .container
-        h1= user.nickname
+        h1= (userToShow.nickname ? userToShow.nickname : userToShow.firstname)
+        p #{userToShow.location.city}
+        p #{userToShow.bio}
+        each tag in userToShow.tags
+            p.tagsGallery.col-sm-6 #{tag}

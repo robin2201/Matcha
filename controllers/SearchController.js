@@ -80,8 +80,7 @@ module.exports = {
                         if (err) return res.sendStatus(500)
                         if (result) {
                             req.session.user = user
-                            console.log(result)
-                            let userToShow = result.value
+                            let userToShow = result
                             res.render('single', {userToShow: userToShow})
                         }
                     }
