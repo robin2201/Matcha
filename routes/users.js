@@ -32,8 +32,11 @@ router.get('/', (req, res, next) => {
         })
     })
 
-    .get('/:userId', (req, res, next) => {
-
+    .get('/view/:id', (req, res, next) => {
+        let user = req.session.user
+        console.log(req.params)
+        req.session.user = user
+        res.render('home', {users:user})
     })
 
     .get('*', (req, res) => {

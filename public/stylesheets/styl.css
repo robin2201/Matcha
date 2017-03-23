@@ -1,81 +1,38 @@
-body {
-  background-color: red;
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif; }
 
+
+body {
+  background-color: pink;
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+.container {
+  background-color: pink;
+
+}
 a {
-  color: #00B7FF; }
+  color: #00B7FF;
+}
 
 p {
-  color: brown; }
+  background-color: pink;
+  color: brown;
+  border: 1px solid goldenrod;
+}
 
-#title {
-  border: 1px solid green;
-  border-radius: 5px; }
+.usersGallery{
+  border: 1px solid deeppink;
+  border-radius: 2px;
+  margin: 2px 2px 2px 2px;
+}
 
-.gallery-title
-{
-  font-size: 36px;
-  color: #42B32F;
+.tagsGallery{
   text-align: center;
-  font-weight: 500;
-  margin-bottom: 70px;
-}
-.gallery-title:after {
-  content: "";
-  position: absolute;
-  width: 7.5%;
-  left: 46.5%;
-  height: 45px;
-  border-bottom: 1px solid #5e5e5e;
-}
-.filter-button
-{
-  font-size: 18px;
-  border: 1px solid #42B32F;
-  border-radius: 5px;
-  text-align: center;
-  color: #42B32F;
-  margin-bottom: 30px;
+  background-color: darkgray;
+  border: 3px solid darkgray;
+  box-shadow: 1px darkgray;
+  border-radius: 2px;
 
 }
-.filter-button:hover
-{
-  font-size: 18px;
-  border: 1px solid #42B32F;
-  border-radius: 5px;
-  text-align: center;
-  color: #ffffff;
-  background-color: #42B32F;
 
-}
-.filter-button.active
-{
-  background-color: #42B32F;
-  color: white;
-}
-.port-image
-{
-  width: 100%;
-}
 
-.gallery_product
-{
-  margin-bottom: 30px;
-}
-.slider-handle.custom {
-  background: transparent none;
-  /* You can customize the handle and set a background image */
-}
-
-/* Or display content like unicode characters or fontawesome icons */
-.slider-handle.custom::before {
-  line-height: 20px;
-  font-size: 20px;
-  content: '\2605'; /*unicode star character*/
-  color: #726204;
-}
-
-#slider12c .slider-selection {
-  background: yellow;
-}

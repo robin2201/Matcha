@@ -86,11 +86,8 @@ block content
 
 
 
-        .col-lg-3.col-md-3.hidden-sm.hidden-xs
+        .col-lg-4.col-md-3.hidden-sm.hidden-xs
             .panel.panel-default
-                if(user)
-                    each  elem  in user
-                        li=  elem
                 .panel-body
                     .media
                         div(align='center')
@@ -114,9 +111,9 @@ block content
                             h3
                                 strong Gender
                                 if user.gender === 0
-                                    p female
+                                    p &#9792;
                                 else
-                                    p male
+                                    p &#9794;
                             hr
                             h3
                                 strong Birthday

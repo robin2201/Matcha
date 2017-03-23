@@ -3,21 +3,12 @@ include tools
 
 block content
     include partials/navbar
-
-
-
-
-
-
-
-
-
-
     p Hellloooooooooooo
     | How
     | Are
     | You
-    |?
+    | ?
+
     .container
         .row
             form.form-horizontal(method='POST', action='/profile/search')
@@ -33,38 +24,25 @@ block content
                     .input-group.col-md-6
                         input.search-query.form-control(type='text', name="search", placeholder='Search')
                 div.form-group
-                        input#ageMin(type="text", name="ageMin", placeholder="Age min")
-                        input#ageMax(type="text", name="ageMax", placeholder="Age max")
+                    input#ageMin(type="text", name="ageMin", placeholder="Age min")
+                    input#ageMax(type="text", name="ageMax", placeholder="Age max")
                 button.btn.btn-primary(type='submit') Search
 
-
         .row
-            .gallery.col-lg-12.col-md-12.col-sm-12.col-xs-12
-                h1.gallery-title Gallery
-            div(align='center')
-                button.btn.btn-default.filter-button.active(data-filter='all') All
-                |
-                button.btn.btn-default.filter-button(data-filter='hdpe') HDPE Pipes
-                |
-                button.btn.btn-default.filter-button(data-filter='sprinkle') Sprinkle Pipes
-                |
-                button.btn.btn-default.filter-button(data-filter='spray') Spray Nozzle
-                |
-                button.btn.btn-default.filter-button(data-filter='irrigation') Irrigation Pipes
-            br
             if (users)
                 each elem in users
-                    .gallery_product.col-lg-4.col-md-4.col-sm-4.col-xs-6.filter.hdpe
-                        li= elem.firstname
+                    a(href="/users/view/:"+elem._id): .usersGallery.col-lg-3.col-md-3.col-sm-3.col-xs-6
+                        h1= elem.firstname
                         li= elem.location.city
                         if (elem.gender === '1')
-                            li= 'male'
+                            p &#9794;
                         else
-                            li= 'female'
+                            p &#9792;
                         if(elem.age)
                             li= elem.age
                         each tag in elem.tags
-                            li= tag
+                            p.tagsGallery.col-sm-6 #{tag}
+                            //h1: span.label.label-info #{tag}
                         img(src='uploads/image-1488885210969.jpeg')
             script
                 include ../node_modules/bootstrap-slider/dist/bootstrap-slider.min.js
