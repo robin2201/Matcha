@@ -112,11 +112,11 @@ module.exports = {
     verifyAndSetAge: (req, res) => {
         let birthday = req.body.birthday
         let user = req.session.user
-        const tmp = birthday.split('-')
-        const today = new Date()
-        const birthDate = new Date(tmp)
-        const age = today.getFullYear() - birthDate.getFullYear()
-        const month = today.getMonth() - birthDate.getMonth()
+        let tmp = birthday.split('-')
+        let today = new Date()
+        let birthDate = new Date(tmp)
+        let age = today.getFullYear() - birthDate.getFullYear()
+        let month = today.getMonth() - birthDate.getMonth()
 
         if ((month < 0 || (month === 0 && today.getDate() < birthDate.getDate())) ? age - 1 : age) {
             let ret = {}

@@ -30,8 +30,11 @@ block content
                         label.radio-inline bisexual
                             input#bisexual(type='radio', name="gender", value='2')
                 div.form-group
-                    .input-group.col-md-12
+                    .input-group.col-md-6
                         input.search-query.form-control(type='text', name="search", placeholder='Search')
+                div.form-group
+                        input#ageMin(type="text", name="ageMin", placeholder="Age min")
+                        input#ageMax(type="text", name="ageMax", placeholder="Age max")
                 button.btn.btn-primary(type='submit') Search
 
 
@@ -58,8 +61,12 @@ block content
                             li= 'male'
                         else
                             li= 'female'
+                        if(elem.age)
+                            li= elem.age
                         each tag in elem.tags
                             li= tag
                         img(src='uploads/image-1488885210969.jpeg')
+            script
+                include ../node_modules/bootstrap-slider/dist/bootstrap-slider.min.js
             script
                 include ../public/javascripts/scripts.js

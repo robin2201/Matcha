@@ -1,3 +1,5 @@
+
+
 $(document).ready(function(){
 
     $(".filter-button").click(function(){
@@ -14,6 +16,16 @@ $(document).ready(function(){
             $('.filter').filter('.'+value).show('3000');
 
         }
-    });
+    })
 
-});
+    $("#ex2").slider()
+
+    $("#ex10").slider({})
+
+
+
+})
+
+$("#ex16b").slider({ min: 0, max: 10, value: [0, 10], focus: true });
+
+
