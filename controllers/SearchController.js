@@ -5,6 +5,14 @@
 const mongoUtil = require('../config/db')
 const objectId = require('mongodb').ObjectID
 
+const out = {
+    hash: 0,
+    email: 0,
+    token: 0,
+    lastname: 0,
+    birthday: 0
+}
+
 module.exports = {
 
     SearchByNickname: (req, res) => {
@@ -12,13 +20,6 @@ module.exports = {
         let dbkey = {}
         let user = req.session.user
         let UsersSearch = []
-        let out = {
-            hash: 0,
-            email: 0,
-            token: 0,
-            lastname: 0,
-            birthday: 0
-        }
 
         if (gender !== undefined || gender !== '') {
             if (gender === '1') {
@@ -60,13 +61,6 @@ module.exports = {
     showOneUser: (req, res) => {
         let userToFind = req.params.id
         let user = req.session.user
-        let out = {
-            hash: 0,
-            email: 0,
-            token: 0,
-            lastname: 0,
-            birthday: 0
-        }
 
         if (userToFind !== undefined || userToFind !== "") {
             mongoUtil.connectToServer((err) => {
@@ -85,6 +79,37 @@ module.exports = {
                         }
                     }
                 )
+            })
+        }
+    },
+
+    findUserNearMyLocation: (req, res) => {
+        console.log('here')
+        let user = req.session.user
+        if(user.location.coordinates){
+            mongoUtil.connectToServer((err) => {
+                console.log('here2')
+
+                if(err) return res.sendStatus(500)
+                let dbUser = mongoUtil.getDb().collection('Users')
+                dbUser.createIndex({location: "2dsphere"})
+                console.log(user.location.coordinates)
+                let geoFind = {
+                   // location:{
+                        $geoWithin:{
+                            $geometry:{
+                                type:"Point",
+                                coordinates: [2.3174956, 48.86666899999999]
+                            }
+                        }
+                    //}
+                }
+
+                dbUser.find(geoFind, out).toArray( (err, dataUsers) => {
+                    let UsersSearch = dataUsers
+                    req.session.user = user
+                    res.render('home', {users: UsersSearch})
+                })
             })
         }
     }

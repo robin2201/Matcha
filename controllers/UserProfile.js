@@ -7,6 +7,7 @@ const NodeGeocoder = require('node-geocoder')('google')
 const ipLoc = require('satelize')
 
 module.exports = {
+
     ModifyInfoUser: (req, res) => {
         let value = req.body
         let id = req.session.userId
@@ -67,47 +68,6 @@ module.exports = {
         }
     },
 
-    AddLocation: (req, res) => {
-        let city = req.body.city
-        let user = req.session.user
-        let id = req.session.userId
-        console.log(req.session)
-        if (city !== undefined || city !== "") {
-            NodeGeocoder.geocode(city, (err, resu) => {
-                if (err) res.sendStatus(500)
-                let location = {}
-                location.coord = [resu[0].longitude, resu[0].latitude]
-                location.country = resu[0].country
-                location.city = resu[0].city
-                location.region = resu[0].administrativeLevels.level1short
-                mongoUtil.connectToServer((err) => {
-                    if (err) return res.sendStatus(500)
-                    let dbUser = mongoUtil.getDb().collection('Users')
-                    dbUser.findOneAndUpdate({
-                            _id: objectId(id)
-                        },
-                        {
-                            $set: {"location": location}
-                        },
-                        (err, result) => {
-                            if (err) return res.sendStatus(500)
-                            if (result) {
-                                req.session.user = result.value
-                                req.session.userId = result.value.id
-                                res.render('profile', {user: req.session.user})
-                            }
-                        }
-                    )
-                })
-            })
-        }
-        else {
-            req.session.user = user
-            req.session.userId = id
-            res.render('profile', {user: req.session.user})
-        }
-    },
-
 
     verifyAndSetAge: (req, res) => {
         let birthday = req.body.birthday
@@ -141,20 +101,60 @@ module.exports = {
 
             })
         } else {
-                req.session.user = user
-                res.render('profile', {
-                    user: user,
-                    message: "Sorry this is not the age for our service"
-                })
-            }
+            req.session.user = user
+            res.render('profile', {
+                user: user,
+                message: "Sorry this is not the age for our service"
+            })
         }
-        ,
+    }
+    ,
 
-        AddTags: (req, res) => {
-            let id = req.session.userId
-            let user = req.session.user
-            let tag = req.body.tags
-            if (tag !== undefined || tag !== "") {
+    AddTags: (req, res) => {
+        let id = req.session.userId
+        let user = req.session.user
+        let tag = req.body.tags
+        if (tag !== undefined || tag !== "") {
+            mongoUtil.connectToServer((err) => {
+                if (err) return res.sendStatus(500)
+                let dbUser = mongoUtil.getDb().collection('Users')
+                dbUser.findOneAndUpdate({
+                        _id: objectId(id)
+                    },
+                    {
+                        $addToSet: {
+                            "tags": tag
+                        }
+                    },
+                    (err, result) => {
+                        if (err) return res.sendStatus(500)
+                        if (result && result.insertedId > 1) {
+                            req.session.user = result.value
+                            req.session.userId = result.value.id
+                            res.render('profile', {user: req.session.user})
+                        }
+                    })
+
+            })
+        }
+        req.session.user = user
+        res.render('profile', {user: req.session.user})
+    },
+
+    AddLocation: (req, res) => {
+        let city = req.body.city
+        let user = req.session.user
+        let id = req.session.userId
+
+        if (city !== undefined || city !== "") {
+            NodeGeocoder.geocode(city, (err, resu) => {
+                if (err) res.sendStatus(500)
+                let location = {}
+                location.type = 'Point'
+                location.coordinates = [resu[0].longitude, resu[0].latitude]
+                //location.country = resu[0].country
+                //location.city = resu[0].city
+                //location.region = resu[0].administrativeLevels.level1short
                 mongoUtil.connectToServer((err) => {
                     if (err) return res.sendStatus(500)
                     let dbUser = mongoUtil.getDb().collection('Users')
@@ -162,67 +162,77 @@ module.exports = {
                             _id: objectId(id)
                         },
                         {
-                            $addToSet: {
-                                "tags": tag
+                            $set: {
+                                "location": location,
+                                "country": resu[0].country,
+                                "city": resu[0].city,
+                                "region": resu[0].administrativeLevels.level1short
                             }
                         },
                         (err, result) => {
                             if (err) return res.sendStatus(500)
-                            if (result && result.insertedId > 1) {
+                            if (result) {
                                 req.session.user = result.value
                                 req.session.userId = result.value.id
                                 res.render('profile', {user: req.session.user})
                             }
-                        })
-
+                        }
+                    )
                 })
-            }
-            req.session.user = user
-            res.render('profile', {user: req.session.user})
-        },
-
-            FindAdressWithIP
-        :
-        (req, res) => {
-            let id = req.session.userId
-            ipLoc.satelize({ip: req.ip}, (err, payload) => {
-                if (err) return res.sendStatus(500)
-                else {
-                    NodeGeocoder.reverse({
-                            lat: payload.latitude,
-                            lon: payload.longitude
-                        },
-                        (err, resu) => {
-                            if (err) return res.sendStatus(500)
-                            else {
-                                let location = {}
-                                location.coord = [resu[0].longitude, resu[0].latitude]
-                                location.country = resu[0].country
-                                location.city = resu[0].city
-                                location.region = resu[0].administrativeLevels.level1short
-                                mongoUtil.connectToServer((err) => {
-                                    if (err) return res.sendStatus(500)
-                                    let dbUser = mongoUtil.getDb().collection('Users')
-                                    dbUser.findOneAndUpdate({
-                                            _id: objectId(id)
-                                        },
-                                        {
-                                            $set: {"location": location}
-                                        },
-                                        (err, result) => {
-                                            if (err) return res.sendStatus(500)
-                                            else {
-                                                req.session.user = result.value
-                                                req.session.userId = result.value.id
-                                                res.render('profile')
-                                            }
-                                        })
-                                })
-                            }
-                        })
-                }
             })
-
         }
+        else {
+            req.session.user = user
+            req.session.userId = id
+            res.render('profile', {user: req.session.user})
+        }
+    },
+
+    FindAdressWithIP: (req, res) => {
+        let id = req.session.userId
+        ipLoc.satelize({ip: req.ip}, (err, payload) => {
+            if (err) return res.sendStatus(500)
+            else {
+                NodeGeocoder.reverse({
+                        lat: payload.latitude,
+                        lon: payload.longitude
+                    },
+                    (err, resu) => {
+                        if (err) return res.sendStatus(500)
+                        else {
+                            let location = {}
+                            location.coordinates = [resu[0].longitude, resu[0].latitude]
+                            location.type = 'Point'
+                            //location.country = resu[0].country
+                            //location.city = resu[0].city
+                            //location.region = resu[0].administrativeLevels.level1short
+                            mongoUtil.connectToServer((err) => {
+                                if (err) return res.sendStatus(500)
+                                let dbUser = mongoUtil.getDb().collection('Users')
+                                dbUser.findOneAndUpdate({
+                                        _id: objectId(id)
+                                    },
+                                    {
+                                        $set: {"location": location,
+                                            "country": resu[0].country,
+                                            "city": resu[0].city,
+                                            "region": resu[0].administrativeLevels.level1short
+                                        }
+                                    },
+                                    (err, result) => {
+                                        if (err) return res.sendStatus(500)
+                                        else {
+                                            req.session.user = result.value
+                                            req.session.userId = result.value.id
+                                            res.render('profile')
+                                        }
+                                    })
+                            })
+                        }
+                    })
+            }
+        })
 
     }
+
+}

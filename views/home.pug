@@ -23,6 +23,10 @@ block content
                     input#ageMax(type="text", name="ageMax", placeholder="Age max")
                 button.btn.btn-primary(type='submit') Search
 
+
+        form.form-horizontal(method='POST', action='/profile/locations')
+            div.form-group
+                button.btn.btn-primary(type='submit') Location
         .row
             if (users)
                 each elem in users
