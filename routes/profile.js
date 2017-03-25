@@ -30,6 +30,9 @@ router.get('/', (req, res) => {
     .post('/search', (req, res) => {
         search.SearchByNickname(req, res)
     })
+    .post('/locations', (req, res) => {
+        search.findUserNearMyLocation(req, res)
+    })
 ;
 
 module.exports = router;

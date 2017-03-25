@@ -86,27 +86,25 @@ module.exports = {
     findUserNearMyLocation: (req, res) => {
         console.log('here')
         let user = req.session.user
-        if(user.location.coordinates){
+        if (user.location.coordinates) {
             mongoUtil.connectToServer((err) => {
-                console.log('here2')
-
-                if(err) return res.sendStatus(500)
+                if (err) return res.sendStatus(500)
                 let dbUser = mongoUtil.getDb().collection('Users')
-                dbUser.createIndex({location: "2dsphere"})
-                console.log(user.location.coordinates)
                 let geoFind = {
-                   // location:{
-                        $geoWithin:{
-                            $geometry:{
-                                type:"Point",
-                                coordinates: [2.3174956, 48.86666899999999]
-                            }
+                    location: {
+                        $near: {
+                            $geometry: {
+                                type: "Polygon",
+                                coordinates: user.location.coordinates
+                            },
+                            $minDistance: 1,
+                            $maxDistance: 5000
                         }
-                    //}
+                    }
                 }
-
-                dbUser.find(geoFind, out).toArray( (err, dataUsers) => {
+                dbUser.find(geoFind, out).toArray((err, dataUsers) => {
                     let UsersSearch = dataUsers
+                    console.log(dataUsers)
                     req.session.user = user
                     res.render('home', {users: UsersSearch})
                 })
