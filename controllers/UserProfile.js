@@ -60,10 +60,12 @@ module.exports = {
                     })
             })
         } else {
-            console.log("Error wrong email")
             req.session.userId = id
             req.session.user = user
-            res.render('profile', {user: req.session.user})
+            res.render('profile', {
+                user: req.session.user,
+                message: "Error wrong email"
+            })
         }
     },
 
@@ -135,20 +137,23 @@ module.exports = {
                     })
 
             })
+        } else {
+            req.session.user = user
+            res.render('profile', {user: user})
         }
-        req.session.user = user
-        res.render('profile', {user: req.session.user})
     },
 
-    AddLocation: (req, res, info) => {
-        console.log(info)
+    AddLocation: (req, res) => {
         let city = (req.body.city ? req.body.city : 'Paris')
         let user = req.session.user
         let id = req.session.userId
         if (city !== undefined || city !== "") {
             NodeGeocoder.geocode(city, (err, resu) => {
                 if (err) res.sendStatus(500)
-                if (resu) {
+                console.log(resu)
+                //if (typeof resu[0] !== ''){
+                if (resu.length > 0){
+                //if (resu[0].longitude !== undefined && resu[0].latitude !== undefined) {
                     let location = {}
                     location.type = 'Point'
                     location.coordinates = [resu[0].longitude, resu[0].latitude]
@@ -182,8 +187,7 @@ module.exports = {
                 }
 
             })
-        }
-        else {
+        } else {
             req.session.user = user
             req.session.userId = id
             res.render('profile', {user: req.session.user})
@@ -192,11 +196,9 @@ module.exports = {
 
     FindAdressWithIP: (req, res) => {
         let id = req.session.userId
-        console.log(req.ip)
-
         ipLoc.satelize({ip: req.ip}, (err, payload) => {
             if (err) return res.sendStatus(500)
-            else {
+            else if (payload) {
                 NodeGeocoder.reverse({
                         lat: payload.latitude,
                         lon: payload.longitude

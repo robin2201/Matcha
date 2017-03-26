@@ -19,14 +19,12 @@ router.get('/', (req, res) => {
         profil.AddTags(req, res)
     })
     .post('/location', (req, res) => {
-        console.log(req.body)
-        profil.AddLocation(req, res, info)
+        profil.AddLocation(req, res)
     })
     .post('/addAge', (req, res) => {
         profil.verifyAndSetAge(req, res)
     })
     .post('/findMe', (req, res) => {
-        console.log(req.body)
         if (req.ip === "::1") {
             profil.AddLocation(req, res)
         } else profil.FindAdressWithIP(req, res)
@@ -34,9 +32,9 @@ router.get('/', (req, res) => {
     .post('/search', (req, res) => {
         search.SearchByNickname(req, res)
     })
-    .post('/locations', (req, res) => {
-        search.findUserNearMyLocation(req, res)
-    })
+    // .post('/locations', (req, res) => {
+    //     search.findUserNearMyLocation(req, res)
+    // })
 ;
 
 module.exports = router;
