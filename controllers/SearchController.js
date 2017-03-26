@@ -23,6 +23,7 @@ module.exports = {
             distMin = parseInt(distMin)
         if (distMax)
             distMax = parseInt(distMax)
+
         let geoFind = {
             location: {
                 $near: {

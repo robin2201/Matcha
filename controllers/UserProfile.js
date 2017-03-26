@@ -112,6 +112,7 @@ module.exports = {
     ,
 
     AddTags: (req, res) => {
+
         let id = req.session.userId
         let user = req.session.user
         let tag = req.body.tags
@@ -129,9 +130,43 @@ module.exports = {
                     },
                     (err, result) => {
                         if (err) return res.sendStatus(500)
-                        if (result && result.insertedId > 1) {
-                            req.session.user = result.value
-                            req.session.userId = result.value.id
+                        if (result) {
+                            console.log(result)
+                            req.session.user = result.value ? result.value : user
+                            req.session.userId = id
+                            res.render('profile', {user: req.session.user})
+                        }
+                    })
+
+            })
+        } else {
+            req.session.user = user
+            res.render('profile', {user: user})
+        }
+    },
+
+    DellTags: (req, res) => {
+
+        let id = req.session.userId
+        let user = req.session.user
+        let tag = req.body.tags
+        if (tag !== undefined || tag !== "") {
+            mongoUtil.connectToServer((err) => {
+                if (err) return res.sendStatus(500)
+                let dbUser = mongoUtil.getDb().collection('Users')
+                dbUser.findOneAndUpdate({
+                        _id: objectId(id)
+                    },
+                    {
+                        $pull: {
+                            "tags": tag
+                        }
+                    },
+                    (err, result) => {
+                        if (err) return res.sendStatus(500)
+                        if (result) {
+                            req.session.user = result.value ? result.value : user
+                            req.session.userId = id
                             res.render('profile', {user: req.session.user})
                         }
                     })

@@ -32,6 +32,10 @@ router.get('/', (req, res) => {
     .post('/search', (req, res) => {
         search.SearchByNickname(req, res)
     })
+    .post('/dellTags', (req, res) => {
+        profil.DellTags(req, res)
+       // res.render('profile', {user:req.session.user})
+    })
     // .post('/locations', (req, res) => {
     //     search.findUserNearMyLocation(req, res)
     // })
