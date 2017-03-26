@@ -7,10 +7,10 @@ const profil = require('../controllers/UserProfile')
 const search = require('../controllers/SearchController')
 
 router.get('/', (req, res) => {
-        res.render('profile')
+    res.render('profile')
 })
     .post('/me', (req, res) => {
-       profil.ModifyInfoUser(req, res)
+        profil.ModifyInfoUser(req, res)
     })
     .post('/email', (req, res) => {
         profil.ModifyEmail(req, res)
@@ -19,13 +19,17 @@ router.get('/', (req, res) => {
         profil.AddTags(req, res)
     })
     .post('/location', (req, res) => {
-        profil.AddLocation(req, res)
+        console.log(req.body)
+        profil.AddLocation(req, res, info)
     })
     .post('/addAge', (req, res) => {
         profil.verifyAndSetAge(req, res)
     })
     .post('/findMe', (req, res) => {
-        profil.FindAdressWithIP(req, res)
+        console.log(req.body)
+        if (req.ip === "::1") {
+            profil.AddLocation(req, res)
+        } else profil.FindAdressWithIP(req, res)
     })
     .post('/search', (req, res) => {
         search.SearchByNickname(req, res)

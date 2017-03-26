@@ -17,22 +17,34 @@ module.exports = {
 
     SearchByNickname: (req, res) => {
         let {gender, search, ageMin, ageMax} = req.body
-        let dbkey = {}
         let user = req.session.user
         let UsersSearch = []
 
+        let geoFind = {
+            location: {
+                $near: {
+                    $geometry: {
+                        type: "Polygon",
+                        coordinates: user.location.coordinates
+                    },
+                    $minDistance: 1,
+                    $maxDistance: 50000000
+                }
+            }
+        }
+
         if (gender !== undefined || gender !== '') {
             if (gender === '1') {
-                dbkey.gender = '1'
+                geoFind.gender = '1'
             } else if (gender === '0') {
-                dbkey.gender = '0'
+                geoFind.gender = '0'
             }
         }
         if (search !== undefined && search !== '') {
-            dbkey.tags = search
+            geoFind.tags = search
         }
         if (ageMin || ageMax) {
-            dbkey.age = {
+            geoFind.age = {
                 $gt: (ageMin ? ageMin : '18'),
                 $lt: (ageMax ? ageMax : '100')
             }
@@ -41,20 +53,11 @@ module.exports = {
         mongoUtil.connectToServer((err) => {
             if (err) return res.sendStatus(500)
             let dbUser = mongoUtil.getDb().collection('Users')
-            if (dbkey.gender !== undefined || dbkey.tags !== undefined || dbkey.age !== undefined) {
-                dbUser.find(dbkey, out).toArray((err, dataUsers) => {
+                dbUser.find(geoFind, out).toArray((err, dataUsers) => {
                     UsersSearch = dataUsers
                     req.session.user = user
                     res.render('home', {users: UsersSearch})
                 })
-            } else {
-                dbUser.find({}, out).toArray((err, dataUsers) => {
-                    UsersSearch = dataUsers
-                    req.session.user = user
-                    res.render('home', {users: UsersSearch})
-                })
-            }
-            console.log('re1')
         })
     },
 
@@ -84,7 +87,6 @@ module.exports = {
     },
 
     findUserNearMyLocation: (req, res) => {
-        console.log('here')
         let user = req.session.user
         if (user.location.coordinates) {
             mongoUtil.connectToServer((err) => {
@@ -98,13 +100,12 @@ module.exports = {
                                 coordinates: user.location.coordinates
                             },
                             $minDistance: 1,
-                            $maxDistance: 5000
+                            $maxDistance: 50000000
                         }
                     }
                 }
                 dbUser.find(geoFind, out).toArray((err, dataUsers) => {
                     let UsersSearch = dataUsers
-                    console.log(dataUsers)
                     req.session.user = user
                     res.render('home', {users: UsersSearch})
                 })
