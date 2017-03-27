@@ -102,11 +102,9 @@ block content
                             h3
                                 strong Location
                             p
-                                | #{user.location.city}
-                                | #{user.location.country}
-                                | #{user.location.region}
-                                | #{user.location.long}
-                                | #{user.location.lat}
+                                | #{user.city}
+                                | #{user.country}
+                                | #{user.region}
                             hr
                             h3
                                 strong Gender
@@ -124,6 +122,13 @@ block content
                                 strong Name
                             p #{user.firstname}
                             hr
+
+                            if(user.tags)
+                                each tag in user.tags
+                                    form.form-horizontal(method='POST', action='/profile/dellTags')
+                                        label #{tag}
+                                        input#tags(type="hidden", name="info", value=tag)
+                                        button(type="submit") Dell Tags
 
 
                             img#geo-map(src='', data-latitude='#{user.location.lat}', data-longitude='#{user.location.long}')

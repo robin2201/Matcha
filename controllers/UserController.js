@@ -1,9 +1,9 @@
 /**
  * Created by robin on 2/21/17.
  */
-const mongoUtil = require('../config/db');
-const db = mongoUtil.getDb();
-const schemaValidator = require('../models/validatorSchema');
+const mongoUtil = require('../config/db')
+const db = mongoUtil.getDb()
+const schemaValidator = require('../models/validatorSchema')
 const bcrypt = require('bcrypt')
 const UserM = require('../models/user')
 const verifyAndSetAge = require('../controllers/UserProfile').verifyAndSetAge
@@ -13,14 +13,14 @@ module.exports = {
 
     logout: (req, res) => {
         req.session.destroy((err) => {
-            if (!err) res.redirect('/');
+            if (!err) res.redirect('/')
         });
     },
 
     registerUser: (req, res) => {
         console.log(req.body)
         req.checkBody(schemaValidator)
-        req.checkBody('cPassword', 'Not same pass').equals(req.body.password);
+        req.checkBody('cPassword', 'Not same pass').equals(req.body.password)
         let errors = req.validationErrors()
         if (errors) return res.send(errors)
         let {firstname, lastname, password, email, gender, birthday} = req.body
