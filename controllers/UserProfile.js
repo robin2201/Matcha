@@ -149,7 +149,7 @@ module.exports = {
 
         let id = req.session.userId
         let user = req.session.user
-        let tag = req.body.tags
+        let tag = req.body.info
         if (tag !== undefined || tag !== "") {
             mongoUtil.connectToServer((err) => {
                 if (err) return res.sendStatus(500)
@@ -165,6 +165,7 @@ module.exports = {
                     (err, result) => {
                         if (err) return res.sendStatus(500)
                         if (result) {
+                            console.log(result)
                             req.session.user = result.value ? result.value : user
                             req.session.userId = id
                             res.render('profile', {user: req.session.user})
@@ -174,7 +175,10 @@ module.exports = {
             })
         } else {
             req.session.user = user
-            res.render('profile', {user: user})
+            res.render('profile', {
+                user: user,
+                message: "Sorry an error occured"
+            })
         }
     },
 
@@ -186,9 +190,7 @@ module.exports = {
             NodeGeocoder.geocode(city, (err, resu) => {
                 if (err) res.sendStatus(500)
                 console.log(resu)
-                //if (typeof resu[0] !== ''){
-                if (resu.length > 0){
-                //if (resu[0].longitude !== undefined && resu[0].latitude !== undefined) {
+                if (resu.length > 0 && resu[0].location !== undefined && resu[0].latitude !== undefined){
                     let location = {}
                     location.type = 'Point'
                     location.coordinates = [resu[0].longitude, resu[0].latitude]

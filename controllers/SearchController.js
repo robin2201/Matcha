@@ -20,9 +20,9 @@ module.exports = {
         let user = req.session.user
         let UsersSearch = []
         if (distMin)
-            distMin = parseInt(distMin)
+            distMin = parseInt(distMin) * 1000
         if (distMax)
-            distMax = parseInt(distMax)
+            distMax = parseInt(distMax) * 1000
 
         let geoFind = {
             location: {
@@ -47,7 +47,7 @@ module.exports = {
         if (search !== undefined && search !== '') {
             geoFind.tags = search
         }
-        if(ageMin || ageMax) {
+        if (ageMin || ageMax) {
             geoFind.age = {
                 $gt: (ageMin ? ageMin : '18'),
                 $lt: (ageMax ? ageMax : '100')
@@ -88,6 +88,67 @@ module.exports = {
                 )
             })
         }
+    },
+
+    likeAndVerifyOtherProfile: (req, res) => {
+        let user = req.session.user
+        let idUserToLike = objectId(req.body.UsertoLike)
+        if (user && idUserToLike) {
+            mongoUtil.connectToServer((err) => {
+                if (err) return res.sendStatus(500)
+                else {
+                    let dbUser = mongoUtil.getDb().collection('Users')
+                    dbUser.findOne({
+                            _id: idUserToLike
+                        },
+                        (err, resultUser) => {
+                            req.session.user = user
+                            if (err) return res.sendStatus(500)
+                            else if (resultUser) {
+                                if (resultUser.matches) {
+                                    for (let userLiked of resultUser.matches) {
+                                        if (userLiked._id === user._id) {
+                                            console.log("Before render view")
+                                            res.render('home', {
+                                                user: req.session.user,
+                                                message: "Sorry you have already like this user"
+                                            })
+                                            break
+                                        }
+                                    }
+
+                                } //else {
+                                console.log("teteteteteteteteetetet")
+                                    let usr = {}
+                                    usr._id = user._id
+                                    dbUser.updateOne({
+                                            _id: idUserToLike,
+                                        }, {
+                                            $addToSet: {
+                                                "matches": usr
+                                            }
+                                        },
+                                        (err, resultUpdate) => {
+                                            if (err) return res.sendStatus(500)
+                                            else {
+                                                //console.log(resultUpdate)
+                                                res.render('home', {
+                                                    user: user,
+                                                    message: "Yes that is good"
+                                                })
+                                            }
+                                        }
+                                    )
+                               // }
+
+                            }
+                        })
+                }
+            })
+
+
+        }
+
     }
 }
 

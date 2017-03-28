@@ -34,11 +34,10 @@ router.get('/', (req, res) => {
     })
     .post('/dellTags', (req, res) => {
         profil.DellTags(req, res)
-       // res.render('profile', {user:req.session.user})
     })
-    // .post('/locations', (req, res) => {
-    //     search.findUserNearMyLocation(req, res)
-    // })
+     .post('/likeOther', (req, res) => {
+         search.likeAndVerifyOtherProfile(req, res)
+     })
 ;
 
 module.exports = router;

@@ -31,6 +31,9 @@ block content
             div.form-group
                 button.btn.btn-primary(type='submit') Location
         .row
+            if(message)
+                p #{message}
+
             if (users)
                 each elem in users
                     a(href="/users/view/:"+elem._id): .usersGallery.col-lg-3.col-md-3.col-sm-3.col-xs-6
@@ -44,6 +47,9 @@ block content
                             li= elem.age
                         each tag in elem.tags
                             p.tagsGallery.col-sm-6 #{tag}
+                        form.form-horizontal(method="post", action="/profile/likeOther")
+                            input#like(type="hidden", value=elem._id, name="UsertoLike")
+                            button.btn.btn-danger(type="submit") &hearts;
                             //h1: span.label.label-info #{tag}
                         img(src='uploads/image-1488885210969.jpeg')
             script
