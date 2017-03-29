@@ -60,7 +60,7 @@ module.exports = {
             dbUser.find(geoFind, out).toArray((err, dataUsers) => {
                 UsersSearch = dataUsers
                 req.session.user = user
-                res.render('home', {users: UsersSearch})
+                return res.render('home', {users: UsersSearch})
             })
         })
     },
@@ -69,7 +69,7 @@ module.exports = {
         let userToFind = req.params.id
         let user = req.session.user
 
-        if (userToFind !== undefined || userToFind !== "") {
+        if (userToFind !== undefined && userToFind !== "") {
             mongoUtil.connectToServer((err) => {
                 if (err) return res.sendStatus(500)
                 let dbUser = mongoUtil.getDb().collection('Users')
@@ -82,7 +82,7 @@ module.exports = {
                         if (result) {
                             req.session.user = user
                             let userToShow = result
-                            res.render('single', {userToShow: userToShow})
+                            return res.render('single', {userToShow: userToShow})
                         }
                     }
                 )
@@ -90,57 +90,61 @@ module.exports = {
         }
     },
 
+    checkMyMatch: (mySession, idToCheck) => {
+        for (let rest of mySession.matches){
+            if(String(rest._id) === String(idToCheck)) return true
+            else return false
+        }
+    },
+
     likeAndVerifyOtherProfile: (req, res) => {
         let user = req.session.user
         let idUserToLike = objectId(req.body.UsertoLike)
+        let test = module.exports.checkMyMatch(user, idUserToLike)
         if (user && idUserToLike) {
             mongoUtil.connectToServer((err) => {
                 if (err) return res.sendStatus(500)
                 else {
                     let dbUser = mongoUtil.getDb().collection('Users')
                     dbUser.findOne({
-                            _id: idUserToLike
+                            $and: [
+                                {_id: idUserToLike},
+                                {matches: {_id: user._id}}
+                            ]
                         },
                         (err, resultUser) => {
                             req.session.user = user
                             if (err) return res.sendStatus(500)
-                            else if (resultUser) {
-                                if (resultUser.matches) {
-                                    for (let userLiked of resultUser.matches) {
-                                        if (userLiked._id === user._id) {
-                                            console.log("Before render view")
-                                            res.render('home', {
-                                                user: req.session.user,
-                                                message: "Sorry you have already like this user"
+                            else if (resultUser && test){
+                                return res.render('home', {
+                                    user: req.session.user,
+                                    message: "Nice, now you can chat with your match 😄"
+                                })
+                            } else if (resultUser) {
+                                return res.render('home', {
+                                    user: req.session.user,
+                                    message: "Sorry you have already like this user"
+                                })
+                            } else {
+                                let usr = {}
+                                usr._id = user._id
+                                dbUser.updateOne({
+                                        _id: idUserToLike,
+                                    }, {
+                                        $addToSet: {
+                                            "matches": usr
+                                        }
+                                    },
+                                    (err, resultUpdate) => {
+                                        if (err) return res.sendStatus(500)
+                                        else {
+                                            return res.render('home', {
+                                                user: user,
+                                                message: "Yes that is good"
                                             })
-                                            break
                                         }
                                     }
-
-                                } //else {
-                                console.log("teteteteteteteteetetet")
-                                    let usr = {}
-                                    usr._id = user._id
-                                    dbUser.updateOne({
-                                            _id: idUserToLike,
-                                        }, {
-                                            $addToSet: {
-                                                "matches": usr
-                                            }
-                                        },
-                                        (err, resultUpdate) => {
-                                            if (err) return res.sendStatus(500)
-                                            else {
-                                                //console.log(resultUpdate)
-                                                res.render('home', {
-                                                    user: user,
-                                                    message: "Yes that is good"
-                                                })
-                                            }
-                                        }
-                                    )
-                               // }
-
+                                )
                             }
                         })
                 }

@@ -38,7 +38,9 @@ block content
                 each elem in users
                     a(href="/users/view/:"+elem._id): .usersGallery.col-lg-3.col-md-3.col-sm-3.col-xs-6
                         h1= elem.firstname
-                        li= elem.location.city
+                        li= elem.city
+                        li= elem.region
+                        li= elem.country
                         if (elem.gender === '1')
                             p &#9794;
                         else

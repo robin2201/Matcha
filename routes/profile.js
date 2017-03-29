@@ -25,9 +25,7 @@ router.get('/', (req, res) => {
         profil.verifyAndSetAge(req, res)
     })
     .post('/findMe', (req, res) => {
-        if (req.ip === "::1") {
-            profil.AddLocation(req, res)
-        } else profil.FindAdressWithIP(req, res)
+        profil.FindAdressWithIP(req, res)
     })
     .post('/search', (req, res) => {
         search.SearchByNickname(req, res)
@@ -35,9 +33,9 @@ router.get('/', (req, res) => {
     .post('/dellTags', (req, res) => {
         profil.DellTags(req, res)
     })
-     .post('/likeOther', (req, res) => {
-         search.likeAndVerifyOtherProfile(req, res)
-     })
+    .post('/likeOther', (req, res) => {
+        search.likeAndVerifyOtherProfile(req, res)
+    })
 ;
 
 module.exports = router;
