@@ -91,8 +91,8 @@ module.exports = {
     },
 
     checkMyMatch: (mySession, idToCheck) => {
-        for (let rest of mySession.matches){
-            if(String(rest._id) === String(idToCheck)) return true
+        for (let rest of mySession.matches) {
+            if (String(rest._id) === String(idToCheck)) return true
             else return false
         }
     },
@@ -115,7 +115,7 @@ module.exports = {
                         (err, resultUser) => {
                             req.session.user = user
                             if (err) return res.sendStatus(500)
-                            else if (resultUser && test){
+                            else if (resultUser && test) {
                                 return res.render('home', {
                                     user: req.session.user,
                                     message: "Nice, now you can chat with your match 😄"
@@ -149,10 +149,7 @@ module.exports = {
                         })
                 }
             })
-
-
         }
-
     }
 }
 
