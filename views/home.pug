@@ -54,12 +54,3 @@ block content
                             button.btn.btn-danger(type="submit") &hearts;
                             //h1: span.label.label-info #{tag}
                         img(src='uploads/image-1488885210969.jpeg')
-        .row
-            script
-                include ../node_modules/socket.io-client/dist/socket.io.js
-            script
-                include ../config/sockets.js
-            ul#messages
-            form#test(action='')
-                input#m(autocomplete='off')
-                button Send

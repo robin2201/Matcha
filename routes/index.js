@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 //const db = require('../config/db');
-const session = require('express-session');
+//const session = require('express-session');
 const home = require('../controllers/UserController');
 
 
@@ -26,6 +26,4 @@ router.get('/', (req, res) => {
         home.logout(req, res)
     })
 
-;
-
-module.exports = router;
+module.exports = router

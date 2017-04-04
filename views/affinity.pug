@@ -1,0 +1,30 @@
+extends layout
+include tools
+
+block content
+    include partials/navbar
+
+
+    .container
+        script
+            include ../public/javascripts/scripts.js
+        script
+            include ../node_modules/socket.io-client/dist/socket.io.js
+        script
+            include ../config/sockets.js
+        //if user
+        //    each matche in user.matches
+        //        p.test #{matche._id} ❤️💃
+        //        a(href="/users/view/:"+matche._id, onclick="myFunction(this.href)") See..
+        //        .row
+        //            ul#messages
+        //                form#test(action='')
+        //                    input#m(autocomplete='off')
+        //                    input#idto(type='hidden', value=matche.id, name="idToTalk")
+        //                    button Send
+
+        if chatrooms
+            each elem in chatrooms
+                li #{elem._i1}
+                li #{elem._i2}
+                li #{elem.message}

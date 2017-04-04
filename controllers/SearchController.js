@@ -91,10 +91,12 @@ module.exports = {
     },
 
     checkMyMatch: (mySession, idToCheck) => {
-        for (let rest of mySession.matches) {
-            if (String(rest._id) === String(idToCheck)) return true
-            else return false
-        }
+        if (mySession.matches !== undefined) {
+            for (let rest of mySession.matches) {
+                if (String(rest._id) === String(idToCheck)) return true
+                else return false
+            }
+        } else return false
     },
 
     likeAndVerifyOtherProfile: (req, res) => {
@@ -116,6 +118,30 @@ module.exports = {
                             req.session.user = user
                             if (err) return res.sendStatus(500)
                             else if (resultUser && test) {
+                                let db = mongoUtil.getDb()
+                                let Matches = db.collection('Matches')
+                                Matches.insertOne({},
+                                    (err, resMatchCollection) => {
+                                        if (err) return res.sendStatus(500)
+                                        else if (resMatchCollection/* && resMatchCollection.ops[0].insertedCount === 1*/) {
+
+                                            console.log(resMatchCollection.insertedId)
+                                            dbUser.updateMany({
+                                                    $or: [
+                                                        {_id: objectId(user._id)},
+                                                        {_id: idUserToLike}
+                                                    ]
+                                                },
+                                                {
+                                                    $addToSet: {
+                                                        "room": resMatchCollection.insertedId
+                                                    }
+                                                },
+                                                err => {
+                                                    if (err) return res.sendStatus(500)
+                                                })
+                                        }
+                                    })
                                 return res.render('home', {
                                     user: req.session.user,
                                     message: "Nice, now you can chat with your match 😄"
@@ -123,7 +149,7 @@ module.exports = {
                             } else if (resultUser) {
                                 return res.render('home', {
                                     user: req.session.user,
-                                    message: "Sorry you have already like this user"
+                                    message: "You have already like this user"
                                 })
                             } else {
                                 let usr = {}
@@ -135,7 +161,7 @@ module.exports = {
                                             "matches": usr
                                         }
                                     },
-                                    (err, resultUpdate) => {
+                                    err => {
                                         if (err) return res.sendStatus(500)
                                         else {
                                             return res.render('home', {

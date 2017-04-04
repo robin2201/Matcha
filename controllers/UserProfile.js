@@ -12,7 +12,7 @@ module.exports = {
         let value = req.body
         let id = req.session.userId
         if (value !== '') {
-            mongoUtil.connectToServer((err) => {
+            mongoUtil.connectToServer(err => {
                 if (err) return res.sendStatus(500)
                 let dbUser = mongoUtil.getDb().collection('Users')
                 dbUser.findOneAndUpdate({
@@ -41,7 +41,7 @@ module.exports = {
         let user = req.session.user
         const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
         if (regex.test(email)) {
-            mongoUtil.connectToServer((err) => {
+            mongoUtil.connectToServer(err => {
                 if (err) res.sendStatus(500)
                 let dbUser = mongoUtil.getDb().collection('Users')
                 dbUser.findOneAndUpdate({
@@ -108,8 +108,7 @@ module.exports = {
                 message: "Sorry this is not the age for our service"
             })
         }
-    }
-    ,
+    },
 
     AddTags: (req, res) => {
 
@@ -117,7 +116,7 @@ module.exports = {
         let user = req.session.user
         let tag = req.body.tags
         if (tag !== undefined || tag !== "") {
-            mongoUtil.connectToServer((err) => {
+            mongoUtil.connectToServer( err => {
                 if (err) return res.sendStatus(500)
                 let dbUser = mongoUtil.getDb().collection('Users')
                 dbUser.findOneAndUpdate({
@@ -151,7 +150,7 @@ module.exports = {
         let user = req.session.user
         let tag = req.body.info
         if (tag !== undefined && tag !== "") {
-            mongoUtil.connectToServer((err) => {
+            mongoUtil.connectToServer( err => {
                 if (err) return res.sendStatus(500)
                 let dbUser = mongoUtil.getDb().collection('Users')
                 dbUser.findOneAndUpdate({
@@ -165,10 +164,13 @@ module.exports = {
                     (err, result) => {
                         if (err) return res.sendStatus(500)
                         if (result) {
-                            console.log(result)
                             req.session.user = result.value ? result.value : user
+                            console.log('lol')
                             req.session.userId = id
-                            return res.render('profile', {user: req.session.user})
+                            return res.render('profile', {
+                                user: req.session.user,
+                                message: "Tag "+tag+" supprimer de vos affinitées"
+                            })
                         }
                     })
 
@@ -186,7 +188,7 @@ module.exports = {
     FindAdressWithIP: (req, res) => {
         let id = req.session.userId
         let ipToFind = req.ip
-        if (ipToFind === "::1"){
+        if (ipToFind === "::1") {
             ipToFind = "62.210.32.10"
         }
         ipLoc.satelize({ip: ipToFind}, (err, payload) => {

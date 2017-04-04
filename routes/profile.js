@@ -36,6 +36,6 @@ router.get('/', (req, res) => {
     .post('/likeOther', (req, res) => {
         search.likeAndVerifyOtherProfile(req, res)
     })
-;
 
-module.exports = router;
+
+module.exports = router
