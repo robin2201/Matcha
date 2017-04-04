@@ -20,26 +20,24 @@ app.set('port', port);
  */
 
 const server = http.createServer(app)
-
-//const serverS = http.Server(app);
 const io = require('socket.io')(server);
 
 /**
  * Listen on provided port, on all network interfaces.
  */
 
-// io.on('connection', function (socket) {
-//     socket.emit('news', { hello: 'world' });
-//     socket.on('my other event', function (data) {
-//         console.log(data);
-//     });
-// });
-io.on('connection', function(socket){
-    socket.on('chat message', function(msg){
-      console.log(msg)
-        io.emit('chat message', msg);
-    });
-});
+io.on('connection', socket => {
+
+     socket.on('id to', idTo =>{
+        console.log('In to')
+         console.log(idTo)
+     })
+     socket.on('chat message', msg => {
+
+       console.log(msg)
+         io.emit('chat message', msg)
+     })
+})
 
 server.listen(port)
 server.on('error', onError)

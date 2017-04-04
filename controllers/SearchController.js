@@ -102,7 +102,7 @@ module.exports = {
     likeAndVerifyOtherProfile: (req, res) => {
         let user = req.session.user
         let idUserToLike = objectId(req.body.UsertoLike)
-        let test = module.exports.checkMyMatch(user, idUserToLike)
+        let ifMatchMe = module.exports.checkMyMatch(user, idUserToLike)
         if (user && idUserToLike) {
             mongoUtil.connectToServer((err) => {
                 if (err) return res.sendStatus(500)
@@ -117,15 +117,13 @@ module.exports = {
                         (err, resultUser) => {
                             req.session.user = user
                             if (err) return res.sendStatus(500)
-                            else if (resultUser && test) {
+                            else if (resultUser && ifMatchMe) {
                                 let db = mongoUtil.getDb()
                                 let Matches = db.collection('Matches')
                                 Matches.insertOne({},
                                     (err, resMatchCollection) => {
                                         if (err) return res.sendStatus(500)
-                                        else if (resMatchCollection/* && resMatchCollection.ops[0].insertedCount === 1*/) {
-
-                                            console.log(resMatchCollection.insertedId)
+                                        else if (resMatchCollection && resMatchCollection.insertedCount === 1) {
                                             dbUser.updateMany({
                                                     $or: [
                                                         {_id: objectId(user._id)},

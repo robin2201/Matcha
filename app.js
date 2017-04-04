@@ -11,6 +11,7 @@ let validator = require('express-validator')
 let index = require('./routes/index')
 let users = require('./routes/users')
 let profile = require('./routes/profile')
+let affinity = require('./routes/affinity')
 
 const app = express()
 
@@ -47,6 +48,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use('/', index)
 app.use('/users', users)
 app.use('/profile', profile)
+app.use('/affinity', affinity)
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
   let err = new Error('Not Found')
