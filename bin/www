@@ -21,7 +21,7 @@ app.set('port', port);
 
 const server = http.createServer(app)
 const io = require('socket.io')(server);
-
+const sockToDb = require('../controllers/SocketsController').saveMessageFromSocketsToDb
 /**
  * Listen on provided port, on all network interfaces.
  */

@@ -2,7 +2,7 @@ $( () => {
     let socket = io()
 
     $('#test').submit( () => {
-        let pseudo = "ta mere la puta"
+        let pseudo = $('#idto').val()
         socket.emit("id to", pseudo)
         socket.emit('chat message', $('#m').val())
         $('#m').val('')
