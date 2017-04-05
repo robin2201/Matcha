@@ -49,7 +49,7 @@ module.exports = {
         }
         if (ageMin || ageMax) {
             geoFind.age = {
-                $gt: (ageMin ? ageMin : '18'),
+                $gte: (ageMin ? ageMin : '18'),
                 $lt: (ageMax ? ageMax : '100')
             }
         }
@@ -70,7 +70,7 @@ module.exports = {
         let user = req.session.user
 
         if (userToFind !== undefined && userToFind !== "") {
-            mongoUtil.connectToServer((err) => {
+            mongoUtil.connectToServer(err => {
                 if (err) return res.sendStatus(500)
                 let dbUser = mongoUtil.getDb().collection('Users')
                 dbUser.findOne({
@@ -81,8 +81,7 @@ module.exports = {
                         if (err) return res.sendStatus(500)
                         if (result) {
                             req.session.user = user
-                            let userToShow = result
-                            return res.render('single', {userToShow: userToShow})
+                            return res.render('single', {userToShow: result})
                         }
                     }
                 )
@@ -154,7 +153,8 @@ module.exports = {
                                 usr._id = user._id
                                 dbUser.updateOne({
                                         _id: idUserToLike,
-                                    }, {
+                                    },
+                                    {
                                         $addToSet: {
                                             "matches": usr
                                         }
