@@ -1,5 +1,6 @@
 const mongoUtil = require('../config/db')
 const objectId = require('mongodb').ObjectID
+
 const out = {
     hash: 0,
     email: 0,
@@ -10,130 +11,109 @@ const out = {
 
 
 module.exports = {
+
     loadAllMyChat: (req, res) => {
         let usr = req.session.user
         const roomsChat = usr.room.map(x => {
             return objectId(x)
         })
-        let dbMatches = mongoUtil.getDb().collection('Matches')
         let dbUser = mongoUtil.getDb().collection('Users')
-        // dbMatches.find({
-        //     _id: {
-        //         $in: roomsChat
-        //     }
-        // }).toArray((err, ress) => {
-        //     if (err) return res.sendStatus(500)
-        //     else {
-        //         req.session.user = usr
-        //         return res.render('affinity', {
-        //             user: req.session.user,
-        //             message: "Here you can flirt with yours matches,, Enjoy! ❤️",
-        //             chatrooms: ress
-        //         })
-        //     }
-        // })
-        let Myroom = dbMatches.find({
+        dbMatches.find({
             _id: {
                 $in: roomsChat
             }
-        }).toArray()
-            .then(eachDocumentOfRoom => {
-                let newTabWithDataFormatted = eachDocumentOfRoom.map(elem => {
-                    let obj = {}
-                    obj._id = objectId(elem._id)
-                    obj.message = elem.message
-                    return obj
-                })
-                return newTabWithDataFormatted
-            }).then(retPromiseRoom => {
-                let RoomWithUsersInfo = retPromiseRoom.map(elem => {
-                    console.log('id tp add '+ elem._id)
-                    let obj = {}
-                    obj._id = objectId(elem._id)
-                    obj.message = elem.message
-                    return obj
-                })
-                return RoomWithUsersInfo
-            }).then(finalResult => {
-                finalResult.map(elem => {
-                    console.log(elem._id)
-                    console.log(elem.message[0].nickname)
-                })
-            })
+        }).toArray((err, resMyRoomChat) => {
+            if (err) return res.sendStatus(500)
+            else {
 
-
-        return res.render('affinity', {
-            user: req.session.user,
-            message: "Here you can flirt with yours matches,, Enjoy! ❤️",
-            chatrooms: Myroom
+                req.session.user = usr
+                return res.render('affinity', {
+                    user: req.session.user,
+                    message: "Here you can flirt with yours matches,, Enjoy! ❤️",
+                    chatrooms: resMyRoomChat
+                })
+            }
         })
-
-
-        // dbMatches.find({
+        //dbMatches.find({
         //     _id: {
         //         $in: roomsChat
         //     }
-        // }).map(doc => {
-        //
-        //     let idToFindOtherPeople = doc._id
-        //     console.log(doc)
-        //     let otherUser = dbUser.findOne({
-        //             _id: objectId(idToFindOtherPeople)
-        //         }, out,
-        //         (err, resUserWithSameRoom) => {
-        //             if (err) return res.sendStatus(500)
-        //             else {
-        //                 console.log(resUserWithSameRoom)
-        //                 return resUserWithSameRoom}
-        //         })
-        //     return otherUser
-        // })
-        //     .toArray((err, ress) => {
+        // }, (err ,resRoom) => {
         //     if (err) return res.sendStatus(500)
-        //     else {
-        //         console.log('test')
-        //         console.log(ress)
-        //         req.session.user = usr
+        //     else{
+        //         console.log(resRoom)
+        //         console.log(resRoom.message)
         //         return res.render('affinity', {
         //             user: req.session.user,
         //             message: "Here you can flirt with yours matches,, Enjoy! ❤️",
-        //             chatrooms: ress
+        //             chatrooms: resRoom
         //         })
         //     }
         // })
-        // let ress = new Promise (
-        //     (resolve, reject) => {
-        //     dbMatches.find({
-        //      _id: {
-        //          $in: roomsChat
-        //      }
-        // // })
-        //     //.toArray(err => {
-        //     // if (err) return res.sendStatus(500)
-        //  }).forEach(resu => {
-        //      console.log(resu)
-        //      //dbUser.findOne({resu._id})
-        // })//.then(ret => {
-        // //     return ret
-        // // })
-        //         resolve(resu)
-        // })
 
-        //.then(val => {
-        //   return val
-        //})
-        // console.log(ress)
 
-        // return res.render('affinity', {
-        //     user: req.session.user,
-        //     message: "Here you can flirt with yours matches,, Enjoy! ❤️",
-        //     chatrooms: ress
-        // })
+            //.toArray()
+            // .then(eachDocumentOfRoom => {
+            //     let newTabWithDataFormatted = eachDocumentOfRoom.map(elem => {
+            //         let obj = {}
+            //         obj.user = obj.user1 = dbUser.findOne({"room":obj._id}, out).then(x => {
+            //             console.log("mdr")
+            //             console.log(x)
+            //             return x})
+            //         console.log("tesst")
+            //         obj._id = objectId(elem._id)
+            //         // obj.user1 = dbUser.findOne({_id:obj._id})
+            //         // for(let test of obj.user1){
+            //         //     console.log("Heeeeeeeeeeeeeee")
+            //         //     console.log(test)
+            //         // }
+            //         obj.message = elem.message
+            //         return obj
+            //     })
+            //     console.log("Out of my Promise")
+            //     console.log(obj)
+            //     return newTabWithDataFormatted
+            // }).then(retPromiseRoom => {
+            //     let RoomWithUsersInfo = retPromiseRoom.map(elem => {
+            //         console.log('id tp add '+ elem._id)
+            //         console.log(elem.user1)
+            //         let obj = {}
+            //         obj._id = objectId(elem._id)
+            //         obj.message = elem.message
+            //         return obj
+            //     })
+            //     return RoomWithUsersInfo
+            // }).then(finalResult => {
+            //     finalResult.map(elem => {
+            //         console.log(elem._id)
+            //         console.log(elem.message[0].nickname)
+            //     })
+            // })
+
+
 
     },
 
-    saveMessageFromSocketsToDb: (req, res, arrayMessage) => {
-        let user = req.session.user
+    saveMessageFromSocketsToDb: (idRoom, message, nickname) => {
+        console.log(idRoom)
+        console.log(message)
+        console.log(nickname)
+        let dbMatches = mongoUtil.getDb().collection('Matches')
+        let mongoMessageFormatted = {}
+        mongoMessageFormatted.nickname = nickname
+        mongoMessageFormatted.message = message
+        dbMatches.updateOne({
+            _id: objectId(idRoom)
+        },
+            {
+                $addToSet:{
+                    "message": mongoMessageFormatted
+                }
+            },
+            err => {
+            if(err) return console.log('Error during Socket transmission')
+            })
+
 
     }
 

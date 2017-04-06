@@ -77,11 +77,37 @@ module.exports = {
                         _id: objectId(userToFind.substr(1))
                     },
                     out,
-                    (err, result) => {
+                    (err, resultSingleUser) => {
                         if (err) return res.sendStatus(500)
-                        if (result) {
-                            req.session.user = user
-                            return res.render('single', {userToShow: result})
+                        else {
+                            console.log(user)
+                            if(resultSingleUser.room !== undefined ){
+                                resultSingleUser.room.map(x => {
+                                    for(let myRoom of user.room){
+                                        if(String(myRoom) === String(x)){
+                                            let dbMatches = mongoUtil.getDb().collection('Matches')
+                                            dbMatches.findOne({
+                                                _id: objectId(myRoom)
+                                            }, (err, resMyRoomChat) => {
+                                                if (err) return res.sendStatus(500)
+                                                else {
+                                                    req.session.user = user
+                                                    return res.render('single', {
+                                                        userToShow: resultSingleUser,
+                                                        user: req.session.user,
+                                                        message: "Here you can flirt with yours matches,, Enjoy! ❤️",
+                                                        chatRooms: resMyRoomChat.message,
+                                                        idRoom: resMyRoomChat._id
+                                                    })
+                                                }
+                                            })
+                                        }
+                                    }
+                                })
+                            }else{
+                                 req.session.user = user
+                                 return res.render('single', {userToShow: resultSingleUser})
+                            }
                         }
                     }
                 )

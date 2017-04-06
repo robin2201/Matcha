@@ -3,8 +3,13 @@ $( () => {
 
     $('#test').submit( () => {
         let pseudo = $('#idto').val()
-        socket.emit("id to", pseudo)
+        let message =  $('#m').val()
+        let idRoom = $('#idRoom').val()
+        let nickname = $('#nicknameSocket').val()
+
+        socket.emit("id to", idRoom, message, nickname)
         socket.emit('chat message', $('#m').val())
+
         $('#m').val('')
         return false
     })

@@ -28,9 +28,8 @@ const sockToDb = require('../controllers/SocketsController').saveMessageFromSock
 
 io.on('connection', socket => {
 
-     socket.on('id to', idTo =>{
-        console.log('In to')
-         console.log(idTo)
+     socket.on('id to', (idRoom, message, nickname) =>{
+            sockToDb(idRoom, message, nickname )
      })
      socket.on('chat message', msg => {
 
