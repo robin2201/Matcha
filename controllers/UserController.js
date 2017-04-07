@@ -91,7 +91,7 @@ module.exports = {
                                     req.session.user = resDb
                                     req.session.userId = resDb._id
                                     console.log(req.session)
-                                    res.render('home', {user: req.session.user})
+                                    return res.render('home', {user: req.session.user})
                                 } else return res.send("Sorry this password not match :(")
                             });
                     } else return res.send("sorry this name doesn't exist Or your account isn't validate :(, Please check yours Emails")
@@ -142,9 +142,9 @@ module.exports = {
                 },
                 (err, result) => {
                     if (err) return res.sendStatus(500).json(err)
-                    if (result) {
+                    if (result && result.ok === 1) {
                         req.session.user = result.value
-                        res.redirect('/profile')
+                        return res.render({user:req.session.user})
                     }
                     else return res.sendStatus(404)
                 })

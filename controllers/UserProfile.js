@@ -8,6 +8,17 @@ const ipLoc = require('satelize')
 
 module.exports = {
 
+    loadMyProfilWithMyNotifications: (req, res) => {
+        let user = req.session.user
+        if(user.notifications !== undefined){
+            console.log(user.notifications)
+        }
+        return res.render('profile', {
+            user:user,
+            notifications: user.notifications
+        })
+    },
+
     ModifyInfoUser: (req, res) => {
         let value = req.body
         let id = req.session.userId

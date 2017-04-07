@@ -6,7 +6,8 @@ const router = express.Router()
 const profil = require('../controllers/UserProfile')
 const search = require('../controllers/SearchController')
 
-router.get('/', (req, res) => {
+router.get('profile', (req, res) => {
+     //profil.loadMyProfilWithMyNotifications(req, res)
     res.render('profile')
 })
     .post('/me', (req, res) => {

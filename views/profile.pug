@@ -138,8 +138,12 @@ block content
                 if(message)
                     p #{message}
 
-
-
+                if user.notifications
+                    each elem in user.notifications
+                        each test in elem
+                            p #{test}
+                    form(method='post', action='/profile/clearNotif')
+                        button.btn-danger(type='submit') Clear notifications
 
 
 

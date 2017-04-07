@@ -23,15 +23,4 @@ block content
         //                    input#idto(type='hidden', value=matche.id, name="idToTalk")
         //                    button Send
 
-        if chatrooms
-            each elem in chatrooms
-                li #{elem._i1}
-                li #{elem._i2}
-                li #{elem.message}
 
-        .row
-            ul#messages
-                form#test(action='')
-                    input#m(autocomplete='off')
-                    input#idto(type='hidden', value=user.room[0], name="idToTalk")
-                    button Send
