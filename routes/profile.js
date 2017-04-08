@@ -37,6 +37,25 @@ router.get('profile', (req, res) => {
     .post('/likeOther', (req, res) => {
         search.likeAndVerifyOtherProfile(req, res)
     })
+    .post('/clearNotif', (req, res) => {
+        profil.clearAllMyNotifications(req, res)
+    })
+    .get('/forgotPassword', (req, res) => {
+        return res.render('forgot')
+    })
+    .post('/forgotPassword', (req, res) => {
+        profil.sendEmailInstructionForNewPassword(req, res)
+    })
+    .get('/modifPass/:id', (req, res) => {
+        console.log(req.params)
+        res.render('index', {
+            message:"Your pass is correctly changed! 🔑"
+        })
+    })
 
 
 module.exports = router
+
+//TODO => Need to create function changeMyPassword(req, res) in userController
+//TODO => Maybe create a module who can check pass with bcrypt
+//TODO => Now is a redurection but modifPass but in future in a email

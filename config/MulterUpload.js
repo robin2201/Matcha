@@ -8,18 +8,19 @@ let fs = require('fs')
 let storage = multer.diskStorage({
     destination: (req, file, cb) => {
         try {
-            fs.accessSync('./uploads')
+            fs.accessSync('./public/uploads')
         } catch (e) {
-            fs.mkdirSync('./uploads')
+            fs.mkdirSync('./public/uploads')
         }
-        cb(null, './uploads')
+        cb(null, './public/uploads')
     },
     limits: {
         files: 1,
         fileSize: 1024 * 1024
     },
     filename: (req, file, cb) => {
-        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+        console.log(file.fieldname + '-' + Date.now() + path.extname(file.originalname))
+        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
     }
 })
 
@@ -27,7 +28,7 @@ let upload = multer({
     storage: storage,
     fileFilter: (req, file, cb) => {
         let ext = path.extname(file.originalname);
-        if (ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
+        if (ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg' && ext !== '.JPG') {
             return cb(new Error('Only images are allowed'))
         }
         cb(null, true)

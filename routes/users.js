@@ -17,7 +17,7 @@ router.get('/', (req, res, next) => {
         home.signinUser(req, res)
     })
 
-    .post('/register', (req, res, next) => {
+    .post('/register', (req, res) => {
         home.registerUser(req, res)
     })
 
@@ -26,11 +26,9 @@ router.get('/', (req, res, next) => {
     })
 
     .post('/upload', (req, res) => {
-        Upload(req, res, (err) => {
+        Upload(req, res, err => {
             if (err) return res.end("Error uploading file. " + err)
-            else {
-                home.AddPicToDb(req, res)
-            }
+            else home.AddPicToDb(req, res)
         })
     })
 
@@ -40,6 +38,6 @@ router.get('/', (req, res, next) => {
 
     .get('*', (req, res) => {
         res.render('index')
-    });
+    })
 
-module.exports = router;
+module.exports = router

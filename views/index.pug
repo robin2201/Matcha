@@ -5,6 +5,10 @@ block content
       h1.title: a(href='/') Matcha
       p Find Love with Style
 
+
+    .row
+        if message
+            p #{message}
     .row
       .registerForm
         a(href='/register') Register

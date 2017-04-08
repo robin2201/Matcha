@@ -2,22 +2,24 @@
  * Created by robin on 3/2/17.
  */
 const mongoUtil = require('../config/db')
+const db_close = require('../config/db').closeDb
 const objectId = require('mongodb').ObjectID
 const NodeGeocoder = require('node-geocoder')('google')
 const ipLoc = require('satelize')
+const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
 module.exports = {
-
-    loadMyProfilWithMyNotifications: (req, res) => {
-        let user = req.session.user
-        if(user.notifications !== undefined){
-            console.log(user.notifications)
-        }
-        return res.render('profile', {
-            user:user,
-            notifications: user.notifications
-        })
-    },
+    //
+    // loadMyProfilWithMyNotifications: (req, res) => {
+    //     let user = req.session.user
+    //     if(user.notifications !== undefined){
+    //         console.log(user.notifications)
+    //     }
+    //     return res.render('profile', {
+    //         user:user,
+    //         notifications: user.notifications
+    //     })
+    // },
 
     ModifyInfoUser: (req, res) => {
         let value = req.body
@@ -37,7 +39,10 @@ module.exports = {
                         if (result && result.ok === 1) {
                             req.session.user = result.value
                             req.session.userId = result.value._id
-                            res.render('profile', {user: req.session.user})
+                            res.render('profile', {
+                                user: req.session.user,
+                                message: value + " are modified with sucess!"
+                            })
 
                         }
                     }
@@ -50,7 +55,6 @@ module.exports = {
         let email = req.body.email
         let id = req.session.userId
         let user = req.session.user
-        const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
         if (regex.test(email)) {
             mongoUtil.connectToServer(err => {
                 if (err) res.sendStatus(500)
@@ -80,6 +84,32 @@ module.exports = {
         }
     },
 
+    sendEmailInstructionForNewPassword: (req, res) => {
+        let email = req.body.email
+        if (email !== undefined && regex.test(email)) {
+            mongoUtil.connectToServer(err => {
+                if (err) return res.sendStatus(500)
+                else {
+                    let dbUser = mongoUtil.getDb().collection('Users')
+                    dbUser.findOne({
+                            'email': email
+                        },
+                        (err, sucess) => {
+                            console.log(sucess)
+                            if (err) return res.sendStatus(500)
+                            else if (sucess === undefined || sucess === '') return res.render('index', {
+                                message: "Sorry this mail doesn't exist"
+                            })
+                            else {
+                                res.redirect('/profile/modifPass/:' + sucess._id)
+                            }
+                        })
+                }
+            })
+        }else return res.render('index', {
+            message: "Invalid mail please retry"
+        })
+    },
 
     verifyAndSetAge: (req, res) => {
         let birthday = req.body.birthday
@@ -127,7 +157,7 @@ module.exports = {
         let user = req.session.user
         let tag = req.body.tags
         if (tag !== undefined || tag !== "") {
-            mongoUtil.connectToServer( err => {
+            mongoUtil.connectToServer(err => {
                 if (err) return res.sendStatus(500)
                 let dbUser = mongoUtil.getDb().collection('Users')
                 dbUser.findOneAndUpdate({
@@ -161,7 +191,7 @@ module.exports = {
         let user = req.session.user
         let tag = req.body.info
         if (tag !== undefined && tag !== "") {
-            mongoUtil.connectToServer( err => {
+            mongoUtil.connectToServer(err => {
                 if (err) return res.sendStatus(500)
                 let dbUser = mongoUtil.getDb().collection('Users')
                 dbUser.findOneAndUpdate({
@@ -180,7 +210,7 @@ module.exports = {
                             req.session.userId = id
                             return res.render('profile', {
                                 user: req.session.user,
-                                message: "Tag "+tag+" supprimer de vos affinitées"
+                                message: "Tag " + tag + " supprimer de vos affinitées"
                             })
                         }
                     })
@@ -293,6 +323,29 @@ module.exports = {
             req.session.user = user
             req.session.userId = id
             return res.render('profile', {user: req.session.user})
+        }
+    },
+
+    clearAllMyNotifications: (req, res) => {
+        let user = req.session.user
+        if (user && (user._id !== '' || user._id !== undefined)) {
+            let dbUser = mongoUtil.getDb().collection('Users')
+            dbUser.findOneAndUpdate({
+                    _id: objectId(user._id)
+                },
+                {
+                    $unset: {'notifications': ''}
+                },
+                err => {
+                    if (err) return res.sendStatus(500)
+                    else {
+                        req.session.user = user
+                        return res.render('profile', {
+                            user: req.session.user,
+                            message: 'All your notifications are cleared'
+                        })
+                    }
+                })
         }
     }
 }

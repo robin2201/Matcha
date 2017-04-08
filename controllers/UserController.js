@@ -7,6 +7,7 @@ const schemaValidator = require('../models/validatorSchema')
 const bcrypt = require('bcrypt')
 const UserM = require('../models/user')
 const verifyAndSetAge = require('../controllers/UserProfile').verifyAndSetAge
+const FindWithIp = require('../controllers/UserProfile').FindAdressWithIP
 const objectId = require('mongodb').ObjectID
 
 module.exports = {
@@ -91,10 +92,13 @@ module.exports = {
                                     req.session.user = resDb
                                     req.session.userId = resDb._id
                                     console.log(req.session)
-                                    return res.render('home', {user: req.session.user})
-                                } else return res.send("Sorry this password not match :(")
+                                    return res.render('home', {
+                                        user: req.session.user,
+                                        message:"Hey "+req.session.user.nickname+" happy to see you :)"
+                                    })
+                                } else return res.render('index',{message:"Sorry this password not match :("})
                             });
-                    } else return res.send("sorry this name doesn't exist Or your account isn't validate :(, Please check yours Emails")
+                    } else return res.render('index', {message:"sorry this name doesn't exist Or your account isn't validate :(, Please check yours Emails"})
                 })
         });
     },
@@ -132,19 +136,23 @@ module.exports = {
         mongoUtil.connectToServer((err) => {
             if (err) return res.sendStatus(500)
             let dbUsers = mongoUtil.getDb().collection('Users')
+            console.log(req.file)
             dbUsers.findOneAndUpdate({
                     _id: objectId(id)
                 },
                 {
                     $addToSet: {
-                        "pics": req.file.path
+                        "pics": '/static/uploads/'+req.file.filename
                     }
                 },
                 (err, result) => {
                     if (err) return res.sendStatus(500).json(err)
-                    if (result && result.ok === 1) {
+                    else if (result && result.ok === 1) {
                         req.session.user = result.value
-                        return res.render({user:req.session.user})
+                        return res.render('profile', {
+                            user:req.session.user,
+                            message:"New pic Upload"
+                        })
                     }
                     else return res.sendStatus(404)
                 })

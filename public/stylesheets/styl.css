@@ -39,4 +39,8 @@ p {
 #messages li:nth-child(odd) { background: #eee; }
 #messages { margin-bottom: 40px }
 
-
+.testChatBox {
+  background-color: #00B7FF;
+  border: 1px solid black;
+  border-radius: 2px;
+}

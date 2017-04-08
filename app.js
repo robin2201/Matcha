@@ -10,7 +10,6 @@ let validator = require('express-validator')
 let index = require('./routes/index')
 let users = require('./routes/users')
 let profile = require('./routes/profile')
-let affinity = require('./routes/affinity')
 
 const app = express()
 
@@ -43,13 +42,13 @@ app.use(require('node-sass-middleware')({
     sourceMap: true
 }))
 app.use(express.static(path.join(__dirname, 'public')))
+app.use('/static', express.static(path.join(__dirname, 'public')))
 
 app.use('/', index)
 app.use('/users', users)
 app.use('/profile', profile)
 // app.use('/profile',(req, res, next) => {
 // }, profile)
-app.use('/affinity', affinity)
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
     let err = new Error('Not Found')

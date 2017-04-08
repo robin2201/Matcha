@@ -116,8 +116,6 @@ module.exports = {
                                                 (err, resMyRoomChat) => {
                                                     if (err) return res.sendStatus(500)
                                                     else {
-                                                        console.log('Mat')
-
                                                         req.session.user = user
                                                         return res.render('single', {
                                                             userToShow: resultSingleUser,
@@ -126,18 +124,19 @@ module.exports = {
                                                             chatRooms: resMyRoomChat.message,
                                                             idRoom: resMyRoomChat._id
                                                         })
+
                                                     }
                                                 })
-                                        } else {
-                                            console.log('Nooooooo')
-                                            req.session.user = user
-                                            console.log(resultSingleUser)
-                                            res.render('single', {
-                                                userToShow: resultSingleUser,
-                                                user: req.session.user
-                                            })
-                                            break
-                                        }
+                                        }// else {
+                                        //     console.log('Nooooooo')
+                                        //     req.session.user = user
+                                        //     console.log(resultSingleUser)
+                                        //     res.render('single', {
+                                        //         userToShow: resultSingleUser,
+                                        //         user: req.session.user
+                                        //     })
+                                        //     break
+                                        // }
                                     }
                                 })
                             } else {
