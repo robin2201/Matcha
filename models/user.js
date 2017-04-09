@@ -63,8 +63,14 @@ class User {
     SetBirthday() {
         this.data.birthdate = birthday
     }
+    GetAge() {
+        this.data.age = age
+    }
+    SetAge() {
+        this.data.age = age
+    }
 
-    static create({firstname, lastname, hash, email, gender, birthday}, callback) {
+    static create({firstname, lastname, hash, email, gender, birthday, age}, callback) {
         let token = this.GetRandomToken()
         let UserToConstruct = {
             firstname,
@@ -73,7 +79,8 @@ class User {
             email,
             token,
             gender,
-            birthday
+            birthday,
+            age
         }
         callback(new User(UserToConstruct))
     }

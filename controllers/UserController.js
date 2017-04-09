@@ -18,54 +18,58 @@ module.exports = {
     },
 
     registerUser: (req, res) => {
-        console.log(req.body)
         req.checkBody(schemaValidator)
         req.checkBody('cPassword', 'Not same pass').equals(req.body.password)
         let errors = req.validationErrors()
         if (errors) return res.send(errors)
         let {firstname, lastname, password, email, gender, birthday} = req.body
 
-        let birth = verifyAndSetAge(birthday)
-        mongoUtil.connectToServer(err => {
-            if (err) return res.sendStatus(500)
-            let dbUsers = mongoUtil.getDb().collection('Users');
-            dbUsers.findOne({
-                    $or: [
-                        {firstname: firstname},
-                        {email: email}
-                    ]
-                },
-                (err, result) => {
-                    if (err) return res.send(err)
-                    if (result) {
-                        if (result.firstname === firstname)
-                            return res.render('index', {message: 'Sorry this Username is already taken'})
-                        else if (result.email === email)
-                            return res.render('index', {message: 'Sorry this Email is already taken'})
-                    } else {
-                        bcrypt.hash(password, 10, (err, hash) => {
-                            if (err) res.send(err)
-                            UserM.create({firstname, lastname, hash, email, gender, birth},
-                                user => {
-                                    dbUsers.insertOne(user.data, (err, result) => {
-                                        if (err) return res.send(err)
-                                        else {
-                                            const {ops, insertedCount} = result
-                                            if (insertedCount > 0) {
-                                                req.session.user = ops[0]
-                                                req.session.userId = ops[0]._id
-                                                user.SendActivationMail(req, res)
-                                                res.render('index')
+        let tmp = birthday.split('-')
+        let today = new Date()
+        let birthDate = new Date(tmp)
+        let age = today.getFullYear() - birthDate.getFullYear()
+        let month = today.getMonth() - birthDate.getMonth()
+        if ((month < 0 || (month === 0 && today.getDate() < birthDate.getDate())) ? age - 1 : age) {
+            mongoUtil.connectToServer(err => {
+                if (err) return res.sendStatus(500)
+                let dbUsers = mongoUtil.getDb().collection('Users');
+                dbUsers.findOne({
+                        $or: [
+                            {firstname: firstname},
+                            {email: email}
+                        ]
+                    },
+                    (err, result) => {
+                        if (err) return res.send(err)
+                        if (result) {
+                            if (result.firstname === firstname)
+                                return res.render('index', {message: 'Sorry this Username is already taken'})
+                            else if (result.email === email)
+                                return res.render('index', {message: 'Sorry this Email is already taken'})
+                        } else {
+                            bcrypt.hash(password, 10, (err, hash) => {
+                                if (err) res.send(err)
+                                UserM.create({firstname, lastname, hash, email, gender, birthday, age},
+                                    user => {
+                                        dbUsers.insertOne(user.data, (err, result) => {
+                                            if (err) return res.send(err)
+                                            else {
+                                                const {ops, insertedCount} = result
+                                                if (insertedCount > 0) {
+                                                    req.session.user = ops[0]
+                                                    req.session.userId = ops[0]._id
+                                                    user.SendActivationMail(req, res)
+                                                    res.render('index')
+                                                }
                                             }
-                                        }
+                                        })
                                     })
-                                })
-                        })
-                    }
+                            })
+                        }
 
-                })
-        })
-
+                    })
+            })
+        }
     },
 
     signinUser: (req, res) => {
