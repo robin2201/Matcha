@@ -7,6 +7,7 @@ const objectId = require('mongodb').ObjectID
 const NodeGeocoder = require('node-geocoder')('google')
 const ipLoc = require('satelize')
 const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+const transporter = require('../config/mail')
 
 module.exports = {
     //
@@ -101,12 +102,36 @@ module.exports = {
                                 message: "Sorry this mail doesn't exist"
                             })
                             else {
-                                res.redirect('/profile/modifPass/:' + sucess._id)
+                                transporter.verify(error => {
+                                    if (error) return console.log(error)
+                                    else {
+                                        let EmailContent = 'http://localhost:3000/profile/modifPass/:' + sucess._id
+                                        let message = {
+                                            from: 'MatchaHelper@love.com',
+                                            to: email,
+                                            subject: 'Modification of your password',
+                                            text: 'Hello You',
+                                            html: '<b>Hello,, to change your email please click on the link</b>' +
+                                            '<p>Cliquer sur le lien suivant : </p>' +
+                                            '<a href="' + EmailContent + '">Modify my password</a> ',
+                                        }
+                                        transporter.sendMail(message,
+                                            (error, info) => {
+                                                if (error) return console.log(error)
+                                                else console.log('Message %s sent: %s', info.messageId, info.response)
+                                                transporter.close()
+                                                return res.render('index', {
+                                                    message: "Info are send on your email"
+                                                })
+                                            })
+                                    }
+                                })
+
                             }
                         })
                 }
             })
-        }else return res.render('index', {
+        } else return res.render('index', {
             message: "Invalid mail please retry"
         })
     },
@@ -224,7 +249,6 @@ module.exports = {
             })
         }
     },
-
 
     FindAdressWithIP: (req, res) => {
         let id = req.session.userId
@@ -348,4 +372,6 @@ module.exports = {
                 })
         }
     }
+
+
 }

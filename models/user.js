@@ -60,9 +60,10 @@ class User {
         this.data.gender = gender
     }
 
-    SetBirthday(){
+    SetBirthday() {
         this.data.birthdate = birthday
     }
+
     static create({firstname, lastname, hash, email, gender, birthday}, callback) {
         let token = this.GetRandomToken()
         let UserToConstruct = {
@@ -78,7 +79,6 @@ class User {
     }
 
     SendActivationMail(req, res) {
-
         let EmailContent = 'http://localhost:3000/users/activation/:' + req.session.userId + '/:' + this.GetRandomToken()
         let message = {
             from: 'MatchaHelper@love.com',
@@ -89,21 +89,20 @@ class User {
             '<p>Cliquer sur le lien suivant : </p>' +
             '<a href="' + EmailContent + '">Find Love</a> ',
         }
-        transporter.verify((error, success) => {
+        transporter.verify(error => {
             if (error) return console.log(error)
             else {
-                console.log('Server is ready to take our messages')
                 transporter.sendMail(message,
                     (error, info) => {
                         if (error) return console.log(error)
                         console.log('Message %s sent: %s', info.messageId, info.response)
                         transporter.close()
-                    });
+                    })
             }
-        });
+        })
 
     }
 }
 
-module.exports = User;
+module.exports = User
 

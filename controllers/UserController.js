@@ -7,15 +7,14 @@ const schemaValidator = require('../models/validatorSchema')
 const bcrypt = require('bcrypt')
 const UserM = require('../models/user')
 const verifyAndSetAge = require('../controllers/UserProfile').verifyAndSetAge
-const FindWithIp = require('../controllers/UserProfile').FindAdressWithIP
 const objectId = require('mongodb').ObjectID
 
 module.exports = {
 
     logout: (req, res) => {
-        req.session.destroy((err) => {
+        req.session.destroy(err => {
             if (!err) res.redirect('/')
-        });
+        })
     },
 
     registerUser: (req, res) => {
@@ -27,8 +26,8 @@ module.exports = {
         let {firstname, lastname, password, email, gender, birthday} = req.body
 
         let birth = verifyAndSetAge(birthday)
-        mongoUtil.connectToServer((err) => {
-            if (err) return res.send(err)
+        mongoUtil.connectToServer(err => {
+            if (err) return res.sendStatus(500)
             let dbUsers = mongoUtil.getDb().collection('Users');
             dbUsers.findOne({
                     $or: [
@@ -40,14 +39,14 @@ module.exports = {
                     if (err) return res.send(err)
                     if (result) {
                         if (result.firstname === firstname)
-                            return res.send('Sorry this Username is already taken')
+                            return res.render('index', {message: 'Sorry this Username is already taken'})
                         else if (result.email === email)
-                            return res.send('Sorry this Email is already taken')
+                            return res.render('index', {message: 'Sorry this Email is already taken'})
                     } else {
                         bcrypt.hash(password, 10, (err, hash) => {
                             if (err) res.send(err)
                             UserM.create({firstname, lastname, hash, email, gender, birth},
-                                (user) => {
+                                user => {
                                     dbUsers.insertOne(user.data, (err, result) => {
                                         if (err) return res.send(err)
                                         else {
@@ -74,8 +73,8 @@ module.exports = {
         req.checkBody(schemaValidator)
         let errors = req.validationErrors()
         if (errors) res.send(errors)
-        mongoUtil.connectToServer((err) => {
-            if (err) return res.send(err)
+        mongoUtil.connectToServer(err => {
+            if (err) return res.sendStatus(500)
             let dbUsers = mongoUtil.getDb().collection('Users')
             dbUsers.findOne({
                     $and: [
@@ -94,13 +93,13 @@ module.exports = {
                                     console.log(req.session)
                                     return res.render('home', {
                                         user: req.session.user,
-                                        message:"Hey "+req.session.user.nickname+" happy to see you :)"
+                                        message: "Hey " + req.session.user.nickname + " happy to see you :)"
                                     })
-                                } else return res.render('index',{message:"Sorry this password not match :("})
-                            });
-                    } else return res.render('index', {message:"sorry this name doesn't exist Or your account isn't validate :(, Please check yours Emails"})
+                                } else return res.render('index', {message: "Sorry this password not match :("})
+                            })
+                    } else return res.render('index', {message: "sorry this name doesn't exist Or your account isn't validate :(, Please check yours Emails"})
                 })
-        });
+        })
     },
 
     valideToken: (req, res) => {
@@ -142,7 +141,7 @@ module.exports = {
                 },
                 {
                     $addToSet: {
-                        "pics": '/static/uploads/'+req.file.filename
+                        "pics": '/static/uploads/' + req.file.filename
                     }
                 },
                 (err, result) => {
@@ -150,12 +149,44 @@ module.exports = {
                     else if (result && result.ok === 1) {
                         req.session.user = result.value
                         return res.render('profile', {
-                            user:req.session.user,
-                            message:"New pic Upload"
+                            user: req.session.user,
+                            message: "New pic Upload"
                         })
                     }
                     else return res.sendStatus(404)
                 })
         })
+    },
+
+    modifyPassword: (req, res) => {
+        let {password, cPassword, id} = req.body
+        if (password !== undefined && cPassword !== undefined && id !== undefined && (password === cPassword)) {
+            bcrypt.hash(password, 10, (err, hash) => {
+                if (err) return res.sendStatus(500)
+                else {
+                    mongoUtil.connectToServer(err => {
+                        if (err) return res.sendStatus(500)
+                        else {
+                            let dbUser = mongoUtil.getDb().collection('Users')
+                            dbUser.findOneAndUpdate({
+                                    _id: objectId(id)
+                                },
+                                {
+                                    'hash': hash
+                                },
+                                (err, resultModifPass) => {
+                                    if (err) return res.sendStatus(500)
+                                    else {
+                                        return res.render('index', {message: "Your pass is correctly modified"})
+                                    }
+                                }
+                            )
+                        }
+                    })
+                }
+            })
+        }
+
+
     }
-};
+}

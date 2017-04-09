@@ -5,6 +5,7 @@ const express = require('express')
 const router = express.Router()
 const profil = require('../controllers/UserProfile')
 const search = require('../controllers/SearchController')
+const modifyPassword = require('../controllers/UserController').modifyPassword
 
 router.get('profile', (req, res) => {
      //profil.loadMyProfilWithMyNotifications(req, res)
@@ -41,16 +42,19 @@ router.get('profile', (req, res) => {
         profil.clearAllMyNotifications(req, res)
     })
     .get('/forgotPassword', (req, res) => {
-        return res.render('forgot')
+        return res.render('forgot', {info:'email'})
     })
     .post('/forgotPassword', (req, res) => {
         profil.sendEmailInstructionForNewPassword(req, res)
     })
     .get('/modifPass/:id', (req, res) => {
-        console.log(req.params)
-        res.render('index', {
-            message:"Your pass is correctly changed! 🔑"
+        res.render('forgot', {
+            info:"password",
+            id:req.params.id.substr(1)
         })
+    })
+    .post('/modifPass', (req, res) => {
+        modifyPassword(req, res)
     })
 
 
