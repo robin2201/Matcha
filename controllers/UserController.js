@@ -181,7 +181,9 @@ module.exports = {
                                 (err, resultModifPass) => {
                                     if (err) return res.sendStatus(500)
                                     else {
-                                        return res.render('index', {message: "Your pass is correctly modified"})
+                                        return res.render('index', {
+                                            message: "Your pass is correctly modified"
+                                        })
                                     }
                                 }
                             )
@@ -190,7 +192,5 @@ module.exports = {
                 }
             })
         }
-
-
     }
 }

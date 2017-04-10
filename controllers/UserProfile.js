@@ -38,11 +38,12 @@ module.exports = {
                     (err, result) => {
                         if (err) return res.sendStatus(500)
                         if (result && result.ok === 1) {
+                            console.log(result)
                             req.session.user = result.value
                             req.session.userId = result.value._id
                             res.render('profile', {
                                 user: req.session.user,
-                                message: value + " are modified with sucess!"
+                                message: result.value + " are modified with sucess!"
                             })
 
                         }
@@ -95,8 +96,8 @@ module.exports = {
                     dbUser.findOne({
                             'email': email
                         },
-                        (err, sucess) => {
-                            console.log(sucess)
+                        (err, retMyProfile) => {
+                            console.log("Sucess " + retMyProfile)
                             if (err) return res.sendStatus(500)
                             else if (sucess === undefined || sucess === '') return res.render('index', {
                                 message: "Sorry this mail doesn't exist"
@@ -105,7 +106,7 @@ module.exports = {
                                 transporter.verify(error => {
                                     if (error) return console.log(error)
                                     else {
-                                        let EmailContent = 'http://localhost:3000/profile/modifPass/:' + sucess._id
+                                        let EmailContent = 'http://localhost:3000/profile/modifPass/:' + retMyProfile._id
                                         let message = {
                                             from: 'MatchaHelper@love.com',
                                             to: email,
@@ -120,13 +121,12 @@ module.exports = {
                                                 if (error) return console.log(error)
                                                 else console.log('Message %s sent: %s', info.messageId, info.response)
                                                 transporter.close()
-                                                return res.render('index', {
-                                                    message: "Info are send on your email"
-                                                })
                                             })
                                     }
                                 })
-
+                                return res.render('index', {
+                                    message: "Info are send on your email"
+                                })
                             }
                         })
                 }

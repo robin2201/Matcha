@@ -130,10 +130,10 @@ block content
                                     form.form-horizontal(method='POST', action='/profile/dellTags')
                                         label #{tag}
                                         input#tags(type="hidden", name="info", value=tag)
-                                        button(type="submit") Dell Tags
+                                        button(type="submit", onclick="window.refresh();") Dell Tags
 
 
-                            img#geo-map(src="https://maps.googleapis.com/maps/api/staticmap?center=" + user.location.coordinates[0] +','+ user.location.coordinates[1] + "&zoom=14&size=400x300&sensor=true&key=AIzaSyBu-916DdpKAjTmJNIgngS6HL_kDIKU0aU")
+                            //img#geo-map(src="https://maps.googleapis.com/maps/api/staticmap?center=" + user.location.coordinates[0] +','+ user.location.coordinates[1] + "&zoom=14&size=400x300&sensor=true&key=AIzaSyBu-916DdpKAjTmJNIgngS6HL_kDIKU0aU")
 
 
 
