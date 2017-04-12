@@ -9,6 +9,14 @@ const UserM = require('../models/user')
 const verifyAndSetAge = require('../controllers/UserProfile').verifyAndSetAge
 const objectId = require('mongodb').ObjectID
 
+const out = {
+    hash: 0,
+    email: 0,
+    token: 0,
+    lastname: 0,
+    birthday: 0
+}
+
 module.exports = {
 
     logout: (req, res) => {
@@ -40,7 +48,7 @@ module.exports = {
                         ]
                     },
                     (err, result) => {
-                        if (err) return res.send(err)
+                        if (err) return res.sendStatus(500)
                         if (result) {
                             if (result.firstname === firstname)
                                 return res.render('index', {message: 'Sorry this Username is already taken'})
@@ -48,7 +56,7 @@ module.exports = {
                                 return res.render('index', {message: 'Sorry this Email is already taken'})
                         } else {
                             bcrypt.hash(password, 10, (err, hash) => {
-                                if (err) res.send(err)
+                                if (err) return res.sendStatus(500)
                                 UserM.create({firstname, lastname, hash, email, gender, birthday, age},
                                     user => {
                                         dbUsers.insertOne(user.data, (err, result) => {
@@ -59,7 +67,7 @@ module.exports = {
                                                     req.session.user = ops[0]
                                                     req.session.userId = ops[0]._id
                                                     user.SendActivationMail(req, res)
-                                                    res.render('index')
+                                                    return res.render('index', {message: 'Register with sucess now check your email to vslidate your account'})
                                                 }
                                             }
                                         })
@@ -76,17 +84,18 @@ module.exports = {
         let {firstname, password} = req.body
         req.checkBody(schemaValidator)
         let errors = req.validationErrors()
-        if (errors) res.send(errors)
+        if (errors) return res.send(errors)
         mongoUtil.connectToServer(err => {
             if (err) return res.sendStatus(500)
             let dbUsers = mongoUtil.getDb().collection('Users')
             dbUsers.findOne({
                     $and: [
-                        {firstname: firstname},
+                        {'firstname': firstname},
                         {'emailValidation': 'true'}
                     ]
                 },
                 (err, resDb) => {
+                    console.log(resDb)
                     if (err) return res.send(err)
                     else if (resDb) {
                         bcrypt.compare(password, resDb.hash,
@@ -94,7 +103,6 @@ module.exports = {
                                 if (resCpPass === true) {
                                     req.session.user = resDb
                                     req.session.userId = resDb._id
-                                    console.log(req.session)
                                     return res.render('home', {
                                         user: req.session.user,
                                         message: "Hey " + req.session.user.nickname + " happy to see you :)"
@@ -134,12 +142,49 @@ module.exports = {
         })
     },
 
+
+    modifyPassword: (req, res) => {
+        let {password, cPassword, id} = req.body
+        if (password !== undefined && cPassword !== undefined && id !== undefined && (password === cPassword)) {
+            bcrypt.hash(password, 10, (err, hash) => {
+                if (err) return res.sendStatus(500)
+                else {
+                    mongoUtil.connectToServer(err => {
+                        if (err) return res.sendStatus(500)
+                        else {
+                            let dbUser = mongoUtil.getDb().collection('Users')
+                            dbUser.findOneAndUpdate({
+                                    _id: objectId(id)
+                                },
+                                {
+                                    $set: {
+                                        'hash': hash
+                                    }
+                                },
+                                err => {
+                                    if (err) return res.sendStatus(500)
+                                    else {
+                                        return res.render('index', {
+                                            message: "Your pass is correctly modified"
+                                        })
+                                    }
+                                }
+                            )
+                        }
+                    })
+                }
+            })
+        } else {
+            return res.render('index', {message: 'Invalid input type'})
+        }
+    },
+
     AddPicToDb: (req, res) => {
         let id = req.session.userId
+        let pics = req.session.user.pics
         mongoUtil.connectToServer((err) => {
             if (err) return res.sendStatus(500)
             let dbUsers = mongoUtil.getDb().collection('Users')
-            console.log(req.file)
             dbUsers.findOneAndUpdate({
                     _id: objectId(id)
                 },
@@ -162,35 +207,22 @@ module.exports = {
         })
     },
 
-    modifyPassword: (req, res) => {
-        let {password, cPassword, id} = req.body
-        if (password !== undefined && cPassword !== undefined && id !== undefined && (password === cPassword)) {
-            bcrypt.hash(password, 10, (err, hash) => {
-                if (err) return res.sendStatus(500)
-                else {
-                    mongoUtil.connectToServer(err => {
+
+    updateMySession: (req, res) => {
+        mongoUtil.connectToServer(err => {
+            if (err) return res.sendStatus(500)
+            else {
+                let dbUser = mongoUtil.getDb().collection('Users')
+                dbUser.findOne({
+                        _id: objectId(req.session.userId)
+                    },
+                    (err, resultMyInfo) => {
                         if (err) return res.sendStatus(500)
                         else {
-                            let dbUser = mongoUtil.getDb().collection('Users')
-                            dbUser.findOneAndUpdate({
-                                    _id: objectId(id)
-                                },
-                                {
-                                    'hash': hash
-                                },
-                                (err, resultModifPass) => {
-                                    if (err) return res.sendStatus(500)
-                                    else {
-                                        return res.render('index', {
-                                            message: "Your pass is correctly modified"
-                                        })
-                                    }
-                                }
-                            )
+                            req.session.user = resultMyInfo.value
                         }
                     })
-                }
-            })
-        }
+            }
+        })
     }
 }

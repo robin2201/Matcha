@@ -2,12 +2,19 @@
  * Created by robin on 3/2/17.
  */
 const mongoUtil = require('../config/db')
-const db_close = require('../config/db').closeDb
 const objectId = require('mongodb').ObjectID
 const NodeGeocoder = require('node-geocoder')('google')
 const ipLoc = require('satelize')
 const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 const transporter = require('../config/mail')
+
+const out = {
+    hash: 0,
+    email: 0,
+    token: 0,
+    lastname: 0,
+    birthday: 0
+}
 
 module.exports = {
     //
@@ -24,7 +31,7 @@ module.exports = {
 
     ModifyInfoUser: (req, res) => {
         let value = req.body
-        let id = req.session.userId
+        let id = (req.session.userId ? req.session.userId : req.session.user._id)
         if (value !== '') {
             mongoUtil.connectToServer(err => {
                 if (err) return res.sendStatus(500)
@@ -67,6 +74,7 @@ module.exports = {
                     {
                         $set: {"email": email}
                     },
+                    out,
                     (err, result) => {
                         if (err) return res.sendStatus(500)
                         else {
@@ -97,9 +105,8 @@ module.exports = {
                             'email': email
                         },
                         (err, retMyProfile) => {
-                            console.log("Sucess " + retMyProfile)
                             if (err) return res.sendStatus(500)
-                            else if (sucess === undefined || sucess === '') return res.render('index', {
+                            else if (retMyProfile === undefined || retMyProfile === '') return res.render('index', {
                                 message: "Sorry this mail doesn't exist"
                             })
                             else {
@@ -307,11 +314,7 @@ module.exports = {
             NodeGeocoder.geocode(city, (err, resu) => {
                 if (err) res.sendStatus(500)
                 console.log(resu)
-                if (resu.length === 0) {
-                    console.log("Noooooo")
-                    return module.exports.FindAdressWithIP(req, res)
-
-                }
+                if (resu.length === 0) return module.exports.FindAdressWithIP(req, res)
                 else if (resu[0].location !== '' && resu[0].latitude !== '' && resu.length !== 0) {
                     let location = {}
                     location.type = 'Point'
@@ -370,6 +373,46 @@ module.exports = {
                         })
                     }
                 })
+        }
+    },
+
+    DellPics: (req, res) => {
+        let {idForDelPic, delpics} = req.body
+        user = req.session.user
+        if (idForDelPic !== undefined && delpics !== undefined) {
+            mongoUtil.connectToServer(err => {
+                if (err) return res.sendStatus(500)
+                else {
+                    let dbUser = mongoUtil.getDb().collection('Users')
+                    dbUser.findOneAndUpdate({
+                            _id: objectId(idForDelPic)
+                        },
+                        {
+                            $pull: {
+                                'pics': delpics
+                            }
+                        },
+                        out,
+                        (err, resDellPics) => {
+                            if (err) return res.sendStatus(500)
+                            else {
+                                req.session.user = resDellPics.value
+                                res.render('profile', {
+                                    user: req.session.user,
+                                    message: "Pic dell"
+                                })
+                            }
+                        }
+                    )
+                }
+            })
+        }
+        else{
+            req.session.user = user
+            res.render('profile', {
+                user: req.session.user,
+                message: "Invalid Input"
+            })
         }
     }
 }

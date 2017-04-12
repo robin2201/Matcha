@@ -10,6 +10,7 @@ let validator = require('express-validator')
 let index = require('./routes/index')
 let users = require('./routes/users')
 let profile = require('./routes/profile')
+let updateMySession = require('./controllers/UserController').updateMySession
 
 const app = express()
 
@@ -46,7 +47,23 @@ app.use('/static', express.static(path.join(__dirname, 'public')))
 
 app.use('/', index)
 app.use('/users', users)
+// app.use('/users', (req, res, next) => {
+//     console.log('Uesss')
+//     if(req.session.user){
+//         updateMySession(req, res)
+//         next()
+//     }
+//     else res.render('index', {message: "Acces Denied, Log In before"})
+// }, users)
 app.use('/profile', profile)
+// app.use('/profile', (req, res, next) => {
+//     console.log(req.session)
+//     if(req.session.userId){
+//         updateMySession(req, res, next)
+//         next()
+//     }
+//    // else res.render('index', {message: "Acces Denied, Log In before"})
+// }, profile)
 // app.use('/profile',(req, res, next) => {
 // }, profile)
 // catch 404 and forward to error handler

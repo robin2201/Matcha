@@ -26,11 +26,6 @@ block content
                     input#email.form-control(type='email', placeholder='name@email.com' name='email')
                 button(type="submit", value="Upload") Email
 
-            form.form-horizontal(method='POST', action='/profile/password')
-                div.form-group
-                    input#pw.form-control(type='password', placeholder="Password (8 to 20)" name='password')
-                button(type="submit", value="Upload") Password
-
             form.form-horizontal(method='POST', action='/profile/me')
                 div.form-group
                     label.control-label Add some words about you
@@ -94,6 +89,9 @@ block content
                             if user.pics
                                 each pic in user.pics
                                     img#picture(src='http://localhost:3000' + pic)
+                                    form(method="POST", action="/profile/DellPics")
+                                        input(type="hidden", name="idForDelPic", value=user._id)
+                                        input(type="submit", name="delpics", value=pic)
                         .media-body
                             hr
                             h3

@@ -40,10 +40,10 @@ module.exports = {
             if (user.orientation !== undefined && user.orientation !== "" && gender === undefined) {
                 geoFind.gender = (user.orientation === '0' ? '0' : '1')
             }
-            else if (gender === '1') {
-                geoFind.gender = '1'
-            } else if (gender === '0') {
-                geoFind.gender = '0'
+            else if (gender === "1") {
+                geoFind.gender = "1"
+            } else if (gender === "0") {
+                geoFind.gender = "0"
             }
         }
         if (search !== undefined && search !== '') {
@@ -51,20 +51,27 @@ module.exports = {
         }
         if (ageMin || ageMax) {
             geoFind.age = {
-                $gte: (ageMin ? ageMin : '18'),
-                $lt: (ageMax ? ageMax : '100')
+                $gte: (ageMin ? parseInt(ageMin) : 18),
+                $lt: (ageMax ? parseInt(ageMax) : 100)
             }
         }
+
         mongoUtil.connectToServer((err) => {
             if (err) return res.sendStatus(500)
-            console.log(geoFind)
+
             let dbUser = mongoUtil.getDb().collection('Users')
+            dbUser.createIndex({"location": "2dsphere"})
             dbUser.find(geoFind, out).toArray((err, dataUsers) => {
                 req.session.user = user
-                return res.render('home', {
+                if (err) return res.sendStatus(500)
+                else if (dataUsers) return res.render('home', {
                     users: dataUsers,
                     user: user
                 })
+                else return res.render('home', {
+                        user: req.session.user,
+                        message: "No match found"
+                    })
             })
         })
     },
@@ -107,40 +114,45 @@ module.exports = {
                         else {
                             if (resultSingleUser.room !== undefined) {
                                 resultSingleUser.room.map(x => {
-                                    for (let myRoom of user.room) {
-                                        if (String(myRoom) === String(x)) {
-                                            let dbMatches = mongoUtil.getDb().collection('Matches')
-                                            dbMatches.findOne({
-                                                    _id: objectId(myRoom)
-                                                },
-                                                (err, resMyRoomChat) => {
-                                                    if (err) return res.sendStatus(500)
-                                                    else {
-                                                        req.session.user = user
-                                                        return res.render('single', {
-                                                            userToShow: resultSingleUser,
-                                                            user: req.session.user,
-                                                            message: "Here you can flirt with yours matches,, Enjoy! ❤️",
-                                                            chatRooms: resMyRoomChat.message,
-                                                            idRoom: resMyRoomChat._id
-                                                        })
+                                    if(user.room !== undefined) {
+                                        for (let myRoom of user.room) {
+                                            if (String(myRoom) === String(x)) {
+                                                let dbMatches = mongoUtil.getDb().collection('Matches')
+                                                dbMatches.findOne({
+                                                        _id: objectId(myRoom)
+                                                    },
+                                                    (err, resMyRoomChat) => {
+                                                        if (err) return res.sendStatus(500)
+                                                        else {
+                                                            req.session.user = user
+                                                            return res.render('single', {
+                                                                userToShow: resultSingleUser,
+                                                                user: req.session.user,
+                                                                message: "Here you can flirt with yours matches,, Enjoy! ❤️",
+                                                                chatRooms: (resMyRoomChat.message ? resMyRoomChat.message : ' '),
+                                                                idRoom: resMyRoomChat._id
+                                                            })
 
-                                                    }
-                                                })
-                                        }// else {
-                                        //     console.log('Nooooooo')
-                                        //     req.session.user = user
-                                        //     console.log(resultSingleUser)
-                                        //     res.render('single', {
-                                        //         userToShow: resultSingleUser,
-                                        //         user: req.session.user
-                                        //     })
-                                        //     break
-                                        // }
+                                                        }
+                                                    })
+                                            }// else {
+                                            //     console.log('Nooooooo')
+                                            //     req.session.user = user
+                                            //     console.log(resultSingleUser)
+                                            //     res.render('single', {
+                                            //         userToShow: resultSingleUser,
+                                            //         user: req.session.user
+                                            //     })
+                                            //     break
+                                            // }
+                                        }
+                                    }else{
+                                        req.session.user = user
+                                        return res.render('single', {userToShow: resultSingleUser})
                                     }
                                 })
+
                             } else {
-                                console.log('Double noooooooo')
                                 req.session.user = user
                                 return res.render('single', {userToShow: resultSingleUser})
                             }
@@ -212,13 +224,17 @@ module.exports = {
                                 })
                             } else {
                                 let usr = {}
+                                let notif = {}
+                                notif.like = "You have on like"
+                                notif.nickname = user.nickname
                                 usr._id = user._id
                                 dbUser.updateOne({
                                         _id: idUserToLike,
                                     },
                                     {
                                         $addToSet: {
-                                            "matches": usr
+                                            "matches": usr,
+                                            "notifications": notif
                                         }
                                     },
                                     err => {
@@ -238,4 +254,3 @@ module.exports = {
         }
     }
 }
-

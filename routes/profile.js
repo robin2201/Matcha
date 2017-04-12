@@ -7,9 +7,8 @@ const profil = require('../controllers/UserProfile')
 const search = require('../controllers/SearchController')
 const modifyPassword = require('../controllers/UserController').modifyPassword
 
-router.get('profile', (req, res) => {
+router.get('/', (req, res) => {
      //profil.loadMyProfilWithMyNotifications(req, res)
-    res.render('profile')
 })
     .post('/me', (req, res) => {
         profil.ModifyInfoUser(req, res)
@@ -55,6 +54,10 @@ router.get('profile', (req, res) => {
     })
     .post('/modifPass', (req, res) => {
         modifyPassword(req, res)
+    })
+    .post('/DellPics', (req, res) => {
+        profil.DellPics(req, res)
+
     })
 
 

@@ -47,8 +47,10 @@ block content
                             p &#9792;
                         if(elem.age)
                             li= elem.age
-                        each tag in elem.tags
-                            p.tagsGallery.col-sm-6 #{tag}
-                        form.form-horizontal(method="post", action="/profile/likeOther")
-                            input#like(type="hidden", value=elem._id, name="UsertoLike")
-                            button.btn.btn-danger(type="submit") &hearts;
+
+                        if(elem.tag)
+                            each tag in elem.tags
+                                p.tagsGallery.col-sm-6 #{tag}
+                            form.form-horizontal(method="post", action="/profile/likeOther")
+                                input#like(type="hidden", value=elem._id, name="UsertoLike")
+                                button.btn.btn-danger(type="submit") &hearts;

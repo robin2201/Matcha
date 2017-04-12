@@ -95,9 +95,6 @@ module.exports = {
     },
 
     saveMessageFromSocketsToDb: (idRoom, message, nickname) => {
-        console.log(idRoom)
-        console.log(message)
-        console.log(nickname)
         let dbMatches = mongoUtil.getDb().collection('Matches')
         let mongoMessageFormatted = {}
         mongoMessageFormatted.nickname = nickname
@@ -113,8 +110,5 @@ module.exports = {
             err => {
             if(err) return console.log('Error during Socket transmission')
             })
-
-
     }
-
 }
