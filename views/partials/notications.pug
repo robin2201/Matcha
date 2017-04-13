@@ -1,0 +1,18 @@
+mixin notifications(notif)
+    ul.dropdown-menu.dropdown-cart(role='menu')
+        li
+            span.item
+                span.item-left
+                    img(src='http://lorempixel.com/50/50/', alt='')
+                    |
+                    span.item-info
+                        span Item name
+                        |
+                        span 23$
+                |
+                span.item-right
+                    button.btn.btn-xs.btn-danger.pull-right x
+
+a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
+    span.glyphicon.glyphicon-shopping-cart 7 - Items
+        +notifications(user.notifications)

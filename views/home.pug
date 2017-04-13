@@ -32,9 +32,14 @@ block content
             if(message || user)
                 .jumbotron
                     .row
-                        .col-lg-3
-                            if(message)
-                                div.alert-sucess.message #{message}
+                        if message
+                            div.alert-sucess.message #{message}
 
-                            if (users)
-                                +userGallery(user)
+                        if users
+                            +userGallery(users)
+
+
+
+    script
+        include ../public/javascripts/scripts.js
+
