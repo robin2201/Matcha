@@ -3,3 +3,14 @@ function myFunction(url) {
 }
 
 
+$().ready(() => {
+    $('[rel="tooltip"]').tooltip()
+
+});
+
+function rotateCard(btn){
+    let $card = $(btn).closest('.card-container')
+    console.log($card)
+    if($card.hasClass('hover')) $card.removeClass('hover')
+    else $card.addClass('hover')
+}

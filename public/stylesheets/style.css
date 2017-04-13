@@ -1,16 +1,5 @@
-body {
-  background-color: red;
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif; }
-
-a {
-  color: #00B7FF; }
-
+@import url(https://fonts.googleapis.com/css?family=Montserrat:700);
 p {
-  color: brown; }
-
-#title {
-  border: 1px solid green;
-  border-radius: 5px; }
+  border: 1px solid gold; }
 
 /*# sourceMappingURL=style.css.map */
