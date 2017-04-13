@@ -3,29 +3,31 @@ extends layout
 block content
     .header
       h1.title: a(href='/') Matcha
-      p Find Love with Style
+      p Find Love around you!
 
 
-    .row
-        if message
-            p #{message}
-    .row
-      .registerForm
-        a(href='/register') Register
-        br
+    .jumbotron
+        .col-sm-8
+            .row
+                if message
+                    div.alert-danger.message #{message}
+            .row
+              .registerForm
+                a(href='/register') Register
+                br
 
-    .row
-      .loginForm
-        a(href='/login') Login
-        br
+            .row
+              .loginForm
+                a(href='/login') Login
+                br
 
-    .row
-      .test
-        block test
+            .row
+              .test
+                block test
 
-    block register
+            block register
 
-    block login
+            block login
 
 
 

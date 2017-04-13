@@ -1,56 +1,40 @@
 extends layout
-include tools
+include partials/userGallery
 
 block content
     include partials/navbar
 
-    .container
-        .row
-            form.form-horizontal(method='POST', action='/profile/search')
-                div.form-group
-                    label.control-label Orientation
-                        label.radio-inline Male
-                            input#male(type='radio', name="gender", value='1')
-                        label.radio-inline Female
-                            input#female(type='radio', name="gender", value='0')
-                        label.radio-inline bisexual
-                            input#bisexual(type='radio', name="gender", value='2')
-                div.form-group
-                    .input-group.col-md-6
-                        input.search-query.form-control(type='text', name="search", placeholder='Search')
-                div.form-group
-                    input#ageMin(type="text", name="ageMin", placeholder="Age min")
-                    input#ageMax(type="text", name="ageMax", placeholder="Age max")
-                div.form-group
-                    input#distMin(type="text", name="distMin", placeholder="dist min")
-                    input#distMax(type="text", name="distMax", placeholder="dist max")
-                button.btn.btn-primary(type='submit') Search
+    .container.col-sm-12
+        .jumbotron
+            .row
+                .col-sm-8
+                    form.form-horizontal(method='POST', action='/profile/search')
+                        div.form-group
+                            label.control-label Orientation
+                                label.radio-inline Male
+                                    input#male(type='radio', name="gender", value='1')
+                                label.radio-inline Female
+                                    input#female(type='radio', name="gender", value='0')
+                                label.radio-inline bisexual
+                                    input#bisexual(type='radio', name="gender", value='2')
+                        div.form-group
+                            .input-group.col-md-6
+                                input.search-query.form-control(type='text', name="search", placeholder='Search')
+                        div.form-group
+                            input#ageMin(type="text", name="ageMin", placeholder="Age min")
+                            input#ageMax(type="text", name="ageMax", placeholder="Age max")
+                        div.form-group
+                            input#distMin(type="text", name="distMin", placeholder="dist min")
+                            input#distMax(type="text", name="distMax", placeholder="dist max")
+                        button.btn.btn-primary.btn-info(type='submit') Search
 
 
-        form.form-horizontal(method='POST', action='/profile/locations')
-            div.form-group
-                button.btn.btn-primary(type='submit') Location
-        .row
-            if(message)
-                p #{message}
+            if(message || user)
+                .jumbotron
+                    .row
+                        .col-lg-3
+                            if(message)
+                                div.alert-sucess.message #{message}
 
-            if (users)
-                each elem in users
-                    a(href="/users/view/:"+elem._id): .usersGallery.col-lg-3.col-md-3.col-sm-3.col-xs-6
-                        h1= elem.firstname
-                        li= elem.city
-                        li= elem.region
-                        li= elem.country
-                        if (elem.gender === '1')
-                            p &#9794;
-                        else
-                            p &#9792;
-                        if(elem.age)
-                            li= elem.age
-
-                        if(elem.tag)
-                            each tag in elem.tags
-                                p.tagsGallery.col-sm-6 #{tag}
-                            form.form-horizontal(method="post", action="/profile/likeOther")
-                                input#like(type="hidden", value=elem._id, name="UsertoLike")
-                                button.btn.btn-danger(type="submit") &hearts;
+                            if (users)
+                                +userGallery(user)

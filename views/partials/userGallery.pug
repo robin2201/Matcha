@@ -1,0 +1,25 @@
+mixin userGallery(user)
+    each elem in users
+        a.thumbnail(href="/users/view/:"+elem._id): .usersGallery.col-lg-6.col-md-6.col-sm-6.col-xs-6
+            img.avatar(src="http://api.adorable.io/avatar/76/" + elem.firstname)
+            h1= elem.firstname
+            li= elem.city
+            li= elem.region
+            li= elem.country
+            if (elem.gender === '1')
+                p &#9794;
+            else
+                p &#9792;
+            if(elem.age)
+                li= elem.age
+
+            if(elem.tag)
+                each tag in elem.tags
+                    p.tagsGallery.col-sm-6 #{tag}
+            if(elem.pics)
+                .col-lg-3.col-md-4.col-xs-6.thumb
+                    img.img-responsive.thumbnail(src=elem.pics[0])
+
+            form.form-horizontal(method="post", action="/profile/likeOther")
+                input#like(type="hidden", value=elem._id, name="UsertoLike")
+                button.btn.btn-danger(type="submit") ❤️

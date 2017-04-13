@@ -6,11 +6,9 @@ const db = mongoUtil.getDb()
 const schemaValidator = require('../models/validatorSchema')
 const bcrypt = require('bcrypt')
 const UserM = require('../models/user')
-const verifyAndSetAge = require('../controllers/UserProfile').verifyAndSetAge
 const objectId = require('mongodb').ObjectID
 
 const out = {
-    hash: 0,
     email: 0,
     token: 0,
     lastname: 0,
@@ -94,13 +92,14 @@ module.exports = {
                         {'emailValidation': 'true'}
                     ]
                 },
+                out,
                 (err, resDb) => {
-                    console.log(resDb)
                     if (err) return res.send(err)
                     else if (resDb) {
                         bcrypt.compare(password, resDb.hash,
                             (err, resCpPass) => {
                                 if (resCpPass === true) {
+                                    module.exports.calculatePopularity(resDb)
                                     req.session.user = resDb
                                     req.session.userId = resDb._id
                                     return res.render('home', {
@@ -113,35 +112,6 @@ module.exports = {
                 })
         })
     },
-
-    valideToken: (req, res) => {
-        let {id, token} = req.params
-
-        mongoUtil.connectToServer((err) => {
-            if (err) return res.send(err)
-            let dbUsers = mongoUtil.getDb().collection('Users')
-            dbUsers.findOneAndUpdate({
-                    $and: [
-                        {_id: objectId(id.substr(1))},
-                        {token: token.substr(1)}
-                    ]
-                },
-                {
-                    $set: {"emailValidation": "true"}
-                },
-                (err, result) => {
-                    if (err) return res.send(err)
-                    if (result.ok === 1) {
-                        let user = result.value
-                        req.session.user = user
-                        req.session.userId = user._id
-                        res.render('home', {user: req.session.user})
-                    } else return res.send('Sorry an error occured please try later or if the problem persits send Us an Email')
-                }
-            )
-        })
-    },
-
 
     modifyPassword: (req, res) => {
         let {password, cPassword, id} = req.body
@@ -179,34 +149,71 @@ module.exports = {
         }
     },
 
-    AddPicToDb: (req, res) => {
-        let id = req.session.userId
-        let pics = req.session.user.pics
+    valideToken: (req, res) => {
+        let {id, token} = req.params
+
         mongoUtil.connectToServer((err) => {
-            if (err) return res.sendStatus(500)
+            if (err) return res.send(err)
             let dbUsers = mongoUtil.getDb().collection('Users')
             dbUsers.findOneAndUpdate({
-                    _id: objectId(id)
+                    $and: [
+                        {_id: objectId(id.substr(1))},
+                        {token: token.substr(1)}
+                    ]
                 },
                 {
-                    $addToSet: {
-                        "pics": '/static/uploads/' + req.file.filename
-                    }
+                    $set: {"emailValidation": "true"}
                 },
                 (err, result) => {
-                    if (err) return res.sendStatus(500).json(err)
-                    else if (result && result.ok === 1) {
-                        req.session.user = result.value
-                        return res.render('profile', {
-                            user: req.session.user,
-                            message: "New pic Upload"
-                        })
-                    }
-                    else return res.sendStatus(404)
-                })
+                    if (err) return res.send(err)
+                    if (result.ok === 1) {
+                        let user = result.value
+                        req.session.user = user
+                        req.session.userId = user._id
+                        res.render('home', {user: req.session.user})
+                    } else return res.send('Sorry an error occured please try later or if the problem persits send Us an Email')
+                }
+            )
         })
     },
 
+    AddPicToDb: (req, res) => {
+        let id = req.session.userId
+        let user = req.session.user
+        let Countpics = user.pics.length
+        if (Countpics < 6) {
+            console.log(Countpics)
+            mongoUtil.connectToServer((err) => {
+                if (err) return res.sendStatus(500)
+                let dbUsers = mongoUtil.getDb().collection('Users')
+                dbUsers.findOneAndUpdate({
+                        _id: objectId(id)
+                    },
+                    {
+                        $addToSet: {
+                            "pics": '/static/uploads/' + req.file.filename
+                        }
+                    },
+                    (err, result) => {
+                        if (err) return res.sendStatus(500).json(err)
+                        else if (result && result.ok === 1) {
+                            req.session.user = result.value
+                            return res.render('profile', {
+                                user: req.session.user,
+                                message: "New pic Upload"
+                            })
+                        }
+                        else return res.sendStatus(500)
+                    })
+            })
+        }else{
+            req.session.user = user
+            return res.render('profile', {
+                user:user,
+                message:"You just can add 5 pics, delete one if you want to upload an other"
+            })
+        }
+    },
 
     updateMySession: (req, res) => {
         mongoUtil.connectToServer(err => {
@@ -221,6 +228,34 @@ module.exports = {
                         else {
                             req.session.user = resultMyInfo.value
                         }
+                    })
+            }
+        })
+    },
+
+    calculatePopularity: (user) => {
+        let pop = 0
+        if (user.matches !== undefined && user._id !== undefined && user.matches.length > 0) {
+            let pop = user.matches.length
+            pop *= 3
+        }
+        if (user.nickname !== undefined) pop += 3
+        if (user.pics.length > 0) pop += 3
+        if (user.bio !== undefined) pop += 3
+        mongoUtil.connectToServer(err => {
+            if (err) return res.sendStatus(500)
+            else {
+                let dbUser = mongoUtil.getDb().collection('Users')
+                dbUser.findOneAndUpdate({
+                        _id: objectId(user._id)
+                    },
+                    {
+                        $set: {
+                            'popularity': pop
+                        }
+                    },
+                    err => {
+                        return err
                     })
             }
         })

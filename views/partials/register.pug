@@ -1,32 +1,39 @@
 extends ../index
 
 block register
-    .main.container
+    .jumbotron
         .row
             form.form-horizontal(method='POST', action='/users/register')
-                div.form-group
-                    label(for='firstname') FirstName:
-                    input#firstname.form-control(type='text', placeholder='first' name='firstname')
-                div.form-group
-                    label(for='lastname') LastName:
-                    input#lastname.form-control(type='text', placeholder='first' name='lastname')
-                div.form-group
-                    label(for='email') Email:
-                    input#email.form-control(type='email', placeholder='name@email.com' name='email')
-                div.form-group
-                    label(for='birthday') Birthday:
-                    input#birthday.form-control(type='date', placeholder='birthday' name='birthday')
-                div.form-group
-                    label.control-label Gender
-                    .row
-                        label.radio-inline Male
-                            input#male(type='radio', name="gender", value='1')
-                        label.radio-inline Female
-                            input#female(type='radio', name="gender", value='0')
-                div.form-group
-                    label(for='pw') Password:
-                    input#pw.form-control(type='password' name='password')
-                div.form-group
-                    label(for='pw2') Confirm Password:
-                    input#pw2.form-control(type='password' name='cPassword')
-                button.btn.btn-primary(type='submit') Sign up
+                div.form-group.row
+                    .col-sm-12
+                        label(for='firstname') FirstName:
+                        input#firstname.form-control(type='text', placeholder='first' name='firstname')
+                div.form-group.row
+                    .col-sm-12
+                        label(for='lastname') LastName:
+                        input#lastname.form-control(type='text', placeholder='first' name='lastname')
+                div.form-group.row
+                    .col-sm-12
+                        label(for='email') Email:
+                        input#email.form-control(type='email', placeholder='name@email.com' name='email')
+                div.form-group.row
+                    .col-sm-12
+                        label(for='birthday') Birthday:
+                        input#birthday.form-control(type='date', placeholder='birthday' name='birthday')
+                div.form-group.row
+                    .col-sm-12
+                        label.control-label Gender
+                        .row
+                            label.radio-inline Male
+                                input#male(type='radio', name="gender", value='1')
+                            label.radio-inline Female
+                                input#female(type='radio', name="gender", value='0')
+                div.form-group.row
+                    .col-sm-12
+                        label(for='pw') Password:
+                        input#pw.form-control(type='password' name='password')
+                div.form-group.row
+                    .col-sm-12
+                        label(for='pw2') Confirm Password:
+                        input#pw2.form-control(type='password' name='cPassword')
+                button.btn.btn-primary.btn-success(type='submit') Sign up
