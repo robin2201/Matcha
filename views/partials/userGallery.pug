@@ -19,27 +19,29 @@ mixin userGallery(user)
                                         p.gender Male
                                     else
                                         p.gender Woman
-                                    p.text-center
-                                        | &quot;I&apos;m the new Sinatra, and since I made it here I can make it anywhere, yeah, they love me everywhere&quot;
+                                    if elem.bio
+                                        p.text-center &quot;I&apos;#{elem.bio}&quot;
 
                         .back
                             .header
-                                h5.motto &quot;#{elem.bio}&quot;
+                                h5.motto &quot;#{elem.nickname}&quot;
                             .content
                                 .main
                                     h4.text-center Interests
                                     if elem.tags
                                         each tag in elem.tags
-                                            p.text-center #{tag}
+                                            p.tagElem.text-center #{tag}
                                     .stats-container
-                                        .stats
+                                        .stats.text-center
                                             if elem.popularity
                                                 h4 #{elem.popularity}
-                                                p  Popularity score
+                                                p  🌟 Popularity 🌟
                             .footer
                                 .like
                                     form.form-horizontal(method="post", action="/profile/likeOther")
                                         input#like(type="hidden", value=elem._id, name="UsertoLike")
                                         button.btn.btn-danger(type="submit") ❤️
-
-
+                                .block
+                                    form.form-horizontal(method="POST", action="/profile/blockOther")
+                                        input#like(type="hidden", value=elem._id, name="UsertoBlock")
+                                        button.btn.btn-danger(type="submit") 💔

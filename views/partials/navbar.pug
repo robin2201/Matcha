@@ -1,3 +1,5 @@
+include notications
+
 .row
     nav#topNav.navbar.fixed-top.navbar-toggleable-sm
         .container
@@ -11,3 +13,11 @@
                         a.nav-link.page-scroll(href='/home') Home
                     li.nav-item
                         a.nav-link.page-scroll(href='/logout') Logout
+
+                    //if(user.notifications)
+                    //    each elem in user.notifications
+                    //        +notifications(elem.nickname, (elem.visit ? elem.visit : elem.like))
+
+//                        +notifications(user.notifications)
+//a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
+                        //    span.glyphicon.glyphicon-shopping-cart 🌍

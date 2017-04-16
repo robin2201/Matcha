@@ -7,27 +7,18 @@ block content
 
 
     .jumbotron
-        .col-sm-8
+        .col-sm-12
             .row
                 if message
                     div.alert-danger.message #{message}
             .row
-              .registerForm
-                a(href='/register') Register
-                br
-
-            .row
-              .loginForm
-                a(href='/login') Login
-                br
-
-            .row
-              .test
-                block test
-
+                .col-sm-4
+                .col-sm-2
+                    .registerForm
+                        a(href='/register') Register 🍺
+                .col-sm-2
+                    .loginForm
+                        a(href='/login') Login 🥂
             block register
 
             block login
-
-
-

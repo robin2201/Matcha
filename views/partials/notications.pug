@@ -1,18 +1,15 @@
-mixin notifications(notif)
-    ul.dropdown-menu.dropdown-cart(role='menu')
-        li
-            span.item
-                span.item-left
-                    img(src='http://lorempixel.com/50/50/', alt='')
-                    |
-                    span.item-info
-                        span Item name
-                        |
-                        span 23$
-                |
-                span.item-right
-                    button.btn.btn-xs.btn-danger.pull-right x
+mixin notifications(nickname, data)
+        ul.dropdown-menu.dropdown-cart(role='menu')
+            li
+                span.item
+                    span.item-left
+                        img(src="http://api.adorable.io/avatar/33/" + nickname)
+                        span.item-info
+                            span #{nickname}
+                            if data.visit !== undefined
+                                span visit your profile
+                            else
+                                span like your profile
+                    span.item-right
+                        button.btn.btn-xs.btn-danger.pull-right x
 
-a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
-    span.glyphicon.glyphicon-shopping-cart 7 - Items
-        +notifications(user.notifications)

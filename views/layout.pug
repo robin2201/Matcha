@@ -8,12 +8,14 @@ html
 
     script
       include ../public/javascripts/jquery-3.2.0.min.js
-    //link(rel="stylesheet", href='public/stylesheets/styl.css')
     link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css", integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ", crossorigin="anonymous")
-    //script(src="https://code.jquery.com/jquery-3.1.1.min.js")
     script(src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js", integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb", crossorigin="anonymous")
     script(src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js", integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn", crossorigin="anonymous")
-    //script(src="../public/javascripts/scripts.js")
   body
     block content
-
+    block foot
+        footer
+            navbar.fixed-bottom.navbar-light.bg-faded
+            .col-md-8
+              p &copy; 2017
+                a(style='color:#0a93a6; text-decoration:none;', href='https://profile.intra.42.fr/users/rberthie') rberthie😎 2017 , All rights reserved 2016-2017.

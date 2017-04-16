@@ -6,12 +6,12 @@ const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const session = require('express-session')
 const compression = require('compression')
+
 let validator = require('express-validator')
 let index = require('./routes/index')
 let users = require('./routes/users')
 let profile = require('./routes/profile')
 let updateMySession = require('./controllers/UserController').updateMySession
-
 const app = express()
 
 const sess = session({
@@ -24,8 +24,6 @@ const sess = session({
 
  */
 // view engine setup
-// app.set('views', path.join(__dirname, 'viewz'))
-// app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'pug')
 
@@ -50,24 +48,22 @@ app.use('/static', express.static(path.join(__dirname, 'public')))
 app.use('/', index)
 app.use('/users', users)
 // app.use('/users', (req, res, next) => {
-//     console.log('Uesss')
-//     if(req.session.user){
-//         updateMySession(req, res)
+//     if (req.session.user && (req.session.user._id || req.session.userId)) {
+//         updateMySession(req)
 //         next()
 //     }
-//     else res.render('index', {message: "Acces Denied, Log In before"})
+//     // else res.render('index', {
+//     //     message: "Acces Denied, Log In before"
+//     // })
 // }, users)
-app.use('/profile', profile)
-// app.use('/profile', (req, res, next) => {
-//     console.log(req.session)
-//     if(req.session.userId){
-//         updateMySession(req, res, next)
-//         next()
-//     }
-//    // else res.render('index', {message: "Acces Denied, Log In before"})
-// }, profile)
-// app.use('/profile',(req, res, next) => {
-// }, profile)
+app.use('/profile', (req, res, next) => {
+    if (req.session.user && (req.session.user._id || req.session.userId)) {
+        updateMySession(req)
+        next()
+    } else res.render('index', {
+        message: "Acces Denied, Log In before"
+    })
+}, profile)
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
     let err = new Error('Not Found')

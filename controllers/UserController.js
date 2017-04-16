@@ -7,6 +7,7 @@ const schemaValidator = require('../models/validatorSchema')
 const bcrypt = require('bcrypt')
 const UserM = require('../models/user')
 const objectId = require('mongodb').ObjectID
+const checkLocation = require('./UserProfile').CheckLocation
 
 const out = {
     email: 0,
@@ -35,46 +36,57 @@ module.exports = {
         let birthDate = new Date(tmp)
         let age = today.getFullYear() - birthDate.getFullYear()
         let month = today.getMonth() - birthDate.getMonth()
-        if ((month < 0 || (month === 0 && today.getDate() < birthDate.getDate())) ? age - 1 : age) {
-            mongoUtil.connectToServer(err => {
-                if (err) return res.sendStatus(500)
-                let dbUsers = mongoUtil.getDb().collection('Users');
-                dbUsers.findOne({
-                        $or: [
-                            {firstname: firstname},
-                            {email: email}
-                        ]
-                    },
-                    (err, result) => {
-                        if (err) return res.sendStatus(500)
-                        if (result) {
-                            if (result.firstname === firstname)
-                                return res.render('index', {message: 'Sorry this Username is already taken'})
-                            else if (result.email === email)
-                                return res.render('index', {message: 'Sorry this Email is already taken'})
-                        } else {
-                            bcrypt.hash(password, 10, (err, hash) => {
-                                if (err) return res.sendStatus(500)
-                                UserM.create({firstname, lastname, hash, email, gender, birthday, age},
-                                    user => {
-                                        dbUsers.insertOne(user.data, (err, result) => {
-                                            if (err) return res.send(err)
-                                            else {
-                                                const {ops, insertedCount} = result
-                                                if (insertedCount > 0) {
-                                                    req.session.user = ops[0]
-                                                    req.session.userId = ops[0]._id
-                                                    user.SendActivationMail(req, res)
-                                                    return res.render('index', {message: 'Register with sucess now check your email to vslidate your account'})
-                                                }
-                                            }
-                                        })
-                                    })
-                            })
-                        }
-
-                    })
+        if(birthDate === undefined){
+            return res.render('index', {
+                message: "Sorry Date input not valid"
             })
+        }
+        if ((month < 0 || (month === 0 && today.getDate() < birthDate.getDate())) ? age - 1 : age) {
+            if (age > 17 && age < 100) {
+                mongoUtil.connectToServer(err => {
+                    if (err) return res.sendStatus(500)
+                    let dbUsers = mongoUtil.getDb().collection('Users');
+                    dbUsers.findOne({
+                            $or: [
+                                {firstname: firstname},
+                                {email: email}
+                            ]
+                        },
+                        (err, result) => {
+                            if (err) return res.sendStatus(500)
+                            if (result) {
+                                if (result.firstname === firstname)
+                                    return res.render('index', {message: 'Sorry this Username is already taken'})
+                                else if (result.email === email)
+                                    return res.render('index', {message: 'Sorry this Email is already taken'})
+                            } else {
+                                bcrypt.hash(password, 10, (err, hash) => {
+                                    if (err) return res.sendStatus(500)
+                                    UserM.create({firstname, lastname, hash, email, gender, birthday, age},
+                                        user => {
+                                            dbUsers.insertOne(user.data, (err, result) => {
+                                                if (err) return res.send(err)
+                                                else {
+                                                    const {ops, insertedCount} = result
+                                                    if (insertedCount > 0) {
+                                                        req.session.user = ops[0]
+                                                        req.session.userId = ops[0]._id
+                                                        user.SendActivationMail(req, res)
+                                                        return res.render('index', {message: 'Register with sucess now check your email to vslidate your account'})
+                                                    }
+                                                }
+                                            })
+                                        })
+                                })
+                            }
+
+                        })
+                })
+            }else{
+                return res.render('index', {
+                    message: "Sorry Date input not valid"
+                })
+            }
         }
     },
 
@@ -101,6 +113,7 @@ module.exports = {
                                 if (resCpPass === true) {
                                     module.exports.calculatePopularity(resDb)
                                     req.session.user = resDb
+                                    if(req.session.user.location === undefined) checkLocation(req)
                                     req.session.userId = resDb._id
                                     return res.render('home', {
                                         user: req.session.user,
@@ -111,6 +124,7 @@ module.exports = {
                     } else return res.render('index', {message: "sorry this name doesn't exist Or your account isn't validate :(, Please check yours Emails"})
                 })
         })
+
     },
 
     modifyPassword: (req, res) => {
@@ -180,42 +194,51 @@ module.exports = {
     AddPicToDb: (req, res) => {
         let id = req.session.userId
         let user = req.session.user
-        let Countpics = user.pics.length
-        if (Countpics < 6) {
-            console.log(Countpics)
-            mongoUtil.connectToServer((err) => {
-                if (err) return res.sendStatus(500)
-                let dbUsers = mongoUtil.getDb().collection('Users')
-                dbUsers.findOneAndUpdate({
-                        _id: objectId(id)
-                    },
-                    {
-                        $addToSet: {
-                            "pics": '/static/uploads/' + req.file.filename
-                        }
-                    },
-                    (err, result) => {
-                        if (err) return res.sendStatus(500).json(err)
-                        else if (result && result.ok === 1) {
-                            req.session.user = result.value
-                            return res.render('profile', {
-                                user: req.session.user,
-                                message: "New pic Upload"
+        if (user.pics === undefined || user.pics.length < 6) {
+            if (req.file !== undefined && req.file !== '') {
+                mongoUtil.connectToServer(err => {
+                    if (err) return res.sendStatus(500)
+                    else {
+                        let dbUsers = mongoUtil.getDb().collection('Users')
+                        dbUsers.findOneAndUpdate({
+                                _id: objectId(id)
+                            },
+                            {
+                                $addToSet: {
+                                    "pics": '/static/uploads/' + req.file.filename
+                                }
+                            },
+                            (err, result) => {
+                                if (err) return res.sendStatus(500).json(err)
+                                else if (result && result.ok === 1) {
+                                    req.session.user = result.value
+                                    return res.render('profile', {
+                                        user: req.session.user,
+                                        message: "New pic Upload"
+                                    })
+                                }
+                                else return res.sendStatus(500)
                             })
-                        }
-                        else return res.sendStatus(500)
-                    })
-            })
-        }else{
+                    }
+                })
+            } else {
+                req.session.user = user
+                return res.render('profile', {
+                    user: user,
+                    message: "Invalid type file"
+                })
+            }
+        } else {
             req.session.user = user
             return res.render('profile', {
-                user:user,
-                message:"You just can add 5 pics, delete one if you want to upload an other"
+                user: user,
+                message: "You just can add 5 pics, delete one if you want to upload an other"
             })
         }
     },
 
-    updateMySession: (req, res) => {
+    updateMySession: req => {
+        console.log('i uplooad my session')
         mongoUtil.connectToServer(err => {
             if (err) return res.sendStatus(500)
             else {
@@ -224,23 +247,21 @@ module.exports = {
                         _id: objectId(req.session.userId)
                     },
                     (err, resultMyInfo) => {
-                        if (err) return res.sendStatus(500)
-                        else {
-                            req.session.user = resultMyInfo.value
-                        }
+                        if (err) return err
+                        else req.session.user = resultMyInfo.value
                     })
             }
         })
     },
 
-    calculatePopularity: (user) => {
+    calculatePopularity: user => {
         let pop = 0
         if (user.matches !== undefined && user._id !== undefined && user.matches.length > 0) {
             let pop = user.matches.length
             pop *= 3
         }
         if (user.nickname !== undefined) pop += 3
-        if (user.pics.length > 0) pop += 3
+        if (user.pics !== undefined && user.pics.length > 0) pop += 3
         if (user.bio !== undefined) pop += 3
         mongoUtil.connectToServer(err => {
             if (err) return res.sendStatus(500)

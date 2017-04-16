@@ -4,7 +4,7 @@
 
 const mongoUtil = require('../config/db')
 const objectId = require('mongodb').ObjectID
-
+const updateMySessiion = require('./UserController').updateMySession
 const out = {
     hash: 0,
     email: 0,
@@ -16,6 +16,8 @@ const out = {
 module.exports = {
 
     SearchByNickname: (req, res) => {
+
+        updateMySessiion(req)
         let {gender, search, ageMin, ageMax, distMin, distMax} = req.body
         let user = req.session.user
         if (distMin)
@@ -56,23 +58,43 @@ module.exports = {
             }
         }
 
-        mongoUtil.connectToServer((err) => {
+        mongoUtil.connectToServer(err => {
             if (err) return res.sendStatus(500)
 
             let dbUser = mongoUtil.getDb().collection('Users')
             dbUser.createIndex({"location": "2dsphere"})
-            dbUser.find(geoFind, out).toArray((err, dataUsers) => {
-                req.session.user = user
-                if (err) return res.sendStatus(500)
-                else if (dataUsers) return res.render('home', {
-                    users: dataUsers,
-                    user: user
+            dbUser.find(geoFind, out)
+                .toArray((err, dataUsers) => {
+                    req.session.user = user
+                    if (err) return res.sendStatus(500)
+                    else if (dataUsers) {
+                        if (user.block !== undefined && user.block !== '') {
+                            let ArrayUsersWithoutBlockedPeople = []
+                            console.log('In block')
+                            user.block.map(MyBlockedProfile => {
+                                for (let Users of dataUsers) {
+                                    console.log('id ' + Users._id)
+                                    console.log('Myblock ' + MyBlockedProfile)
+                                    if (String(Users._id) !== String(MyBlockedProfile)) {
+                                        ArrayUsersWithoutBlockedPeople.push(Users)
+                                    }
+                                }
+                            })
+                            return res.render('home', {
+                                users: ArrayUsersWithoutBlockedPeople,
+                                user: user
+                            })
+                        }
+                        return res.render('home', {
+                            users: dataUsers,
+                            user: user
+                        })
+                    }
+                    else return res.render('home', {
+                            user: req.session.user,
+                            message: "No match found"
+                        })
                 })
-                else return res.render('home', {
-                        user: req.session.user,
-                        message: "No match found"
-                    })
-            })
         })
     },
 
@@ -95,13 +117,12 @@ module.exports = {
     },
 
     showOneUser: (req, res) => {
+        updateMySessiion(req)
         let userToFind = req.params.id
         let user = req.session.user
-        let saveVisit = module.exports.saveVisitToProfilForNotif(user._id, user.nickname, userToFind)
-        if (saveVisit) {
-            console.log('Notif saved to db')
-        }
         if (userToFind !== undefined && userToFind !== "" && user) {
+            let saveVisit = module.exports.saveVisitToProfilForNotif(user._id, user.nickname, userToFind)
+            if (saveVisit) console.log('Notif saved to db')
             mongoUtil.connectToServer(err => {
                 if (err) return res.sendStatus(500)
                 let dbUser = mongoUtil.getDb().collection('Users')
@@ -110,55 +131,80 @@ module.exports = {
                     },
                     out,
                     (err, resultSingleUser) => {
+                        let NoMatchedRooms = false
                         if (err) return res.sendStatus(500)
                         else {
-                            if (resultSingleUser.room !== undefined) {
-                                resultSingleUser.room.map(x => {
-                                    if(user.room !== undefined) {
-                                        for (let myRoom of user.room) {
-                                            if (String(myRoom) === String(x)) {
-                                                let dbMatches = mongoUtil.getDb().collection('Matches')
-                                                dbMatches.findOne({
-                                                        _id: objectId(myRoom)
-                                                    },
-                                                    (err, resMyRoomChat) => {
-                                                        if (err) return res.sendStatus(500)
-                                                        else {
-                                                            req.session.user = user
-                                                            return res.render('single', {
-                                                                userToShow: resultSingleUser,
-                                                                user: req.session.user,
-                                                                message: "Here you can flirt with yours matches,, Enjoy! ❤️",
-                                                                chatRooms: (resMyRoomChat.message ? resMyRoomChat.message : ' '),
-                                                                idRoom: resMyRoomChat._id
-                                                            })
-
-                                                        }
-                                                    })
-                                            }// else {
-                                            //     console.log('Nooooooo')
-                                            //     req.session.user = user
-                                            //     console.log(resultSingleUser)
-                                            //     res.render('single', {
-                                            //         userToShow: resultSingleUser,
-                                            //         user: req.session.user
-                                            //     })
-                                            //     break
-                                            // }
+                            if (resultSingleUser.room !== undefined && resultSingleUser.room !== '' && user.room !== undefined && user.room !== '') {
+                                for (let RoomOfMatched of resultSingleUser.room) {
+                                    for (let MyRoom of user.room) {
+                                        if (String(MyRoom) === String(RoomOfMatched)) {
+                                            NoMatchedRooms = true
+                                            let dbMatches = mongoUtil.getDb().collection('Matches')
+                                            dbMatches.findOne({_id: objectId(MyRoom)}).then(resMyRoomChat => {
+                                                req.session.user = user
+                                                return res.render('single', {
+                                                    userToShow: resultSingleUser,
+                                                    user: req.session.user,
+                                                    chatRooms: (resMyRoomChat.message ? resMyRoomChat.message : ' '),
+                                                    idRoom: resMyRoomChat._id
+                                                })
+                                            })
                                         }
-                                    }else{
-                                        req.session.user = user
-                                        return res.render('single', {userToShow: resultSingleUser})
                                     }
-                                })
 
+                                }
+                                if (NoMatchedRooms === false) {
+                                    req.session.user = user
+                                    return res.render('single', {
+                                        userToShow: resultSingleUser,
+                                        user: req.session.user
+                                    })
+                                }
                             } else {
                                 req.session.user = user
-                                return res.render('single', {userToShow: resultSingleUser})
+                                return res.render('single', {
+                                    userToShow: resultSingleUser,
+                                    user: req.session.user
+                                })
                             }
                         }
                     }
                 )
+            })
+        }
+    },
+
+    blockOther: (req, res) => {
+        updateMySessiion(req)
+        let user = req.session.user
+        let idUserToBlock = req.body.UsertoBlock
+        if (user.block !== undefined && user.block !== '') {
+
+        }
+        if (user && idUserToBlock) {
+            mongoUtil.connectToServer(err => {
+                if (err) return res.sendStatus(500)
+                else {
+                    let dbUser = mongoUtil.getDb().collection('Users')
+                    dbUser.findOneAndUpdate({
+                            _id: objectId(user._id)
+                        },
+                        {
+                            $addToSet: {
+                                'block': idUserToBlock
+                            },
+                            $pull: {
+                                'matches': idUserToBlock
+                            }
+                        },
+                        err => {
+                            if (err) return res.sendStatus(500)
+                            else return res.render('home', {
+                                user: user,
+                                message: "This User is Blocked"
+                            })
+                        })
+                }
             })
         }
     },
@@ -173,11 +219,12 @@ module.exports = {
     },
 
     likeAndVerifyOtherProfile: (req, res) => {
+        updateMySessiion(req)
         let user = req.session.user
         let idUserToLike = objectId(req.body.UsertoLike)
         let ifMatchMe = module.exports.checkMyMatch(user, idUserToLike)
         if (user && idUserToLike) {
-            mongoUtil.connectToServer((err) => {
+            mongoUtil.connectToServer(err => {
                 if (err) return res.sendStatus(500)
                 else {
                     let dbUser = mongoUtil.getDb().collection('Users')
@@ -205,8 +252,12 @@ module.exports = {
                                                 },
                                                 {
                                                     $addToSet: {
-                                                        "room": resMatchCollection.insertedId
+                                                        "room": resMatchCollection.insertedId,
+                                                        "notifications": {
+                                                            "like": "You have a new match"
+                                                        }
                                                     }
+
                                                 },
                                                 err => {
                                                     if (err) return res.sendStatus(500)
@@ -252,5 +303,31 @@ module.exports = {
                 }
             })
         }
+    },
+
+    searchAndSortByPopularity: (req, res) => {
+        let user = req.session.user
+        if (user !== undefined) {
+            let searchElem = {}
+            if (user.orientation !== undefined) searchElem.gender = user.orientation
+            mongoUtil.connectToServer(err => {
+                if (err) return res.sendStatus(500)
+                else {
+                    let dbUser = mongoUtil.getDb().collection('Users')
+                    dbUser.find(searchElem, out).sort({popularity: -1}).toArray((err, dataUser) => {
+                        console.log(dataUser)
+                        if (err) return res.sendStatus(500)
+                        else {
+                            req.session.user = user
+                            return res.render('home', {
+                                user: user,
+                                users: dataUser
+                            })
+                        }
+                    })
+                }
+            })
+        }
     }
+
 }

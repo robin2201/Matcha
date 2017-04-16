@@ -1,44 +1,58 @@
 extends layout
-include tools
+include partials/chat
 
 block content
     include partials/navbar
 
-    .container
-        script
-            include ../public/javascripts/scripts.js
-        script
-            include ../node_modules/socket.io-client/dist/socket.io.js
-        script
-            include ../config/sockets.js
+    .container-fluid
+        .jumbotron
+            script
+                include ../public/javascripts/scripts.js
+            script
+                include ../node_modules/socket.io-client/dist/socket.io.js
+            script
+                include ../config/sockets.js
 
-        h1= (userToShow.nickname ? userToShow.nickname : userToShow.firstname)
-        p #{userToShow.location.city}
-        p #{userToShow.bio}
-        each tag in userToShow.tags
-            p.tagsGallery.col-sm-6 #{tag}
+            h1= (userToShow.nickname ? userToShow.nickname : userToShow.firstname)
+            p #{userToShow.location.city}
+            p #{userToShow.bio}
+
+            if userToShow.tags
+                each tag in userToShow.tags
+                    p.tagElem #{tag}
 
 
 
-        if message
-            p #{message}
+            if message
+                p #{message}
 
-    .testChatBox
-        if chatRooms
-                each elem in chatRooms
-                        li #{elem.message}
-                        li #{elem.nickname}
+            if(userToShow.pics)
+                each pic in userToShow.pics
+                    .col-lg-3.col-md-4.col-xs-6.thumb
+                        img.img-responsive.thumbnail(src=pic)
+            .testChatBox
 
-        if chatRooms
-            ul#messages
-                form#test(action='')
-                    input#m(type="textarea", autocomplete='off')
-                    input#idto(type='hidden', value=user.id, name="idToTalk")
-                    input#idRoom(type='hidden', value=idRoom, name="idToTalk")
-                    input#nicknameSocket(type='hidden', value=user.nickname, name="idToTalk")
-                    button Send
-
-//if(elem.pics)
-//    each pic in elem.pics
-//        .col-lg-3.col-md-4.col-xs-6.thumb
-//            img.img-responsive.thumbnail(src=pic)
+                if chatRooms
+                    .container
+                        .row
+                            .col-md-5
+                                .panel.panel-primary
+                                    #accordion.panel-heading
+                                        span.glyphicon.glyphicon-comment Chat
+                                        .btn-group.pull-right
+                                            a.btn.btn-default.btn-xs(type='button', data-toggle='collapse', data-parent='#accordion', href='#collapseOne')
+                                                span.glyphicon.glyphicon-chevron-down
+                                                    #collapseOne.panel-collapse.collapse
+                                                        .panel-body
+                                                            ul.chat
+                                                            each elem in chatRooms
+                                                                +chat(elem.nickname, elem.message, user, idRoom)
+                                                            .panel-footer
+                                                                .input-group
+                                                                    ul#messages
+                                                                        form#test(action='')
+                                                                            input#m(type="textarea", autocomplete='off')
+                                                                            input#idto(type='hidden', value=user.id, name="idToTalk")
+                                                                            input#idRoom(type='hidden', value=idRoom, name="idToTalk")
+                                                                            input#nicknameSocket(type='hidden', value=user.nickname, name="idToTalk")
+                                                                            button Send

@@ -3,147 +3,136 @@ extends layout
 block content
     include partials/navbar
 
-    .main.container
-        .row
-            h2 Modifier mes informations
-            form.form-horizontal(method='POST', action='/profile/me')
-                div.form-group
-                    input#nickname.form-control(type='text', placeholder='Nickname' name='nickname')
-                button(type="submit", value="Upload") Nickname
+    .main.container-fluid
+        .jumbotron
+            if message
+                p.alert-danger #{message}
 
-            form.form-horizontal(method='POST', action='/profile/me')
-                div.form-group
-                    input#firstname.form-control(type='text', placeholder='Firstname' name='firstname')
-                button(type="submit", value="Upload") Firstname
+            .row
+                .col-sm-6
+                    if user.location
+                        img(src="https://maps.googleapis.com/maps/api/staticmap?center=" + user.location.coordinates[1] + "," + user.location.coordinates[0] + "&zoom=12&size=200x200&scale=1&&markers=color:blue%7Clabel:M%7C" + user.location.coordinates[1] + "," + user.location.coordinates[0] + "&key=AIzaSyAjLI_BhKEyPzgV3wmSPTYWvZayYC3f8o8")
 
-            form.form-horizontal(method='POST', action='/profile/me')
-                div.form-group
-                    input#lastname.form-control(type='text', placeholder='LastName' name='lastname')
-                button(type="submit", value="Upload") lastname
-
-            form.form-horizontal(method='POST', action='/profile/email')
-                div.form-group
-                    input#email.form-control(type='email', placeholder='name@email.com' name='email')
-                button(type="submit", value="Upload") Email
-
-            form.form-horizontal(method='POST', action='/profile/me')
-                div.form-group
-                    label.control-label Add some words about you
-                    input.form-control(type="textarea", name="bio", placeholder="Hy .....")
-                button(type="submit", value="Upload") Bio
-
-            form.form-horizontal(method='POST', action='/profile/location')
-                div.form-group
-                    label.control-label Where are you living
-                    input.form-control(type="city", name="city", placeholder="Paris")
-                button.btn-large.btn-primary(type='submit' value="submitAdresse") Location
-
-        .row
-            h2.center Ajouter une photo à mon profil
-            form.form-group(action="/users/upload", method="post", enctype="multipart/form-data")
-                input.form-control(type="file", multiple, name="image", accept="images/*")
-                input.form-control(type="submit", value="submit")
-                button(type="submit", value="Upload") Upload File
-
-        form.form-horizontal(method='POST', action='/profile/addTags')
-            div.form-group
-                input#tags.form-control(type='text', placeholder='interests' name='tags')
-            button(type="submit", value="Upload") Add interests
-
-        form.form-horizontal(method='POST', action='/profile/addAge')
-            div.form-group
-                label(for='birthday') Birthday:
-                input#birthday.form-control(type='date', placeholder='birthday' name='birthday')
-                button(type="submit", value="Upload") Birth
+                .col-sm-6
+                    .panel-heading
+                        form.form-horizontal(method='POST', action='/profile/findMe')
+                            div.form-group
+                                input.form-control(type="submit", value="submit")
+                .col-sm-6
+                    form.form-group(method='POST', action='/profile/location')
+                        div.form-group.row
+                            label.control-label i live..
+                            input.form-control(type="city", name="city", placeholder="Paris")
+                        button.btn-large.btn-primary(type='submit' value="submitAdresse") Location
 
 
-        form.form-horizontal(method='POST', action='/profile/me')
-            div.form-group
-                label.control-label Orientation
-                .row
-                    label.radio-inline Male
-                        input#male(type='radio', name="orientation", value='1')
-                    label.radio-inline Female
-                        input#female(type='radio', name="orientation", value='0')
-                    label.radio-inline bisexual
-                        input#bisexual(type='radio', name="orientation", value='2')
-                    button(type="submit", value="orientation") Sexe preferences
-
-
-
-
-        .panel-heading
-            h3.panel-title Update Location
-            form.form-horizontal(method='POST', action='/profile/findMe')
-                div.form-group
-                    input.form-control(type="submit", value="submit")
-
-
-
-
-        .col-lg-4.col-md-3.hidden-sm.hidden-xs
-            .panel.panel-default
-                .panel-body
+            .row
+                .col-lg-12.col-md-12.col-sm-12
                     .media
                         div(align='center')
+                            if user.guestPic
+                                img.img-rounded(src='http://localhost:3000' + user.guestPic)
                             if user.pics
-                                each pic in user.pics
-                                    img#picture(src='http://localhost:3000' + pic)
-                                    form(method="POST", action="/profile/DellPics")
-                                        input(type="hidden", name="idForDelPic", value=user._id)
-                                        input(type="submit", name="delpics", value=pic)
-                        .media-body
-                            hr
-                            h3
-                                strong Bio
-                            p
-                                | #{user.nickname}
-                                | #{user.bio}
-                            h3
-                                strong Location
-                            p
-                                | #{user.city}
-                                | #{user.country}
-                                | #{user.region}
-                            hr
-                            h3
-                                strong Gender
-                                if user.gender === 0
-                                    p &#9792;
-                                else
-                                    p &#9794;
-                            hr
-                            h3
-                                strong Birthday
-                            p #{user.birthday}
-                            hr
+                                    .row
+                                        each pic in user.pics
+                                            .col-md-4
+                                                .thumbnail
+                                                    img.img-responsive.img-rounded(src='http://localhost:3000' + pic, style='width:100%;')
+                                                    .buttonPic
+                                                        form(method="POST", action="/profile/DellPics")
+                                                            input(type="hidden", name="idForDelPic", value=user._id)
+                                                            input(type="hidden", name="delpics", value=pic)
+                                                            button(type='submit', value='delete') ❌
+                                                        form(method="POST", action="/profile/GuestPic")
+                                                            input(type="hidden", name="idForGuestPic", value=user._id)
+                                                            input(type="hidden", name="guestPic", value=pic)
+                                                            button(type='submit', value='updown') ✅
+                .col-lg-6
+                    hr
+                    h3
+                        strong Bio
+                    p
+                        | #{user.nickname}
+                        | #{user.bio}
+                    h3
+                        strong Location
+                    p
+                        | #{user.city}
+                        | #{user.country}
+                        | #{user.region}
+                    hr
+                    h3
+                        strong Gender
+                        if user.gender === 0
+                            p &#9792;
+                        else
+                            p &#9794;
+                    hr
+                    h3
+                        strong Birthday
+                    p #{user.birthday}
+                    hr
 
-                            h3
-                                strong Name
-                            p #{user.firstname}
-                            hr
+                    h3
+                        strong Name
+                    p #{user.firstname}
+                    hr
 
-                            if user.tags
-                                each tag in user.tags
-                                    form.form-horizontal(method='POST', action='/profile/dellTags')
-                                        label #{tag}
-                                        input#tags(type="hidden", name="info", value=tag)
-                                        button(type="submit", onclick="window.refresh();") Dell Tags
+                    if user.tags
+                        each tag in user.tags
+                            form.form-horizontal(method='POST', action='/profile/dellTags')
+                                label #{tag}
+                                input#tags(type="hidden", name="info", value=tag)
+                                button(type="submit", onclick="window.refresh();") Dell Tags
+
+            .row
+                .col-sm-6
+                    h2.center Change it
+                    form.form-group(method='POST', action='/profile/me')
+                        .row
+                            input#nickname.form-control(type='text', placeholder='Nickname' name='nickname')
+                            input#firstname.form-control(type='text', placeholder='Firstname' name='firstname')
+                            input#lastname.form-control(type='text', placeholder='LastName' name='lastname')
+                            input#email.form-control(type='email', placeholder='name@email.com' name='email')
+                            input.form-control(type="textarea", name="bio", placeholder="Hy .....")
+                            div.form-control
+                                label.control-label i Want :
+                                    label.radio-inline 👱🏼
+                                        input#male(type='radio', name="orientation", value='1')
+                                    label.radio-inline 🙎🏼
+                                        input#female(type='radio', name="orientation", value='0')
+                                    label.radio-inline 👫
+                                        input#bisexual(type='radio', name="orientation", value='2')
+                            button.btn-primary(type='submit' value="Upload") Modif
+                .col-sm-6
+                    form.form-group.row(action="/users/upload", method="post", enctype="multipart/form-data")
+                        label.control-label upload pic..
+                            input.form-control(type="file", multiple, name="image", accept="images/*")
+                            input.form-control(type="submit", value="📸")
+                    form.form-horizontal(method='POST', action='/profile/addTags')
+                        div.form-group
+                            input#tags.form-control(type='text', placeholder='interests' name='tags')
+                        button(type="submit", value="Upload") Add interests
+                    form.form-horizontal(method='POST', action='/profile/addAge')
+                        div.form-group
+                            label(for='birthday') Birthday:
+                            input#birthday.form-control(type='date', placeholder='birthday' name='birthday')
+                        button(type="submit", value="Upload") Birth
 
 
-                            //img#geo-map(src="https://maps.googleapis.com/maps/api/staticmap?center=" + user.location.coordinates[0] +','+ user.location.coordinates[1] + "&zoom=14&size=400x300&sensor=true&key=AIzaSyBu-916DdpKAjTmJNIgngS6HL_kDIKU0aU")
 
 
-
-                if(message)
-                    p #{message}
 
                 if user.notifications
                     each elem in user.notifications
                         each test in elem
+                            if elem === visit
+                                p visit
+                            else
+                                p like
                             p #{test}
                     form(method='post', action='/profile/clearNotif')
-                        button.btn-danger(type='submit') Clear notifications
+                        button.btn-danger(type='submit') Clear
 
 
 

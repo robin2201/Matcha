@@ -28,6 +28,10 @@ block content
                             input#distMax(type="text", name="distMax", placeholder="dist max")
                         button.btn.btn-primary.btn-info(type='submit') Search
 
+                    .col-sm-4
+                        form.form-horizontal(method="POST", action='/profile/sortPopularity')
+                            button.btn-info(type="submit") 🌟
+
 
             if(message || user)
                 .jumbotron

@@ -8,7 +8,6 @@ const search = require('../controllers/SearchController')
 const modifyPassword = require('../controllers/UserController').modifyPassword
 
 router.get('/', (req, res) => {
-     //profil.loadMyProfilWithMyNotifications(req, res)
 })
     .post('/me', (req, res) => {
         profil.ModifyInfoUser(req, res)
@@ -37,27 +36,31 @@ router.get('/', (req, res) => {
     .post('/likeOther', (req, res) => {
         search.likeAndVerifyOtherProfile(req, res)
     })
+    .post('/blockOther', (req, res) => {
+        search.blockOther(req, res)
+    })
     .post('/clearNotif', (req, res) => {
         profil.clearAllMyNotifications(req, res)
     })
-    .get('/forgotPassword', (req, res) => {
-        return res.render('forgot', {info:'email'})
-    })
+
     .post('/forgotPassword', (req, res) => {
         profil.sendEmailInstructionForNewPassword(req, res)
     })
-    .get('/modifPass/:id', (req, res) => {
-        res.render('forgot', {
-            info:"password",
-            id:req.params.id.substr(1)
-        })
-    })
+
     .post('/modifPass', (req, res) => {
         modifyPassword(req, res)
     })
+
     .post('/DellPics', (req, res) => {
         profil.DellPics(req, res)
+    })
 
+    .post('/GuestPic', (req, res) => {
+        profil.GuestPic(req, res)
+    })
+
+    .post('/sortPopularity', (req, res) => {
+        search.searchAndSortByPopularity(req, res)
     })
 
 

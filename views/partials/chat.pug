@@ -1,0 +1,8 @@
+mixin chat(username, message)
+        li.left.clearfix
+            span.chat-img.pull-left
+                img.img-circle(src="http://api.adorable.io/avatar/33/" + username)
+            .chat-body.clearfix
+                .header
+                    strong.primary-font #{username}
+                p #{message}

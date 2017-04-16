@@ -5,10 +5,10 @@ const Upload = require('../config/MulterUpload')
 const userToShow = require('../controllers/SearchController').showOneUser
 
 
-router.get('/', (req, res, next) => {
+router.get('/', (req, res) => {
     let user = req.session.user
     if (user) {
-        res.render('home', user)
+        res.render('home', {user:user})
     }
     res.redirect('/')
 })
