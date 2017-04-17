@@ -1,23 +1,15 @@
-include notications
-
-.row
-    nav#topNav.navbar.fixed-top.navbar-toggleable-sm
-        .container
-            button.navbar-toggler.hidden-md-up.float-right(type='button', data-toggle='collapse', data-target='#collapsingNavbar')  &#x2630;
-            a.navbar-brand.page-scroll(href='/home') Matcha
-            #collapsingNavbar.collapse.navbar-collapse
-                ul.navbar-nav
-                    li.nav-item
-                        a.nav-link.page-scroll(href='/profile') My Profile
-                    li.nav-item
-                        a.nav-link.page-scroll(href='/home') Home
-                    li.nav-item
-                        a.nav-link.page-scroll(href='/logout') Logout
-
-                    //if(user.notifications)
-                    //    each elem in user.notifications
-                    //        +notifications(elem.nickname, (elem.visit ? elem.visit : elem.like))
-
-//                        +notifications(user.notifications)
-//a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
-                        //    span.glyphicon.glyphicon-shopping-cart 🌍
+nav.navbar.navbar-fixed-top
+    .container-fluid
+        .navbar-header
+            button.navbar-toggle(type='button', data-toggle='collapse', data-target='#myNavbar')
+                span.icon-bar
+                span.icon-bar
+                span.icon-bar
+            |
+            a.navbar-brand(href='/home') Matcha
+        #myNavbar.collapse.navbar-collapse
+            ul.nav.navbar-nav
+                li.active: a(href='/home') Home
+                li: a(href='/profile') Profile
+            ul.nav.navbar-nav.navbar-right
+                    li: a(href='/logout') Log Out

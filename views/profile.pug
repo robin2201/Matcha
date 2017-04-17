@@ -7,31 +7,26 @@ block content
         .jumbotron
             if message
                 p.alert-danger #{message}
-
             .row
                 .col-sm-6
-                    if user.location
-                        img(src="https://maps.googleapis.com/maps/api/staticmap?center=" + user.location.coordinates[1] + "," + user.location.coordinates[0] + "&zoom=12&size=200x200&scale=1&&markers=color:blue%7Clabel:M%7C" + user.location.coordinates[1] + "," + user.location.coordinates[0] + "&key=AIzaSyAjLI_BhKEyPzgV3wmSPTYWvZayYC3f8o8")
-
-                .col-sm-6
-                    .panel-heading
-                        form.form-horizontal(method='POST', action='/profile/findMe')
-                            div.form-group
-                                input.form-control(type="submit", value="submit")
-                .col-sm-6
-                    form.form-group(method='POST', action='/profile/location')
-                        div.form-group.row
-                            label.control-label i live..
-                            input.form-control(type="city", name="city", placeholder="Paris")
-                        button.btn-large.btn-primary(type='submit' value="submitAdresse") Location
+                    if user.notifications
+                        .MyNotif
+                            h5 My notifications
+                            each elem in user.notifications
+                                each test in elem
+                                    if elem === visit
+                                        p #{test} visit your profile
+                                    else
+                                        p #{test} like your profile
+                            form(method='post', action='/profile/clearNotif')
+                                button.button.btn.btn-xs.btn-danger.pull-right(type='submit') ❌
 
 
             .row
                 .col-lg-12.col-md-12.col-sm-12
-                    .media
                         div(align='center')
                             if user.guestPic
-                                img.img-rounded(src='http://localhost:3000' + user.guestPic)
+                                img.img-rounded.img-responsive(src='http://localhost:3000' + user.guestPic)
                             if user.pics
                                     .row
                                         each pic in user.pics
@@ -47,43 +42,46 @@ block content
                                                             input(type="hidden", name="idForGuestPic", value=user._id)
                                                             input(type="hidden", name="guestPic", value=pic)
                                                             button(type='submit', value='updown') ✅
-                .col-lg-6
-                    hr
-                    h3
-                        strong Bio
-                    p
-                        | #{user.nickname}
-                        | #{user.bio}
-                    h3
-                        strong Location
-                    p
-                        | #{user.city}
-                        | #{user.country}
-                        | #{user.region}
-                    hr
-                    h3
-                        strong Gender
-                        if user.gender === 0
-                            p &#9792;
-                        else
-                            p &#9794;
-                    hr
-                    h3
-                        strong Birthday
-                    p #{user.birthday}
-                    hr
-
-                    h3
-                        strong Name
-                    p #{user.firstname}
-                    hr
-
-                    if user.tags
-                        each tag in user.tags
-                            form.form-horizontal(method='POST', action='/profile/dellTags')
-                                label #{tag}
-                                input#tags(type="hidden", name="info", value=tag)
-                                button(type="submit", onclick="window.refresh();") Dell Tags
+                .row
+                    .col-sm-6
+                        h3 Bio
+                        p #{user.bio}
+                        h3 Location
+                        p
+                            | #{user.city}
+                            | #{user.country}
+                            | #{user.region}
+                        h3 Gender
+                            if user.gender === 0
+                                p &#9792;
+                            else
+                                p &#9794;
+                        h3 Birthday
+                        p #{user.birthday} , #{user.age} years old
+                        h3 Personnal Info
+                        p #{user.firstname}
+                        p #{user.lastname}
+                        p #{user.email}
+                    .col-sm-6
+                        if user.tags
+                            .item
+                                .item-content-block.tags
+                                    each tag in user.tags
+                                        form.form-horizontal(method='POST', action='/profile/dellTags')
+                                            label #{tag}
+                                            input#tags(type="hidden", name="info", value=tag)
+                                            button(type="submit", onclick="window.refresh();") ❌
+                        if user.location
+                            img(src="https://maps.googleapis.com/maps/api/staticmap?center=" + user.location.coordinates[1] + "," + user.location.coordinates[0] + "&zoom=12&size=200x200&scale=1&&markers=color:blue%7Clabel:M%7C" + user.location.coordinates[1] + "," + user.location.coordinates[0] + "&key=AIzaSyAjLI_BhKEyPzgV3wmSPTYWvZayYC3f8o8")
+                        hr
+                        form.form-horizontal(method='POST', action='/profile/findMe')
+                            div.form-group
+                                input.form-control(type="submit", value="🗺")
+                        form.form-group(method='POST', action='/profile/location')
+                            div.form-group.row
+                                label.control-label i live..
+                                input.form-control(type="city", name="city", placeholder="Paris")
+                            button.btn-large.btn-primary(type='submit' value="submitAdresse") Location
 
             .row
                 .col-sm-6
@@ -104,7 +102,9 @@ block content
                                     label.radio-inline 👫
                                         input#bisexual(type='radio', name="orientation", value='2')
                             button.btn-primary(type='submit' value="Upload") Modif
-                .col-sm-6
+                .col-sm-1
+                .col-sm-5
+                    hr
                     form.form-group.row(action="/users/upload", method="post", enctype="multipart/form-data")
                         label.control-label upload pic..
                             input.form-control(type="file", multiple, name="image", accept="images/*")
@@ -112,27 +112,18 @@ block content
                     form.form-horizontal(method='POST', action='/profile/addTags')
                         div.form-group
                             input#tags.form-control(type='text', placeholder='interests' name='tags')
-                        button(type="submit", value="Upload") Add interests
+                            button(type="submit", value="Upload") Add interests
                     form.form-horizontal(method='POST', action='/profile/addAge')
                         div.form-group
                             label(for='birthday') Birthday:
                             input#birthday.form-control(type='date', placeholder='birthday' name='birthday')
-                        button(type="submit", value="Upload") Birth
+                            button(type="submit", value="Upload") 🎂
+            .row
 
 
 
 
 
-                if user.notifications
-                    each elem in user.notifications
-                        each test in elem
-                            if elem === visit
-                                p visit
-                            else
-                                p like
-                            p #{test}
-                    form(method='post', action='/profile/clearNotif')
-                        button.btn-danger(type='submit') Clear
 
 
 

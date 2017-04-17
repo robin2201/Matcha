@@ -2,57 +2,66 @@ extends layout
 include partials/chat
 
 block content
+    script
+        include ../public/javascripts/scripts.js
+    script
+        include ../node_modules/socket.io-client/dist/socket.io.js
+    script
+        include ../config/sockets.js
     include partials/navbar
 
     .container-fluid
         .jumbotron
-            script
-                include ../public/javascripts/scripts.js
-            script
-                include ../node_modules/socket.io-client/dist/socket.io.js
-            script
-                include ../config/sockets.js
-
-            h1= (userToShow.nickname ? userToShow.nickname : userToShow.firstname)
-            p #{userToShow.location.city}
-            p #{userToShow.bio}
-
-            if userToShow.tags
-                each tag in userToShow.tags
-                    p.tagElem #{tag}
-
-
-
             if message
                 p #{message}
 
-            if(userToShow.pics)
-                each pic in userToShow.pics
-                    .col-lg-3.col-md-4.col-xs-6.thumb
-                        img.img-responsive.thumbnail(src=pic)
-            .testChatBox
+            .row
+                .col-lg-12
+                    h1.center= (userToShow.nickname ? userToShow.nickname : userToShow.firstname)
 
+            .row
+                .col-lg-3
+                    if userToShow.guestPic
+                        img.img-responsive.img-rounded(src=userToShow.guestPic)
+                    else
+                        img.img-responsive.img-rounded(src="http://api.adorable.io/avatar/76/" +userToShow.firstname)
+                .col-lg-4
+                    p #{userToShow.city} , #{userToShow.country}
+                    p #{userToShow.age}
+                    p #{userToShow.bio}
+
+                .col-lg-5
+                    if userToShow.tags
+                        .item
+                            .item-content-block.tags
+                                each tag in userToShow.tags
+                                    p #{tag}
+
+
+            if userToShow.pics
+                .row
+                    each pic in userToShow.pics
+                        .col-md-4
+                            .thumbnail
+                                img.img-responsive.thumbnail(src=pic)
+
+            .ChatBox
+                .container-fluid
                 if chatRooms
-                    .container
-                        .row
-                            .col-md-5
-                                .panel.panel-primary
-                                    #accordion.panel-heading
-                                        span.glyphicon.glyphicon-comment Chat
-                                        .btn-group.pull-right
-                                            a.btn.btn-default.btn-xs(type='button', data-toggle='collapse', data-parent='#accordion', href='#collapseOne')
-                                                span.glyphicon.glyphicon-chevron-down
-                                                    #collapseOne.panel-collapse.collapse
-                                                        .panel-body
-                                                            ul.chat
-                                                            each elem in chatRooms
-                                                                +chat(elem.nickname, elem.message, user, idRoom)
-                                                            .panel-footer
-                                                                .input-group
-                                                                    ul#messages
-                                                                        form#test(action='')
-                                                                            input#m(type="textarea", autocomplete='off')
-                                                                            input#idto(type='hidden', value=user.id, name="idToTalk")
-                                                                            input#idRoom(type='hidden', value=idRoom, name="idToTalk")
-                                                                            input#nicknameSocket(type='hidden', value=user.nickname, name="idToTalk")
-                                                                            button Send
+                    .row
+                        .col-md-5
+                            .panel.panel-primary
+                                .panel-body
+                                    .chat
+                                    each elem in chatRooms
+                                        +chat(elem.nickname, elem.message, user, idRoom)
+                                    .test1
+                                    .panel-footer
+                                        .input-group
+                                            ul#messages
+                                                form#test(action='')
+                                                    input#m(type="textarea", autocomplete='off', placeholder="Write something..." required)
+                                                    input#idto(type='hidden', value=user.id, name="idToTalk")
+                                                    input#idRoom(type='hidden', value=idRoom, name="idToTalk")
+                                                    input#nicknameSocket(type='hidden', value=user.nickname, name="idToTalk")
+                                                    button 🛫

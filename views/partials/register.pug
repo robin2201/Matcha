@@ -1,17 +1,17 @@
 extends ../index
 
 block register
-    .jumbotron
-        .row
+    .row
+        .jumbotron
             form.form-horizontal(method='POST', action='/users/register')
                 div.form-group.row
                     .col-sm-12
                         label(for='firstname') FirstName:
-                        input#firstname.form-control(type='text', placeholder='first' name='firstname')
+                        input#firstname.form-control(type='text', placeholder='John' name='firstname')
                 div.form-group.row
                     .col-sm-12
                         label(for='lastname') LastName:
-                        input#lastname.form-control(type='text', placeholder='first' name='lastname')
+                        input#lastname.form-control(type='text', placeholder='Doe' name='lastname')
                 div.form-group.row
                     .col-sm-12
                         label(for='email') Email:
@@ -19,15 +19,14 @@ block register
                 div.form-group.row
                     .col-sm-12
                         label(for='birthday') Birthday:
-                        input#birthday.form-control(type='date', placeholder='birthday' name='birthday')
+                        input#birthday.form-control(type='date', name='birthday')
                 div.form-group.row
                     .col-sm-12
                         label.control-label Gender
-                        .row
-                            label.radio-inline Male
-                                input#male(type='radio', name="gender", value='1')
-                            label.radio-inline Female
-                                input#female(type='radio', name="gender", value='0')
+                        label.radio-inline Male
+                        input#male(type='radio', name="gender", value='1')
+                        label.radio-inline Female
+                        input#female(type='radio', name="gender", value='0')
                 div.form-group.row
                     .col-sm-12
                         label(for='pw') Password:

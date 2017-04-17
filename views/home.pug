@@ -4,7 +4,7 @@ include partials/userGallery
 block content
     include partials/navbar
 
-    .container.col-sm-12
+    .container-fluid
         .jumbotron
             .row
                 .col-sm-8
@@ -18,7 +18,7 @@ block content
                                 label.radio-inline bisexual
                                     input#bisexual(type='radio', name="gender", value='2')
                         div.form-group
-                            .input-group.col-md-6
+                            .input-group.col-md-4
                                 input.search-query.form-control(type='text', name="search", placeholder='Search')
                         div.form-group
                             input#ageMin(type="text", name="ageMin", placeholder="Age min")
@@ -26,11 +26,14 @@ block content
                         div.form-group
                             input#distMin(type="text", name="distMin", placeholder="dist min")
                             input#distMax(type="text", name="distMax", placeholder="dist max")
-                        button.btn.btn-primary.btn-info(type='submit') Search
+                            button.btn.btn-primary.btn-info(type='submit') Search
 
-                    .col-sm-4
-                        form.form-horizontal(method="POST", action='/profile/sortPopularity')
-                            button.btn-info(type="submit") 🌟
+                .col-sm-4
+                    hr
+                    hr
+                    form.form-horizontal(method="POST", action='/profile/sortPopularity')
+                        label Most Popular
+                        button.btn-info(type="submit") 🌟
 
 
             if(message || user)

@@ -6,45 +6,23 @@ $( () => {
         let message =  $('#m').val()
         let idRoom = $('#idRoom').val()
         let nickname = $('#nicknameSocket').val()
-
+        if(message === '' || idRoom === '' || nickname === '') return false
         socket.emit("id to", idRoom, message, nickname)
-        socket.emit('chat message', $('#m').val())
+        socket.emit('chat message', message, nickname)
 
         $('#m').val('')
         return false
     })
-    socket.on('chat message', msg => {
-        $('#messages').append($('<li>').text(msg))
+    socket.on('chat message', (messNick) => {
+        let mess = messNick.mess
+        let nickname = messNick.nick
+        //$('.test1').append($('<img class="img-circle" src="http://api.adorable.io/avatar/33/"+nickname>'))
+        $('.test1').append($('<strong>').text(nickname))
+        $('.test1').append($('<li>').text(mess))
         window.scrollTo(0, document.body.scrollHeight)
     })
+    // socket.on('nickname', nickname => {
+    //     $('.socketUsername').append(text(nickname))
+    //     window.scrollTo(0, document.body.scrollHeight)
+    // })
 })
-// var socket = io.connect('http://localhost:8080');
-//
-// // On demande le pseudo, on l'envoie au serveur et on l'affiche dans le titre
-// var pseudo = test2sock
-// socket.emit('nouveau_client', pseudo);
-// document.title = pseudo + ' - ' + document.title;
-//
-// // Quand on reçoit un message, on l'insère dans la page
-// socket.on('message', function(data) {
-//     insereMessage(data.pseudo, data.message)
-// })
-//
-// // Quand un nouveau client se connecte, on affiche l'information
-// socket.on('nouveau_client', function(pseudo) {
-//     $('#zone_chat').prepend('<p><em>' + pseudo + ' a rejoint le Chat !</em></p>');
-// })
-//
-// // Lorsqu'on envoie le formulaire, on transmet le message et on l'affiche sur la page
-// $('#formulaire_chat').submit(function () {
-//     var message = $('#message').val();
-//     socket.emit('message', message); // Transmet le message aux autres
-//     insereMessage(pseudo, message); // Affiche le message aussi sur notre page
-//     $('#message').val('').focus(); // Vide la zone de Chat et remet le focus dessus
-//     return false; // Permet de bloquer l'envoi "classique" du formulaire
-// });
-//
-// // Ajoute un message dans la page
-// function insereMessage(pseudo, message) {
-//     $('#zone_chat').prepend('<p><strong>' + pseudo + '</strong> ' + message + '</p>');
-//}

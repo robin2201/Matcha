@@ -4,5 +4,7 @@ mixin chat(username, message)
                 img.img-circle(src="http://api.adorable.io/avatar/33/" + username)
             .chat-body.clearfix
                 .header
-                    strong.primary-font #{username}
-                p #{message}
+                    strong.socketUsername #{username}
+                p.socketMess #{message}
+
+

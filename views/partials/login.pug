@@ -1,16 +1,20 @@
 extends ../index
 
 block login
-    form.form-group.row.col-sm-12(action='/users/login', method='POST')
-        .form-group.row
-        .col-sm-4
-                input.form-control(type='text', placeholder='Username', name='firstname')
-        .form-group.row
-        .col-sm-4
-                input.form-control(type='password', name='password', placeholder='Password')
-        .form-group.row
-        .col-sm-1
-        button.btn.btn-primary.alert-info(type='submit') Sign In
-        .row
-            .col-sm-12
-                a.btn.btn-sm.align-middle.btn-outline-secondary(href='/forgotPassword') Forgot your password?
+    .row
+        .jumbotron
+        .col-lg-12
+            form.form-group(action='/users/login', method='POST')
+                .form-group
+                .col-sm-4
+                        input.form-control(type='text', placeholder='Username', name='firstname')
+                .form-group
+                .col-sm-4
+                        input.form-control(type='password', name='password', placeholder='Password')
+                .form-group
+                .col-sm-1
+                button.btn.btn-primary.alert-info(type='submit') Sign In
+                .row
+                    .col-sm-8
+                    .col-sm-1
+                        a.btn.btn-sm.align-middle.btn-outline-secondary(href='/forgotPassword') Forgot your password?
