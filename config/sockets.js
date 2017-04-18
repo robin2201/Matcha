@@ -21,8 +21,4 @@ $( () => {
         $('.test1').append($('<li>').text(mess))
         window.scrollTo(0, document.body.scrollHeight)
     })
-    // socket.on('nickname', nickname => {
-    //     $('.socketUsername').append(text(nickname))
-    //     window.scrollTo(0, document.body.scrollHeight)
-    // })
 })

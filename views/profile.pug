@@ -9,15 +9,16 @@ block content
                 p.alert-danger #{message}
             .row
                 .col-sm-6
-                    if user.notifications
+                    if (user.notifications !== undefined)
                         .MyNotif
                             h5 My notifications
                             each elem in user.notifications
-                                each test in elem
-                                    if elem === visit
-                                        p #{test} visit your profile
-                                    else
-                                        p #{test} like your profile
+                                if elem
+                                    each test in elem
+                                        if elem === visit
+                                            p #{test} visit your profile
+                                        else
+                                            p #{test} like your profile
                             form(method='post', action='/profile/clearNotif')
                                 button.button.btn.btn-xs.btn-danger.pull-right(type='submit') ❌
 

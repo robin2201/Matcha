@@ -39,5 +39,11 @@ router.get('/', (req, res) => {
     .get('*', (req, res) => {
         res.render('index')
     })
+    .get('/home', (req, res) => {
+        if(req.session.user !== undefined){
+            home.updateMySession(req,res)
+            res.render('home', {user:req.session.user})
+        }else res.render('index')
+    })
 
 module.exports = router

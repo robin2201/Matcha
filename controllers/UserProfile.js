@@ -25,7 +25,7 @@ module.exports = {
         if (req.body.bio !== undefined && req.body.bio !== '') modif.bio = req.body.bio
         if (req.body.city !== undefined && req.body.city !== '') modif.city = req.body.city
         if (req.body.orientation !== undefined && req.body.orientation !== '') modif.orientation = req.body.orientation
-        let id = (req.session.userId ? req.session.userId : req.session.user._id)
+        let id = (req.session.user._id ? req.session.user._id : req.session.userId)
         if (modif !== '' || modif !== undefined) {
             mongoUtil.connectToServer(err => {
                 if (err) return res.sendStatus(500)
@@ -39,7 +39,6 @@ module.exports = {
                     (err, result) => {
                         if (err) return res.sendStatus(500)
                         if (result && result.ok === 1) {
-                            console.log(result)
                             req.session.user = result.value
                             req.session.userId = result.value._id
                             res.render('profile', {
@@ -56,7 +55,7 @@ module.exports = {
 
     ModifyEmail: (req, res) => {
         let email = req.body.email
-        let id = req.session.userId
+        let id = req.session.user._id
         let user = req.session.user
         if (regex.test(email)) {
             mongoUtil.connectToServer(err => {
@@ -187,7 +186,7 @@ module.exports = {
 
     AddTags: (req, res) => {
 
-        let id = req.session.userId
+        let id = req.session.user_id
         let user = req.session.user
         let tag = req.body.tags
         if (tag !== undefined || tag !== "") {
@@ -221,7 +220,7 @@ module.exports = {
 
     DellTags: (req, res) => {
 
-        let id = req.session.userId
+        let id = req.session.user._id
         let user = req.session.user
         let tag = req.body.info
         if (tag !== undefined && tag !== "") {
@@ -260,7 +259,6 @@ module.exports = {
     },
 
     CheckLocation: req => {
-        console.log(req.session)
         if (req.session.user.location === undefined || req.session.user.location === '') {
             console.log("Hello")
             let id = req.session.user._id
@@ -359,7 +357,7 @@ module.exports = {
     AddLocation: (req, res) => {
         let city = (req.body.city ? req.body.city : 'Paris')
         let user = req.session.user
-        let id = req.session.userId
+        let id = req.session.user._id
         if (city !== undefined || city !== "") {
             NodeGeocoder.geocode(city, (err, resu) => {
                 if (err) res.sendStatus(500)
@@ -413,10 +411,11 @@ module.exports = {
                 {
                     $unset: {'notifications': ''}
                 },
-                err => {
+                {notifications:0},
+                (err, ret) => {
                     if (err) return res.sendStatus(500)
                     else {
-                        req.session.user = user
+                        req.session.user = ret.value
                         return res.render('profile', {
                             user: req.session.user,
                             message: 'All your notifications are cleared'
@@ -429,8 +428,8 @@ module.exports = {
     GuestPic: (req, res) => {
         let {idForGuestPic, guestPic} = req.body
         user = req.session.user
-        if (idForGuestPic !== undefined && guestPic !== undefined) {
-//            let oldGuestPic = req.session.user.guestPic
+        if (idForGuestPic !== undefined && guestPic !== undefined && idForGuestPic !== '' && guestPic !== '') {
+           // let oldGuestPic = req.session.user.guestPic
             mongoUtil.connectToServer(err => {
                 if (err) return res.sendStatus(500)
                 else {

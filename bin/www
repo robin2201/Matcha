@@ -32,9 +32,6 @@ io.on('connection', socket => {
         sockToDb(idRoom, message, nickname)
     })
     socket.on('chat message', (msg, nickname) => {
-
-        console.log(msg)
-        console.log(nickname)
         io.emit('chat message', {mess: msg, nick: nickname})
     })
 })

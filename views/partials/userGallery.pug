@@ -1,4 +1,4 @@
-mixin userGallery(user)
+mixin userGallery(user, me)
     each elem in user
         .col-md-4.col-sm-6
             a.thumbnail(href="/users/view/:"+elem._id)
@@ -43,11 +43,14 @@ mixin userGallery(user)
                                                 if elem.popularity
                                                     p  🌟 #{elem.popularity} 🌟
                                 .footer
-                                    .likeButton
-                                        form.form-horizontal(method="post", action="/profile/likeOther")
-                                            input#like(type="hidden", value=elem._id, name="UsertoLike")
-                                            button.btn.btn-danger(type="submit") ❤️
-                                    .blockButton
-                                        form.form-horizontal(method="POST", action="/profile/blockOther")
-                                            input#like(type="hidden", value=elem._id, name="UsertoBlock")
-                                            button.btn.btn-danger(type="submit") 💔
+                                    if (me.pics !== undefined && me.pics[0] !== undefined) || me.guestPic !== undefined
+                                        .likeButton
+                                            form.form-horizontal(method="post", action="/profile/likeOther")
+                                                input#like(type="hidden", value=elem._id, name="UsertoLike")
+                                                button.btn.btn-danger(type="submit") ❤️
+                                        .blockButton
+                                            form.form-horizontal(method="POST", action="/profile/blockOther")
+                                                input#like(type="hidden", value=elem._id, name="UsertoBlock")
+                                                button.btn.btn-danger(type="submit") 💔
+                                    else
+                                        p If you want to like someone upload a pic

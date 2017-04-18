@@ -4,7 +4,7 @@
 
 const mongoUtil = require('../config/db')
 const objectId = require('mongodb').ObjectID
-const updateMySessiion = require('./UserController').updateMySession
+const updateMySession = require('./UserController').updateMySession
 const out = {
     hash: 0,
     email: 0,
@@ -17,7 +17,7 @@ module.exports = {
 
     SearchByNickname: (req, res) => {
 
-        updateMySessiion(req)
+        updateMySession(req, res)
         let {gender, search, ageMin, ageMax, distMin, distMax} = req.body
         let user = req.session.user
         if (distMin)
@@ -117,7 +117,7 @@ module.exports = {
     },
 
     showOneUser: (req, res) => {
-        updateMySessiion(req)
+        updateMySession(req, res)
         let userToFind = req.params.id
         let user = req.session.user
         if (userToFind !== undefined && userToFind !== "" && user) {
@@ -135,32 +135,53 @@ module.exports = {
                         if (err) return res.sendStatus(500)
                         else {
                             if (resultSingleUser.room !== undefined && resultSingleUser.room !== '' && user.room !== undefined && user.room !== '') {
-                                for (let RoomOfMatched of resultSingleUser.room) {
-                                    for (let MyRoom of user.room) {
-                                        if (String(MyRoom) === String(RoomOfMatched)) {
+                                let i = 0
+                                while (i <= resultSingleUser.room.length) {
+                                    let o = 0
+                                    while (o <= user.room.length) {
+                                        if (String(user.room[o]) === String(resultSingleUser.room[i])) {
+                                            console.log('They Match')
                                             NoMatchedRooms = true
-                                            let dbMatches = mongoUtil.getDb().collection('Matches')
-                                            dbMatches.findOne({_id: objectId(MyRoom)}).then(resMyRoomChat => {
-                                                req.session.user = user
-                                                return res.render('single', {
-                                                    userToShow: resultSingleUser,
-                                                    user: req.session.user,
-                                                    chatRooms: (resMyRoomChat.message ? resMyRoomChat.message : ' '),
-                                                    idRoom: resMyRoomChat._id
-                                                })
-                                            })
                                         }
-                                    }
+                                        if (NoMatchedRooms === true) {
+                                            console.log('Yeguwhdc')
+                                            let dbMatches = mongoUtil.getDb().collection('Matches')
+                                            dbMatches.findOne({
+                                                    _id: objectId(user.room[o])
+                                                },
+                                                (err, resMyRoomChat) => {
+                                                    if (err) return res.sendStatus(500)
+                                                    else {
+                                                        console.log(resMyRoomChat)
+                                                        req.session.user = user
+                                                        if(resMyRoomChat.message === undefined)
+                                                            resMyRoomChat.message = ''
+                                                        return res.render('single', {
+                                                            userToShow: resultSingleUser,
+                                                            user: req.session.user,
+                                                            chatRooms: (resMyRoomChat.message ? resMyRoomChat.message : ''),
+                                                            idRoom: resMyRoomChat._id,
+                                                            need: true
+                                                        })
+                                                    }
 
+                                                })
+                                            break
+                                        } else
+                                            o++
+                                    }
+                                    if (i === resultSingleUser.room.length && NoMatchedRooms === false) {
+                                        req.session.user = user
+                                        return res.render('single', {
+                                            userToShow: resultSingleUser,
+                                            user: req.session.user
+                                        })
+                                    } else if (NoMatchedRooms === true) break
+                                    o = 0
+                                    i++
                                 }
-                                if (NoMatchedRooms === false) {
-                                    req.session.user = user
-                                    return res.render('single', {
-                                        userToShow: resultSingleUser,
-                                        user: req.session.user
-                                    })
-                                }
-                            } else {
+                            }
+                            else {
                                 req.session.user = user
                                 return res.render('single', {
                                     userToShow: resultSingleUser,
@@ -175,7 +196,7 @@ module.exports = {
     },
 
     blockOther: (req, res) => {
-        updateMySessiion(req)
+        updateMySession(req, res)
         let user = req.session.user
         let idUserToBlock = req.body.UsertoBlock
         if (user.block !== undefined && user.block !== '') {
@@ -213,16 +234,16 @@ module.exports = {
         if (mySession.matches !== undefined) {
             for (let rest of mySession.matches) {
                 if (String(rest._id) === String(idToCheck)) return true
-                else return false
             }
+            return false
         } else return false
     },
 
     likeAndVerifyOtherProfile: (req, res) => {
-        updateMySessiion(req)
-        let user = req.session.user
+        updateMySession(req, res)
         let idUserToLike = objectId(req.body.UsertoLike)
-        let ifMatchMe = module.exports.checkMyMatch(user, idUserToLike)
+        let ifMatchMe = module.exports.checkMyMatch(req.session.user, idUserToLike)
+        let user = req.session.user
         if (user && idUserToLike) {
             mongoUtil.connectToServer(err => {
                 if (err) return res.sendStatus(500)
@@ -240,7 +261,7 @@ module.exports = {
                             else if (resultUser && ifMatchMe) {
                                 let db = mongoUtil.getDb()
                                 let Matches = db.collection('Matches')
-                                Matches.insertOne({},
+                                Matches.insertOne({"message":[]},
                                     (err, resMatchCollection) => {
                                         if (err) return res.sendStatus(500)
                                         else if (resMatchCollection && resMatchCollection.insertedCount === 1) {
@@ -292,7 +313,7 @@ module.exports = {
                                         if (err) return res.sendStatus(500)
                                         else {
                                             return res.render('home', {
-                                                user: user,
+                                                user: req.session.user,
                                                 message: "Yes that's good"
                                             })
                                         }
@@ -306,6 +327,7 @@ module.exports = {
     },
 
     searchAndSortByPopularity: (req, res) => {
+        updateMySession(req, res)
         let user = req.session.user
         if (user !== undefined) {
             let searchElem = {}
@@ -318,9 +340,8 @@ module.exports = {
                         console.log(dataUser)
                         if (err) return res.sendStatus(500)
                         else {
-                            req.session.user = user
                             return res.render('home', {
-                                user: user,
+                                user: req.session.user,
                                 users: dataUser
                             })
                         }

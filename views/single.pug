@@ -47,21 +47,23 @@ block content
 
             .ChatBox
                 .container-fluid
-                if chatRooms
                     .row
                         .col-md-5
                             .panel.panel-primary
                                 .panel-body
                                     .chat
-                                    each elem in chatRooms
-                                        +chat(elem.nickname, elem.message, user, idRoom)
-                                    .test1
-                                    .panel-footer
-                                        .input-group
-                                            ul#messages
-                                                form#test(action='')
-                                                    input#m(type="textarea", autocomplete='off', placeholder="Write something..." required)
-                                                    input#idto(type='hidden', value=user.id, name="idToTalk")
-                                                    input#idRoom(type='hidden', value=idRoom, name="idToTalk")
-                                                    input#nicknameSocket(type='hidden', value=user.nickname, name="idToTalk")
-                                                    button 🛫
+
+                                        if need === true
+                                            if chatRooms !== undefined
+                                                each elem in chatRooms
+                                                    +chat(elem.nickname, elem.message, user, idRoom)
+                                            .test1
+                                            .panel-footer
+                                                .input-group
+                                                    ul#messages
+                                                        form#test(action='')
+                                                            input#m(type="textarea", autocomplete='off', placeholder="Write something..." required)
+                                                            input#idto(type='hidden', value=user.id, name="idToTalk")
+                                                            input#idRoom(type='hidden', value=idRoom, name="idToTalk")
+                                                            input#nicknameSocket(type='hidden', value=user.nickname, name="idToTalk")
+                                                            button(type='submit') 🛫

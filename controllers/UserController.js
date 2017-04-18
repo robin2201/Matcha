@@ -165,30 +165,34 @@ module.exports = {
 
     valideToken: (req, res) => {
         let {id, token} = req.params
-
-        mongoUtil.connectToServer((err) => {
-            if (err) return res.send(err)
-            let dbUsers = mongoUtil.getDb().collection('Users')
-            dbUsers.findOneAndUpdate({
-                    $and: [
-                        {_id: objectId(id.substr(1))},
-                        {token: token.substr(1)}
-                    ]
-                },
-                {
-                    $set: {"emailValidation": "true"}
-                },
-                (err, result) => {
-                    if (err) return res.send(err)
-                    if (result.ok === 1) {
-                        let user = result.value
-                        req.session.user = user
-                        req.session.userId = user._id
-                        res.render('home', {user: req.session.user})
-                    } else return res.send('Sorry an error occured please try later or if the problem persits send Us an Email')
-                }
-            )
+        if(id !== undefined && id !== '' && token !== undefined && token !== ''){
+            mongoUtil.connectToServer((err) => {
+                if (err) return res.send(err)
+                let dbUsers = mongoUtil.getDb().collection('Users')
+                dbUsers.findOneAndUpdate({
+                        $and: [
+                            {_id: objectId(id.substr(1))},
+                            {token: token.substr(1)}
+                        ]
+                    },
+                    {
+                        $set: {"emailValidation": "true"}
+                    },
+                    (err, result) => {
+                        if (err) return res.send(err)
+                        if (result.ok === 1) {
+                            let user = result.value
+                            req.session.user = user
+                            req.session.userId = user._id
+                            res.render('home', {user: req.session.user})
+                        } else return res.send('Sorry an error occured please try later or if the problem persits send Us an Email')
+                    }
+                )
+            })
+        }else return res.render('index', {
+            message:"Try later an error ocurred"
         })
+
     },
 
     AddPicToDb: (req, res) => {
@@ -237,21 +241,29 @@ module.exports = {
         }
     },
 
-    updateMySession: req => {
+    updateMySession: (req, res) => {
         console.log('i uplooad my session')
-        mongoUtil.connectToServer(err => {
-            if (err) return res.sendStatus(500)
-            else {
-                let dbUser = mongoUtil.getDb().collection('Users')
-                dbUser.findOne({
-                        _id: objectId(req.session.userId)
-                    },
-                    (err, resultMyInfo) => {
-                        if (err) return err
-                        else req.session.user = resultMyInfo.value
-                    })
-            }
+        if(req.session.user){
+            mongoUtil.connectToServer(err => {
+                if (err) return res.sendStatus(500)
+                else {
+                    let dbUser = mongoUtil.getDb().collection('Users')
+                    dbUser.findOne({
+                            _id: objectId(req.session.user._id)
+                        },
+                        out,
+                        (err, resultMyInfo) => {
+                            if (err) return err
+                            else req.session.user = resultMyInfo
+                        })
+                }
+            })
+
+        }
+        else return res.render('index', {
+            message:"Please Log In before"
         })
+
     },
 
     calculatePopularity: user => {
@@ -264,7 +276,7 @@ module.exports = {
         if (user.pics !== undefined && user.pics.length > 0) pop += 3
         if (user.bio !== undefined) pop += 3
         mongoUtil.connectToServer(err => {
-            if (err) return res.sendStatus(500)
+            if (err) return err
             else {
                 let dbUser = mongoUtil.getDb().collection('Users')
                 dbUser.findOneAndUpdate({

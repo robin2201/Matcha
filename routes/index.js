@@ -12,16 +12,17 @@ router.get('/', (req, res) => {
     .get('/login', (req, res) => {
         res.render('partials/login')
     })
-    .get('/home', (req, res, next) => {
+    .get('/home', (req, res) => {
         if(req.session.user !== undefined){
+            home.updateMySession(req, res)
             let user = req.session.user
             res.render('home', {user: user})
         } else res.render('index', {message: "You need to log befores"})
     })
-    .get('/profile', (req, res, next) => {
+    .get('/profile', (req, res) => {
         if(req.session.user !== undefined) {
-            let user = req.session.user
-            res.render('profile', {user: user})
+            home.updateMySession(req, res)
+            res.render('profile', {user: req.session.user})
         }else res.render('index', {message: "You need to log befores"})
     })
     .get('/logout', (req, res) => {
@@ -37,12 +38,12 @@ router.get('/', (req, res) => {
         return res.render('forgot', {info:'email'})
     })
     // .get('*', (req, res, next) => {
-    //     let message = "Sorry this page doesn't exist"
-    //     if(next) message = "To acces this pages you need to log in before"
-    //     res.render('index', {
-    //         user:(req.session.user ? req.session.user : ''),
-    //         message: message
-    //     })
+    //     if(req.session.user === undefined){
+    //        let message = "To acces this pages you need to log in before"
+    //         res.render('index', {
+    //             message: message
+    //         })
+    //     }
     // })
 
 module.exports = router
