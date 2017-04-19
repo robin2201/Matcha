@@ -106,7 +106,7 @@ module.exports = {
             {
                 $addToSet: {
                     'notifications': {
-                        'visit': idUser,
+                        'type': "visit",
                         'nickname': nickname
                     }
                 }
@@ -140,11 +140,9 @@ module.exports = {
                                     let o = 0
                                     while (o <= user.room.length) {
                                         if (String(user.room[o]) === String(resultSingleUser.room[i])) {
-                                            console.log('They Match')
                                             NoMatchedRooms = true
                                         }
                                         if (NoMatchedRooms === true) {
-                                            console.log('Yeguwhdc')
                                             let dbMatches = mongoUtil.getDb().collection('Matches')
                                             dbMatches.findOne({
                                                     _id: objectId(user.room[o])
@@ -275,7 +273,7 @@ module.exports = {
                                                     $addToSet: {
                                                         "room": resMatchCollection.insertedId,
                                                         "notifications": {
-                                                            "like": "You have a new match"
+                                                            "": "You have a new match"
                                                         }
                                                     }
 

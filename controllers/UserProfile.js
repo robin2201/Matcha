@@ -321,10 +321,14 @@ module.exports = {
                     (err, resu) => {
                         if (err) return res.sendStatus(500)
                         else {
+                            if(resu[0].longitude === user.location.coordinates[0] && resu[0].latitude === user.location.coordinates[1]) {
+                                req.session.user = user
+                                return res.render('profile', {user: req.session.user})
+                            }
                             let location = {}
                             location.coordinates = [resu[0].longitude, resu[0].latitude]
                             location.type = 'Point'
-                            mongoUtil.connectToServer((err) => {
+                            mongoUtil.connectToServer(err => {
                                 if (err) return res.sendStatus(500)
                                 let dbUser = mongoUtil.getDb().collection('Users')
                                 dbUser.findOneAndUpdate({

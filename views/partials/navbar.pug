@@ -1,3 +1,5 @@
+include notifications
+
 nav.navbar.navbar-fixed-top
     .container-fluid
         .navbar-header
@@ -12,4 +14,6 @@ nav.navbar.navbar-fixed-top
                 li.active: a(href='/home') Home
                 li: a(href='/profile') Profile
             ul.nav.navbar-nav.navbar-right
-                    li: a(href='/logout') Log Out
+                li: if(user.notifications)
+                        +notifications(user)
+                li: a(href='/logout') Log Out

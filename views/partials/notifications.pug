@@ -1,0 +1,8 @@
+mixin notifications(user)
+    a.dropdown-toggle(href='#', data-toggle='dropdown') #{user.firstname}
+        span.pull-right 🌍
+    ul.dropdown-menu
+        each notif in user.notifications
+            li #{notif.nickname} visit your profile
+        form(method='post', action='/profile/clearNotif')
+            button.button.btn.btn-xs.btn-danger.pull-right(type='submit') ❌
