@@ -3,6 +3,9 @@ mixin notifications(user)
         span.pull-right 🌍
     ul.dropdown-menu
         each notif in user.notifications
-            li #{notif.nickname} visit your profile
+            if notif.type === 'visit'
+                li #{notif.nickname} visit your profile
+            else
+                li #{notif.nickname} like your profile
         form(method='post', action='/profile/clearNotif')
             button.button.btn.btn-xs.btn-danger.pull-right(type='submit') ❌

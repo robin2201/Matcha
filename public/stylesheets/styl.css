@@ -42,7 +42,10 @@ a {
 .tags p{background-color:#756f5d; padding:10px; color:#fff; display:inline-block; font-size:11px; text-transform:uppercase; line-height:11px; border-radius:2px; margin-bottom:5px; margin-right:2px; text-decoration:none;}
 .tags p:hover{background-color:#a38018;}
 
-
+.buttonPic{
+  display:flex;
+  justify-content: space-around;
+}
 /*#messages { list-style-type: none; margin: 0; padding: 0; }*/
 /*#messages li { padding: 5px 10px; }*/
 /*#messages li:nth-child(odd) { background: #eee; }*/

@@ -8,21 +8,6 @@ block content
             if message
                 p.alert-danger #{message}
             .row
-                .col-sm-6
-                    if (user.notifications !== undefined)
-                        .MyNotif
-                            h5 My notifications
-                            each elem in user.notifications
-                                if elem
-                                    each test in elem
-                                        if elem === visit
-                                            p #{test} visit your profile
-                                        else
-                                            p #{test} like your profile
-
-
-
-            .row
                 .col-lg-12.col-md-12.col-sm-12
                         div(align='center')
                             if user.guestPic

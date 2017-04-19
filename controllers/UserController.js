@@ -242,7 +242,6 @@ module.exports = {
     },
 
     updateMySession: (req, res) => {
-        console.log('i uplooad my session')
         if(req.session.user){
             mongoUtil.connectToServer(err => {
                 if (err) return res.sendStatus(500)

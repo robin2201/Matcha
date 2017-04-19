@@ -139,7 +139,10 @@ module.exports = {
                                 while (i <= resultSingleUser.room.length) {
                                     let o = 0
                                     while (o <= user.room.length) {
-                                        if (String(user.room[o]) === String(resultSingleUser.room[i])) {
+                                        if (String(user.room[o]) === String(resultSingleUser.room[i]) && (user.room[o] !== undefined && resultSingleUser.room[i] !== undefined)) {
+                                            console.log(resultSingleUser.room[i])
+                                            console.log(user.room[o])
+
                                             NoMatchedRooms = true
                                         }
                                         if (NoMatchedRooms === true) {
@@ -149,7 +152,8 @@ module.exports = {
                                                 },
                                                 (err, resMyRoomChat) => {
                                                     if (err) return res.sendStatus(500)
-                                                    else {
+                                                    else if(resMyRoomChat !== null){
+                                                        console.log('Testststst')
                                                         console.log(resMyRoomChat)
                                                         req.session.user = user
                                                         if(resMyRoomChat.message === undefined)
@@ -273,7 +277,7 @@ module.exports = {
                                                     $addToSet: {
                                                         "room": resMatchCollection.insertedId,
                                                         "notifications": {
-                                                            "": "You have a new match"
+                                                            "type": "like"
                                                         }
                                                     }
 

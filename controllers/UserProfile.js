@@ -17,16 +17,38 @@ const out = {
 
 module.exports = {
     ModifyInfoUser: (req, res) => {
+        let bool = false
         let modif = {}
-        if (req.body.nickname !== undefined && req.body.nickname !== '') modif.nickname = req.body.nickname
-        if (req.body.firstname !== undefined && req.body.firstname !== '') modif.firstname = req.body.firstname
-        if (req.body.lastname !== undefined && req.body.lastname !== '') modif.lastname = req.body.lastname
-        if (req.body.email !== undefined && req.body.email !== '') modif.email = req.body.email
-        if (req.body.bio !== undefined && req.body.bio !== '') modif.bio = req.body.bio
-        if (req.body.city !== undefined && req.body.city !== '') modif.city = req.body.city
-        if (req.body.orientation !== undefined && req.body.orientation !== '') modif.orientation = req.body.orientation
+        if (req.body.nickname !== undefined && req.body.nickname !== ''){
+            modif.nickname = req.body.nickname
+            bool = true
+        }
+        if (req.body.firstname !== undefined && req.body.firstname !== ''){
+            modif.firstname = req.body.firstname
+            bool = true
+        }
+        if (req.body.lastname !== undefined && req.body.lastname !== '') {
+            modif.lastname = req.body.lastname
+            bool = true
+        }
+        if (req.body.email !== undefined && req.body.email !== '') {
+            modif.email = req.body.email
+            bool = true
+        }
+        if (req.body.bio !== undefined && req.body.bio !== '') {
+            modif.bio = req.body.bio
+            bool = true
+        }
+        if (req.body.city !== undefined && req.body.city !== '') {
+            modif.city = req.body.city
+            bool = true
+        }
+        if (req.body.orientation !== undefined && req.body.orientation !== '') {
+            modif.orientation = req.body.orientation
+            bool = true
+        }
         let id = (req.session.user._id ? req.session.user._id : req.session.userId)
-        if (modif !== '' || modif !== undefined) {
+        if (modif !== '' && modif !== undefined && bool === true) {
             mongoUtil.connectToServer(err => {
                 if (err) return res.sendStatus(500)
                 let dbUser = mongoUtil.getDb().collection('Users')
@@ -49,6 +71,12 @@ module.exports = {
                         }
                     }
                 )
+            })
+        }else {
+            req.session.user = user
+            return res.render('profile', {
+                user: req.session.user,
+                message:"Invalid Input type"
             })
         }
     },
@@ -186,7 +214,7 @@ module.exports = {
 
     AddTags: (req, res) => {
 
-        let id = req.session.user_id
+        let id = req.session.user._id
         let user = req.session.user
         let tag = req.body.tags
         if (tag !== undefined || tag !== "") {
