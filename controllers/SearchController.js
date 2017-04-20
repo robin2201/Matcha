@@ -6,11 +6,14 @@ const mongoUtil = require('../config/db')
 const objectId = require('mongodb').ObjectID
 const updateMySession = require('./UserController').updateMySession
 const out = {
-    hash: 0,
-    email: 0,
-    token: 0,
-    lastname: 0,
-    birthday: 0
+    projection:{
+        hash: 0,
+        email: 0,
+        token: 0,
+        lastname: 0,
+        birthday: 0
+    },
+    returnOriginal: false
 }
 
 module.exports = {
@@ -80,10 +83,15 @@ module.exports = {
                                     }
                                 }
                             })
+                            ArrayUsersWithoutBlockedPeople.shift()
                             return res.render('home', {
                                 users: ArrayUsersWithoutBlockedPeople,
                                 user: user
                             })
+                        }
+                        if (String(dataUsers[0]._id) === String(user._id)) {
+                            console.log('Hello')
+                            dataUsers.shift()
                         }
                         return res.render('home', {
                             users: dataUsers,
@@ -131,54 +139,52 @@ module.exports = {
                     },
                     out,
                     (err, resultSingleUser) => {
-                        let NoMatchedRooms = false
+                        let NoMatchedRooms = true
                         if (err) return res.sendStatus(500)
                         else {
                             if (resultSingleUser.room !== undefined && resultSingleUser.room !== '' && user.room !== undefined && user.room !== '') {
                                 let i = 0
                                 while (i <= resultSingleUser.room.length) {
+                                    console.log(resultSingleUser[0])
                                     let o = 0
                                     while (o <= user.room.length) {
+                                        console.log(user.room[o])
                                         if (String(user.room[o]) === String(resultSingleUser.room[i]) && (user.room[o] !== undefined && resultSingleUser.room[i] !== undefined)) {
-                                            console.log(resultSingleUser.room[i])
-                                            console.log(user.room[o])
-
-                                            NoMatchedRooms = true
-                                        }
-                                        if (NoMatchedRooms === true) {
-                                            let dbMatches = mongoUtil.getDb().collection('Matches')
-                                            dbMatches.findOne({
-                                                    _id: objectId(user.room[o])
-                                                },
-                                                (err, resMyRoomChat) => {
-                                                    if (err) return res.sendStatus(500)
-                                                    else if(resMyRoomChat !== null){
-                                                        console.log('Testststst')
-                                                        console.log(resMyRoomChat)
-                                                        req.session.user = user
-                                                        if(resMyRoomChat.message === undefined)
-                                                            resMyRoomChat.message = ''
-                                                        return res.render('single', {
-                                                            userToShow: resultSingleUser,
-                                                            user: req.session.user,
-                                                            chatRooms: (resMyRoomChat.message ? resMyRoomChat.message : ''),
-                                                            idRoom: resMyRoomChat._id,
-                                                            need: true
-                                                        })
-                                                    }
-
-                                                })
+                                            NoMatchedRooms = false
                                             break
-                                        } else
-                                            o++
+                                        }
+                                        o++
                                     }
-                                    if (i === resultSingleUser.room.length && NoMatchedRooms === false) {
+                                    if (NoMatchedRooms === false) {
+                                        console.log('Yes')
+                                        let dbMatches = mongoUtil.getDb().collection('Matches')
+                                        dbMatches.findOne({
+                                                _id: objectId(user.room[o])
+                                            },
+                                            (err, resMyRoomChat) => {
+                                                if (err) return res.sendStatus(500)
+                                                else if (resMyRoomChat !== null) {
+                                                    req.session.user = user
+                                                    if (resMyRoomChat.message === undefined)
+                                                        resMyRoomChat.message = ''
+                                                    return res.render('single', {
+                                                        userToShow: resultSingleUser,
+                                                        user: req.session.user,
+                                                        chatRooms: (resMyRoomChat.message ? resMyRoomChat.message : ''),
+                                                        idRoom: resMyRoomChat._id,
+                                                        need: true
+                                                    })
+                                                }
+
+                                            })
+                                        break
+                                    } else if (i === resultSingleUser.room.length && NoMatchedRooms === true) {
                                         req.session.user = user
                                         return res.render('single', {
                                             userToShow: resultSingleUser,
                                             user: req.session.user
                                         })
-                                    } else if (NoMatchedRooms === true) break
+                                    }
                                     o = 0
                                     i++
                                 }
@@ -263,7 +269,7 @@ module.exports = {
                             else if (resultUser && ifMatchMe) {
                                 let db = mongoUtil.getDb()
                                 let Matches = db.collection('Matches')
-                                Matches.insertOne({"message":[]},
+                                Matches.insertOne({"message": []},
                                     (err, resMatchCollection) => {
                                         if (err) return res.sendStatus(500)
                                         else if (resMatchCollection && resMatchCollection.insertedCount === 1) {

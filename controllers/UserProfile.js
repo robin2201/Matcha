@@ -7,12 +7,24 @@ const NodeGeocoder = require('node-geocoder')('google')
 const ipLoc = require('satelize')
 const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 const transporter = require('../config/mail')
+// const out = {
+//     // hash: 0,
+//     // email: 0,
+//     // token: 0,
+//     // lastname: 0,
+//     // birthday: 0
+//
+// }
+
 const out = {
-    hash: 0,
-    email: 0,
-    token: 0,
-    lastname: 0,
-    birthday: 0
+    projection:{
+        hash: 0,
+        email: 0,
+        token: 0,
+        lastname: 0,
+        birthday: 0
+    },
+    returnOriginal: false
 }
 
 module.exports = {
@@ -505,6 +517,8 @@ module.exports = {
     DellPics: (req, res) => {
         let {idForDelPic, delpics} = req.body
         user = req.session.user
+        console.log(out)
+        console.log("==============================================================================================")
         if (idForDelPic !== undefined && delpics !== undefined) {
             mongoUtil.connectToServer(err => {
                 if (err) return res.sendStatus(500)
@@ -519,15 +533,20 @@ module.exports = {
                             },
                             $unset: {
                                 'guestPic': delpics
-                            }
+                            },
                         },
-                        out,
+                        out
+                         ,
                         (err, resDellPics) => {
                             if (err) return res.sendStatus(500)
                             else {
+                                console.log(resDellPics.value)
+                                console.log("==============================================================================================")
                                 req.session.user = resDellPics.value
-                                res.render('profile', {
-                                    user: req.session.user,
+                                console.log("==============================================================================================")
+                                console.log(req.session.user)
+                                return res.render('profile', {
+                                    user: resDellPics.value,
                                     message: "Pic dell"
                                 })
                             }

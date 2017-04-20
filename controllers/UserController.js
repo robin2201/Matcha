@@ -10,10 +10,14 @@ const objectId = require('mongodb').ObjectID
 const checkLocation = require('./UserProfile').CheckLocation
 
 const out = {
-    email: 0,
-    token: 0,
-    lastname: 0,
-    birthday: 0
+    projection:{
+        hash: 0,
+        email: 0,
+        token: 0,
+        lastname: 0,
+        birthday: 0
+    },
+    returnOriginal: false
 }
 
 module.exports = {
@@ -104,7 +108,7 @@ module.exports = {
                         {'emailValidation': 'true'}
                     ]
                 },
-                out,
+               // out,
                 (err, resDb) => {
                     if (err) return res.send(err)
                     else if (resDb) {
@@ -196,9 +200,10 @@ module.exports = {
     },
 
     AddPicToDb: (req, res) => {
-        let id = req.session.userId
+        let id = req.session.user._id
         let user = req.session.user
-        if (user.pics === undefined || user.pics.length < 6) {
+        if (user.pics === undefined || (user.pics.length < 6 && user.guestPic === undefined) || (user.pics.length < 5 && user.guestPic)) {
+
             if (req.file !== undefined && req.file !== '') {
                 mongoUtil.connectToServer(err => {
                     if (err) return res.sendStatus(500)
