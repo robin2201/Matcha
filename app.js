@@ -47,15 +47,6 @@ app.use('/static', express.static(path.join(__dirname, 'public')))
 
 app.use('/', index)
 app.use('/users', users)
-// app.use('/users', (req, res, next) => {
-//     if (req.session.user && (req.session.user._id || req.session.userId)) {
-//         updateMySession(req)
-//         next()
-//     }
-//     // else res.render('index', {
-//     //     message: "Acces Denied, Log In before"
-//     // })
-// }, users)
 app.use('/profile', (req, res, next) => {
     if (req.session.user && (req.session.user._id || req.session.userId)) {
         updateMySession(req)
@@ -79,7 +70,7 @@ app.use((err, req, res, next) => {
 
     // render the error page
     res.status(err.status || 500)
-    res.render('error')
+    res.render('index', {message:"Page not found"})
 })
 
 module.exports = app

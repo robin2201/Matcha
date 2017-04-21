@@ -9,8 +9,8 @@ const UserM = require('../models/user')
 const objectId = require('mongodb').ObjectID
 const checkLocation = require('./UserProfile').CheckLocation
 
-const out = {
-    projection:{
+const projectionWithNewDocument = {
+    projection: {
         hash: 0,
         email: 0,
         token: 0,
@@ -18,6 +18,14 @@ const out = {
         birthday: 0
     },
     returnOriginal: false
+}
+
+const projection = {
+    //hash: 0,
+    email: 0,
+    token: 0,
+    lastname: 0,
+    birthday: 0
 }
 
 module.exports = {
@@ -34,13 +42,17 @@ module.exports = {
         let errors = req.validationErrors()
         if (errors) return res.send(errors)
         let {firstname, lastname, password, email, gender, birthday} = req.body
-
+        if (gender === '' || gender === undefined || birthday === '' || birthday === undefined) {
+            return res.render('index', {
+                message: "Please enter a gender"
+            })
+        }
         let tmp = birthday.split('-')
         let today = new Date()
         let birthDate = new Date(tmp)
         let age = today.getFullYear() - birthDate.getFullYear()
         let month = today.getMonth() - birthDate.getMonth()
-        if(birthDate === undefined){
+        if (birthDate === undefined) {
             return res.render('index', {
                 message: "Sorry Date input not valid"
             })
@@ -86,7 +98,7 @@ module.exports = {
 
                         })
                 })
-            }else{
+            } else {
                 return res.render('index', {
                     message: "Sorry Date input not valid"
                 })
@@ -108,7 +120,7 @@ module.exports = {
                         {'emailValidation': 'true'}
                     ]
                 },
-               // out,
+                projection,
                 (err, resDb) => {
                     if (err) return res.send(err)
                     else if (resDb) {
@@ -117,7 +129,7 @@ module.exports = {
                                 if (resCpPass === true) {
                                     module.exports.calculatePopularity(resDb)
                                     req.session.user = resDb
-                                    if(req.session.user.location === undefined) checkLocation(req)
+                                    if (req.session.user.location === undefined) checkLocation(req)
                                     req.session.userId = resDb._id
                                     return res.render('home', {
                                         user: req.session.user,
@@ -169,7 +181,7 @@ module.exports = {
 
     valideToken: (req, res) => {
         let {id, token} = req.params
-        if(id !== undefined && id !== '' && token !== undefined && token !== ''){
+        if (id !== undefined && id !== '' && token !== undefined && token !== '') {
             mongoUtil.connectToServer((err) => {
                 if (err) return res.send(err)
                 let dbUsers = mongoUtil.getDb().collection('Users')
@@ -182,6 +194,7 @@ module.exports = {
                     {
                         $set: {"emailValidation": "true"}
                     },
+                    projectionWithNewDocument,
                     (err, result) => {
                         if (err) return res.send(err)
                         if (result.ok === 1) {
@@ -193,8 +206,8 @@ module.exports = {
                     }
                 )
             })
-        }else return res.render('index', {
-            message:"Try later an error ocurred"
+        } else return res.render('index', {
+            message: "Try later an error ocurred"
         })
 
     },
@@ -217,6 +230,7 @@ module.exports = {
                                     "pics": '/static/uploads/' + req.file.filename
                                 }
                             },
+                            projectionWithNewDocument,
                             (err, result) => {
                                 if (err) return res.sendStatus(500).json(err)
                                 else if (result && result.ok === 1) {
@@ -247,7 +261,7 @@ module.exports = {
     },
 
     updateMySession: (req, res) => {
-        if(req.session.user){
+        if (req.session.user) {
             mongoUtil.connectToServer(err => {
                 if (err) return res.sendStatus(500)
                 else {
@@ -255,7 +269,7 @@ module.exports = {
                     dbUser.findOne({
                             _id: objectId(req.session.user._id)
                         },
-                        out,
+                        //projectionWithNewDocument,
                         (err, resultMyInfo) => {
                             if (err) return err
                             else req.session.user = resultMyInfo
@@ -265,7 +279,7 @@ module.exports = {
 
         }
         else return res.render('index', {
-            message:"Please Log In before"
+            message: "Please Log In before"
         })
 
     },

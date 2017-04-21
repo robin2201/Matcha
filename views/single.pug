@@ -40,10 +40,11 @@ block content
 
             if userToShow.pics
                 .row
-                    each pic in userToShow.pics
-                        .col-md-4
-                            .thumbnail
-                                img.img-responsive(src=pic)
+                    .col-sm-12
+                        each pic in userToShow.pics
+                            .col-md-4
+                                .thumbnail
+                                    img.img-responsive(src=pic)
 
             .ChatBox
                 .container-fluid

@@ -21,6 +21,8 @@ mixin userGallery(user, me)
                                         p.gender(style="color:blue;") 👱🏼 , #{elem.age} years old
                                     else
                                         p.gender(style="color:pink;") 🙎🏼 , #{elem.age} years old
+                                    if elem.city || elem.country
+                                        | #{elem.city ? elem.city : elem.country}
                                     if elem.bio
                                         p.text-center &quot;I&apos;#{elem.bio}&quot;
 
@@ -30,7 +32,7 @@ mixin userGallery(user, me)
                                     h5.motto &quot;#{elem.nickname}&quot;
                                 .content
                                     .main
-                                        h5.text-center Interests
+                                        h6.text-center Interests
                                         if elem.tags
                                             .item
                                                 .item-content-block.tags
@@ -41,7 +43,7 @@ mixin userGallery(user, me)
                                         .stats-container
                                             .stats.text-center
                                                 if elem.popularity
-                                                    p  🌟 #{elem.popularity} 🌟
+                                                    p #{elem.popularity} 🌟
                                 .footer
                                     if (me.pics !== undefined && me.pics[0] !== undefined) || me.guestPic !== undefined
 

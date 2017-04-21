@@ -17,7 +17,7 @@ block content
                                         each pic in user.pics
                                             .col-md-4
                                                 .thumbnail
-                                                    img.img-responsive.img-rounded(src='http://localhost:3000' + pic, style='width:100%;')
+                                                    img.img-responsive.img-rounded(src='http://localhost:3000' + pic)
                                                     .buttonPic
                                                         form(method="POST", action="/profile/DellPics")
                                                             input(type="hidden", name="idForDelPic", value=user._id)

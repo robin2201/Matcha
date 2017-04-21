@@ -7,14 +7,6 @@ const NodeGeocoder = require('node-geocoder')('google')
 const ipLoc = require('satelize')
 const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 const transporter = require('../config/mail')
-// const out = {
-//     // hash: 0,
-//     // email: 0,
-//     // token: 0,
-//     // lastname: 0,
-//     // birthday: 0
-//
-// }
 
 const out = {
     projection:{
@@ -70,9 +62,10 @@ module.exports = {
                     {
                         $set: modif
                     },
+                    out,
                     (err, result) => {
                         if (err) return res.sendStatus(500)
-                        if (result && result.ok === 1) {
+                        else if (result && result.ok === 1) {
                             req.session.user = result.value
                             req.session.userId = result.value._id
                             res.render('profile', {
@@ -80,6 +73,13 @@ module.exports = {
                                 message: result.value + " are modified with sucess!"
                             })
 
+                        }
+                        else{
+                            req.session.user = user
+                            return res.render('profile', {
+                                user: req.session.user,
+                                message:"Invalid Input type"
+                            })
                         }
                     }
                 )
@@ -205,6 +205,7 @@ module.exports = {
                         {
                             $set: ret
                         },
+                        out,
                         (err, resul) => {
                             if (err) return res.sendStatus(500)
                             if (resul) {
@@ -241,6 +242,7 @@ module.exports = {
                             "tags": tag
                         }
                     },
+                    out,
                     (err, result) => {
                         if (err) return res.sendStatus(500)
                         if (result) {
@@ -334,6 +336,7 @@ module.exports = {
                                                 "region": resu[0].administrativeLevels.level1short
                                             }
                                         },
+                                        out,
                                         err => {
                                             return err
                                         })
@@ -382,6 +385,7 @@ module.exports = {
                                             "region": resu[0].administrativeLevels.level1short
                                         }
                                     },
+                                    out,
                                     (err, result) => {
                                         if (err) return res.sendStatus(500)
                                         else {
@@ -425,6 +429,7 @@ module.exports = {
                                     "region": resu[0].administrativeLevels.level1short
                                 }
                             },
+                            out,
                             (err, result) => {
                                 if (err) return res.sendStatus(500)
                                 if (result && result.ok === 1) {
@@ -455,7 +460,7 @@ module.exports = {
                 {
                     $unset: {'notifications': ''}
                 },
-                {notifications:0},
+                out,
                 (err, ret) => {
                     if (err) return res.sendStatus(500)
                     else {
@@ -517,8 +522,6 @@ module.exports = {
     DellPics: (req, res) => {
         let {idForDelPic, delpics} = req.body
         user = req.session.user
-        console.log(out)
-        console.log("==============================================================================================")
         if (idForDelPic !== undefined && delpics !== undefined) {
             mongoUtil.connectToServer(err => {
                 if (err) return res.sendStatus(500)
@@ -535,16 +538,10 @@ module.exports = {
                                 'guestPic': delpics
                             },
                         },
-                        out
-                         ,
+                        out,
                         (err, resDellPics) => {
                             if (err) return res.sendStatus(500)
                             else {
-                                console.log(resDellPics.value)
-                                console.log("==============================================================================================")
-                                req.session.user = resDellPics.value
-                                console.log("==============================================================================================")
-                                console.log(req.session.user)
                                 return res.render('profile', {
                                     user: resDellPics.value,
                                     message: "Pic dell"
