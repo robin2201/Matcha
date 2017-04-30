@@ -20,10 +20,14 @@ router.get('/', (req, res) => {
         } else res.render('index', {message: "You need to log befores"})
     })
     .get('/profile', (req, res) => {
-        if(req.session.user !== undefined) {
-            home.updateMySession(req, res)
-            res.render('profile', {user: req.session.user})
-        }else res.render('index', {message: "You need to log befores"})
+        console.log('Heeeeeeeee')
+        console.log(req.session)
+        res.render('profile', {user: req.session.user})
+
+        // if(req.session.user !== undefined) {
+        //    // home.updateMySession(req, res)
+        //     res.render('profile', {user: req.session.user})
+        // }else res.render('index', {message: "You need to log befores"})
     })
     .get('/logout', (req, res) => {
         home.logout(req, res)

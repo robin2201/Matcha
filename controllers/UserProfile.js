@@ -139,7 +139,7 @@ module.exports = {
                         },
                         (err, retMyProfile) => {
                             if (err) return res.sendStatus(500)
-                            else if (retMyProfile === undefined || retMyProfile === '') return res.render('index', {
+                            else if (retMyProfile === undefined || retMyProfile === '' && retMyProfile._id !== undefined || retMyProfile._id !== '') return res.render('index', {
                                 message: "Sorry this mail doesn't exist"
                             })
                             else {
@@ -172,7 +172,7 @@ module.exports = {
                 }
             })
         } else return res.render('index', {
-            message: "Invalid mail please retry"
+            message: "Invalid mail Or mail Not found,, please retry"
         })
     },
 
@@ -230,7 +230,7 @@ module.exports = {
         let id = req.session.user._id
         let user = req.session.user
         let tag = req.body.tags
-        if (tag !== undefined || tag !== "") {
+        if (tag !== undefined && tag !== "") {
             mongoUtil.connectToServer(err => {
                 if (err) return res.sendStatus(500)
                 let dbUser = mongoUtil.getDb().collection('Users')
@@ -256,7 +256,10 @@ module.exports = {
             })
         } else {
             req.session.user = user
-            return res.render('profile', {user: user})
+            return res.render('profile', {
+                user: user,
+                message:"Invalid Input tags"
+            })
         }
     },
 

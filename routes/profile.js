@@ -8,7 +8,15 @@ const search = require('../controllers/SearchController')
 const modifyPassword = require('../controllers/UserController').modifyPassword
 
 router.get('/', (req, res) => {
-})
+    console.log('Herre')
+    if(req.session.user !== undefined && req.session.user._id !== undefined && req.session.user._id !== '') {
+        res.render('profile', {
+            user: req.session.user
+        })
+    }
+    else
+        res.redirect('/login')
+    })
     .post('/me', (req, res) => {
         profil.ModifyInfoUser(req, res)
     })
@@ -44,6 +52,7 @@ router.get('/', (req, res) => {
     })
 
     .post('/forgotPassword', (req, res) => {
+        console.log('Here')
         profil.sendEmailInstructionForNewPassword(req, res)
     })
 

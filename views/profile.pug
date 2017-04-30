@@ -7,12 +7,13 @@ block content
         .jumbotron
             if message
                 p.alert-danger #{message}
+
             .row
                 .col-lg-12.col-md-12.col-sm-12
                         div(align='center')
                             if user.guestPic
                                 img.img-rounded.img-responsive(src='http://localhost:3000' + user.guestPic)
-                            if user.pics
+                            if user.pics !== undefined 
                                     .row
                                         each pic in user.pics
                                             .col-md-4
@@ -27,10 +28,15 @@ block content
                                                             input(type="hidden", name="idForGuestPic", value=user._id)
                                                             input(type="hidden", name="guestPic", value=pic)
                                                             button(type='submit', value='updown') ✅
+                            else
+                                p Please add pics to your profile (max 5)
                 .row
                     .col-sm-6
                         h3 Bio
-                        p #{user.bio}
+                        if user.bio === '' || user.bio === undefined
+                            p If you want more visibility and popularity add your bio
+                        else
+                            p #{user.bio}
                         h3 Location
                         p
                             | #{user.city}
@@ -47,6 +53,10 @@ block content
                         p #{user.firstname}
                         p #{user.lastname}
                         p #{user.email}
+                        if user.nickname === '' || user.nickname === undefined
+                            p If you want more chance add a nickname
+                        else
+                            p #{user.nickname}
                     .col-sm-6
                         if user.tags
                             .item

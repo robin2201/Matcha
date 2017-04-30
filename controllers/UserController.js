@@ -215,7 +215,7 @@ module.exports = {
     AddPicToDb: (req, res) => {
         let id = req.session.user._id
         let user = req.session.user
-        if (user.pics === undefined || (user.pics.length < 6 && user.guestPic === undefined) || (user.pics.length < 5 && user.guestPic)) {
+        if (user.pics === undefined || (user.pics.length < 5 && user.guestPic === undefined) || (user.pics.length < 4 && user.guestPic)) {
 
             if (req.file !== undefined && req.file !== '') {
                 mongoUtil.connectToServer(err => {
