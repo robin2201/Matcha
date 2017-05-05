@@ -8,6 +8,8 @@ const bcrypt = require('bcrypt')
 const UserM = require('../models/user')
 const objectId = require('mongodb').ObjectID
 const checkLocation = require('./UserProfile').CheckLocation
+const magicNumbers = require('mmmagic').Magic
+const flag = require('mmmagic')
 
 const projectionWithNewDocument = {
     projection: {
@@ -40,7 +42,7 @@ module.exports = {
         req.checkBody(schemaValidator)
         req.checkBody('cPassword', 'Not same pass').equals(req.body.password)
         let errors = req.validationErrors()
-        if (errors) return res.send(errors)
+        if (errors) return res.redirect('/register')
         let {firstname, lastname, password, email, gender, birthday} = req.body
         if (gender === '' || gender === undefined || birthday === '' || birthday === undefined) {
             return res.render('index', {
@@ -52,7 +54,7 @@ module.exports = {
         let birthDate = new Date(tmp)
         let age = today.getFullYear() - birthDate.getFullYear()
         let month = today.getMonth() - birthDate.getMonth()
-        if (birthDate === undefined) {
+        if (birthDate === undefined || birthDate === '' || String(birthDate) === "Invalid Date") {
             return res.render('index', {
                 message: "Sorry Date input not valid"
             })
@@ -60,7 +62,7 @@ module.exports = {
         if ((month < 0 || (month === 0 && today.getDate() < birthDate.getDate())) ? age - 1 : age) {
             if (age > 17 && age < 100) {
                 mongoUtil.connectToServer(err => {
-                    if (err) return res.sendStatus(500)
+                    if (err) return res.render('error', {message: " Error,, please retry"})
                     let dbUsers = mongoUtil.getDb().collection('Users');
                     dbUsers.findOne({
                             $or: [
@@ -69,7 +71,7 @@ module.exports = {
                             ]
                         },
                         (err, result) => {
-                            if (err) return res.sendStatus(500)
+                            if (err) return res.render('error', {message: " Error,, please retry"})
                             if (result) {
                                 if (result.firstname === firstname)
                                     return res.render('index', {message: 'Sorry this Username is already taken'})
@@ -77,7 +79,7 @@ module.exports = {
                                     return res.render('index', {message: 'Sorry this Email is already taken'})
                             } else {
                                 bcrypt.hash(password, 10, (err, hash) => {
-                                    if (err) return res.sendStatus(500)
+                                    if (err) return res.render('error', {message: " Error,, please retry"})
                                     UserM.create({firstname, lastname, hash, email, gender, birthday, age},
                                         user => {
                                             dbUsers.insertOne(user.data, (err, result) => {
@@ -110,9 +112,9 @@ module.exports = {
         let {firstname, password} = req.body
         req.checkBody(schemaValidator)
         let errors = req.validationErrors()
-        if (errors) return res.send(errors)
+        if (errors) return res.redirect('/login')
         mongoUtil.connectToServer(err => {
-            if (err) return res.sendStatus(500)
+            if (err) return res.render('error', {message: " Error,, please retry"})
             let dbUsers = mongoUtil.getDb().collection('Users')
             dbUsers.findOne({
                     $and: [
@@ -147,10 +149,10 @@ module.exports = {
         let {password, cPassword, id} = req.body
         if (password !== undefined && cPassword !== undefined && id !== undefined && (password === cPassword)) {
             bcrypt.hash(password, 10, (err, hash) => {
-                if (err) return res.sendStatus(500)
+                if (err) return res.render('error', {message: " Error,, please retry"})
                 else {
                     mongoUtil.connectToServer(err => {
-                        if (err) return res.sendStatus(500)
+                        if (err) return res.render('error', {message: " Error,, please retry"})
                         else {
                             let dbUser = mongoUtil.getDb().collection('Users')
                             dbUser.findOneAndUpdate({
@@ -162,7 +164,7 @@ module.exports = {
                                     }
                                 },
                                 err => {
-                                    if (err) return res.sendStatus(500)
+                                    if (err) return res.render('error', {message: " Error,, please retry"})
                                     else {
                                         return res.render('index', {
                                             message: "Your pass is correctly modified"
@@ -201,7 +203,8 @@ module.exports = {
                             let user = result.value
                             req.session.user = user
                             req.session.userId = user._id
-                            res.render('home', {user: req.session.user})
+                            res.redirect('/login')
+                            //res.render('home', {user: req.session.user})
                         } else return res.send('Sorry an error occured please try later or if the problem persits send Us an Email')
                     }
                 )
@@ -218,31 +221,37 @@ module.exports = {
         if (user.pics === undefined || (user.pics.length < 5 && user.guestPic === undefined) || (user.pics.length < 4 && user.guestPic)) {
 
             if (req.file !== undefined && req.file !== '') {
-                mongoUtil.connectToServer(err => {
-                    if (err) return res.sendStatus(500)
-                    else {
-                        let dbUsers = mongoUtil.getDb().collection('Users')
-                        dbUsers.findOneAndUpdate({
-                                _id: objectId(id)
-                            },
-                            {
-                                $addToSet: {
-                                    "pics": '/static/uploads/' + req.file.filename
-                                }
-                            },
-                            projectionWithNewDocument,
-                            (err, result) => {
-                                if (err) return res.sendStatus(500).json(err)
-                                else if (result && result.ok === 1) {
-                                    req.session.user = result.value
-                                    return res.render('profile', {
-                                        user: req.session.user,
-                                        message: "New pic Upload"
-                                    })
-                                }
-                                else return res.sendStatus(500)
-                            })
+                let Magic = new magicNumbers(flag.MAGIC_MIME)
+                Magic.detectFile(`./${req.file.path}`, (err, isPic) => {
+                    if (err || isPic.match(/image/g) === null){
+                        return res.redirect('/profile')
                     }
+                    mongoUtil.connectToServer(err => {
+                        if (err) return res.render('error', {message: " Error,, please retry"})
+                        else {
+                            let dbUsers = mongoUtil.getDb().collection('Users')
+                            dbUsers.findOneAndUpdate({
+                                    _id: objectId(id)
+                                },
+                                {
+                                    $addToSet: {
+                                        "pics": '/static/uploads/' + req.file.filename
+                                    }
+                                },
+                                projectionWithNewDocument,
+                                (err, result) => {
+                                    if (err) return res.render('error', {message: " Error,, please retry"}).json(err)
+                                    else if (result && result.ok === 1) {
+                                        req.session.user = result.value
+                                        return res.render('profile', {
+                                            user: req.session.user,
+                                            message: "New pic Upload"
+                                        })
+                                    }
+                                    else return res.render('error', {message: " Error,, please retry"})
+                                })
+                        }
+                    })
                 })
             } else {
                 req.session.user = user
@@ -263,7 +272,7 @@ module.exports = {
     updateMySession: (req, res) => {
         if (req.session.user) {
             mongoUtil.connectToServer(err => {
-                if (err) return res.sendStatus(500)
+                if (err) return res.render('error', {message: " Error,, please retry"})
                 else {
                     let dbUser = mongoUtil.getDb().collection('Users')
                     dbUser.findOne({

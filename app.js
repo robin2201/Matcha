@@ -49,14 +49,6 @@ app.use('/', index)
 app.use('/users', users)
 app.use('/profile', profile)
 
-// app.use('/profile', (req, res, next) => {
-//     if (req.session.user && (req.session.user._id || req.session.userId)) {
-//         updateMySession(req)
-//         next()
-//     } else res.render('index', {
-//         message: "Acces Denied, Log In before"
-//     })
-// }, profile)
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
     let err = new Error('Not Found')
@@ -71,8 +63,8 @@ app.use((err, req, res, next) => {
     res.locals.error = req.app.get('env') === 'development' ? err : {}
 
     // render the error page
-    res.status(err.status || 500)
-    res.render('index', {message:"Page not found"})
+    res.status(err.status || 400)
+    res.render('error', {message:"Page Not Found"})
 })
 
 module.exports = app

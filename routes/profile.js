@@ -7,9 +7,11 @@ const profil = require('../controllers/UserProfile')
 const search = require('../controllers/SearchController')
 const modifyPassword = require('../controllers/UserController').modifyPassword
 
+
 router.get('/', (req, res) => {
     console.log('Herre')
     if(req.session.user !== undefined && req.session.user._id !== undefined && req.session.user._id !== '') {
+        home.updateMySession(req, res)
         res.render('profile', {
             user: req.session.user
         })
@@ -52,7 +54,6 @@ router.get('/', (req, res) => {
     })
 
     .post('/forgotPassword', (req, res) => {
-        console.log('Here')
         profil.sendEmailInstructionForNewPassword(req, res)
     })
 
@@ -74,7 +75,3 @@ router.get('/', (req, res) => {
 
 
 module.exports = router
-
-//TODO => Need to create function changeMyPassword(req, res) in userController
-//TODO => Maybe create a module who can check pass with bcrypt
-//TODO => Now is a redurection but modifPass but in future in a email

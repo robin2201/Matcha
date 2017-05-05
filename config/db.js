@@ -20,8 +20,4 @@ module.exports = {
     closeDb: () => {
         _db.close(err)
     }
-};
-
-
-
-
+}

@@ -45,7 +45,7 @@ module.exports = {
                         coordinates: user.location.coordinates
                     },
                     $minDistance: (distMin ? distMin : 0),
-                    $maxDistance: (distMax ? distMax : 500000000)
+                    $maxDistance: (distMax ? distMax : 5000)
                 }
             }
         }
@@ -71,14 +71,13 @@ module.exports = {
         }
 
         mongoUtil.connectToServer(err => {
-            if (err) return res.sendStatus(500)
+            if (err) return res.render('error', {message:"Mongo Error"})
 
             let dbUser = mongoUtil.getDb().collection('Users')
             dbUser.createIndex({"location": "2dsphere"})
             dbUser.find(geoFind, projection)
                 .toArray((err, dataUsers) => {
-                    req.session.user = user
-                    if (err) return res.sendStatus(500)
+                    if (err) return res.render('error', {message:"Mongo Error"})
                     else if (dataUsers.length > 0) {
                         if (user.block !== undefined && user.block !== '') {
                             let ArrayUsersWithoutBlockedPeople = []
@@ -89,15 +88,24 @@ module.exports = {
                                     }
                                 }
                             })
-                            if (String(ArrayUsersWithoutBlockedPeople[0]._id) === String(user._id) || String(ArrayUsersWithoutBlockedPeople[1]._id) === String(user._id) || String(ArrayUsersWithoutBlockedPeople[2]._id) === String(user._id))
-                                ArrayUsersWithoutBlockedPeople.shift()
+                            if (String(ArrayUsersWithoutBlockedPeople[0]._id) === String(req.session.user._id)) {
+                                ArrayUsersWithoutBlockedPeople.splice(0,1)
+                            }else if (String(ArrayUsersWithoutBlockedPeople[1]._id) === String(req.session.user._id)) {
+                                ArrayUsersWithoutBlockedPeople.splice(1,1)
+                            }else if (String(ArrayUsersWithoutBlockedPeople[2]._id) === String(req.session.user._id)) {
+                                ArrayUsersWithoutBlockedPeople.splice(2,1)
+                            }
                             return res.render('home', {
                                 users: ArrayUsersWithoutBlockedPeople,
                                 user: user
                             })
                         }
-                        if (String(dataUsers[0]._id) === String(user._id)) {
-                            dataUsers.shift()
+                        if (dataUsers[0] && String(dataUsers[0]._id) === String(user._id)) {
+                            dataUsers.splice(0, 1)
+                        }else if (dataUsers[1] && String(dataUsers[1]._id) === String(user._id)) {
+                            dataUsers.splice(1, 1)
+                        }else if (dataUsers[2] && String(dataUsers[2]._id) === String(user._id)) {
+                            dataUsers.splice(2, 1)
                         }
                         return res.render('home', {
                             users: dataUsers,
@@ -139,14 +147,17 @@ module.exports = {
             let saveVisit = module.exports.saveVisitToProfilForNotif(user._id, user.nickname, userToFind)
             if (saveVisit) console.log('Notif saved to db')
             mongoUtil.connectToServer(err => {
-                if (err) return res.sendStatus(500)
+                if (err) return res.render('error', {message:"Mongo Error"})
                 let dbUser = mongoUtil.getDb().collection('Users')
                 dbUser.findOne({
                         _id: objectId(userToFind.substr(1))
                     },
                     (err, resultSingleUser) => {
                         let NoMatchedRooms = true
-                        if (err) return res.sendStatus(500)
+                        if (err) return res.render('error', {message:"Mongo Error"})
+                        else if (resultSingleUser === undefined){
+                            return res.redirect('/')
+                        }
                         else {
                             if (resultSingleUser.room !== undefined && resultSingleUser.room !== '' && user.room !== undefined && user.room !== '') {
                                 let i = 0
@@ -165,7 +176,7 @@ module.exports = {
                                                 _id: objectId((user.room[o] ? user.room[o] : resultSingleUser.room[i]))
                                             },
                                             (err, resMyRoomChat) => {
-                                                if (err) return res.sendStatus(500)
+                                                if (err) return res.render('error', {message:"Mongo Error"})
                                                 else if (resMyRoomChat !== null) {
                                                     req.session.user = user
                                                     if (resMyRoomChat.message === undefined)
@@ -215,7 +226,7 @@ module.exports = {
         }
         if (user && idUserToBlock) {
             mongoUtil.connectToServer(err => {
-                if (err) return res.sendStatus(500)
+                if (err) return res.render('error', {message:"Mongo Error"})
                 else {
                     let dbUser = mongoUtil.getDb().collection('Users')
                     dbUser.findOneAndUpdate({
@@ -231,7 +242,7 @@ module.exports = {
                         },
                         projectionWithNewDocument,
                         (err, resWithBlock) => {
-                            if (err) return res.sendStatus(500)
+                            if (err) return res.render('error', {message:"Mongo Error"})
                             else {
                                 req.session.user = resWithBlock.value
                                 return res.render('home', {
@@ -260,14 +271,14 @@ module.exports = {
     AddRoom: (idOther, idMe, req, res) => {
         console.log('Add Room')
         mongoUtil.connectToServer(err => {
-            if (err) return res.sendStatus(500)
+            if (err) return res.render('error', {message:"Mongo Error"})
             else {
                 let db = mongoUtil.getDb()
                 db.collection('Matches').insertOne({
                         "message": []
                     },
                     (err, retRoomCreated) => {
-                        if (err) return res.sendStatus(500)
+                        if (err) return res.render('error', {message:"Mongo Error"})
                         else if (retRoomCreated.insertedCount === 1) {
                             db.collection('Users').updateMany({
                                     $or: [
@@ -285,7 +296,7 @@ module.exports = {
 
                                 },
                                 err => {
-                                    if (err) return res.sendStatus(500)
+                                    if (err) return res.render('error', {message:"Mongo Error"})
                                     else{
                                         return res.render('home', {
                                             user: req.session.user,
@@ -308,7 +319,7 @@ module.exports = {
             if (idOther !== '' && idOther !== undefined) {
                 let MyMatches = module.exports.checkMyMatch(user, idOther)
                 mongoUtil.connectToServer(err => {
-                    if (err) return res.sendStatus(500)
+                    if (err) return res.render('error', {message:"Mongo Error"})
                     else {
                         let dbUser = mongoUtil.getDb().collection('Users')
                         dbUser.findOne({
@@ -323,7 +334,7 @@ module.exports = {
                             },
                             (err, resultOtherUser) => {
                                 console.log(MyMatches)
-                                if (err) return res.sendStatus(500)
+                                if (err) return res.render('error', {message:"Mongo Error"})
                                 else {
                                     if (resultOtherUser !== null && MyMatches === false) {
                                         return res.render('home', {
@@ -350,11 +361,13 @@ module.exports = {
                                                 }
                                             },
                                             err => {
-                                                if (err) return res.sendStatus(500)
-                                                else return res.render('home', {
-                                                    user: req.session.user,
-                                                    message: "Yes that's good"
-                                                })
+                                                if (err) return res.render('error', {message:"Mongo Error"})
+                                                else
+                                                    res.redirect('/home')
+                                                //     return res.render('home', {
+                                                //     user: req.session.user,
+                                                //     message: "Yes that's good"
+                                                // })
 
                                             })
                                     }
@@ -374,16 +387,22 @@ module.exports = {
             let searchElem = {}
             if (user.orientation !== undefined) searchElem.gender = user.orientation
             mongoUtil.connectToServer(err => {
-                if (err) return res.sendStatus(500)
+                if (err) return res.render('error', {message:"Mongo Error"})
                 else {
                     let dbUser = mongoUtil.getDb().collection('Users')
-                    dbUser.find(searchElem, projection).sort({popularity: -1}).toArray((err, dataUser) => {
-                        console.log(dataUser)
-                        if (err) return res.sendStatus(500)
+                    dbUser.find(searchElem, projection).sort({popularity: -1}).toArray((err, dataUsers) => {
+                        if (err) return res.render('error', {message:"Mongo Error"})
                         else {
+                            if (dataUsers[0] && String(dataUsers[0]._id) === String(user._id)) {
+                                dataUsers.splice(0, 1)
+                            }else if (dataUsers[1] && String(dataUsers[1]._id) === String(user._id)) {
+                                dataUsers.splice(1, 1)
+                            }else if (dataUsers[2] && String(dataUsers[2]._id) === String(user._id)) {
+                                dataUsers.splice(2, 1)
+                            }
                             return res.render('home', {
                                 user: req.session.user,
-                                users: dataUser
+                                users: dataUsers
                             })
                         }
                     })

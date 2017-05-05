@@ -8,7 +8,8 @@ const userToShow = require('../controllers/SearchController').showOneUser
 router.get('/', (req, res) => {
     let user = req.session.user
     if (user) {
-        res.render('home', {user:user})
+        home.updateMySession(req, res)
+        res.render('home', {user:req.session.user})
     }
     res.redirect('/')
 })
@@ -27,7 +28,11 @@ router.get('/', (req, res) => {
 
     .post('/upload', (req, res) => {
         Upload(req, res, err => {
-            if (err) return res.end("Error uploading file. " + err)
+            let user = req.session.user
+            if (err) {
+                req.session.user = user
+                return res.redirect('/profile')
+            }
             else home.AddPicToDb(req, res)
         })
     })
@@ -43,7 +48,7 @@ router.get('/', (req, res) => {
         if(req.session.user !== undefined){
             home.updateMySession(req,res)
             res.render('home', {user:req.session.user})
-        }else res.render('index')
+        }else res.redirect('index')
     })
 
 module.exports = router

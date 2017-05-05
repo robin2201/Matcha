@@ -9,7 +9,7 @@ const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\
 const transporter = require('../config/mail')
 
 const out = {
-    projection:{
+    projection: {
         hash: 0,
         email: 0,
         token: 0,
@@ -19,42 +19,51 @@ const out = {
     returnOriginal: false
 }
 
+
 module.exports = {
+
+
+    regexEmail: email => {
+        let reg = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/ //
+        return reg.test(email)
+    },
+
     ModifyInfoUser: (req, res) => {
+        const user = req.session.user
         let bool = false
         let modif = {}
-        if (req.body.nickname !== undefined && req.body.nickname !== ''){
+        if (req.body.nickname !== undefined && req.body.nickname !== '' && (req.body.nickname.length > 2 && req.body.nickname.length < 20)) {
             modif.nickname = req.body.nickname
             bool = true
         }
-        if (req.body.firstname !== undefined && req.body.firstname !== ''){
+        if (req.body.firstname !== undefined && req.body.firstname !== '' && (req.body.firstname.length > 2 && req.body.firstname.length < 12)) {
             modif.firstname = req.body.firstname
             bool = true
         }
-        if (req.body.lastname !== undefined && req.body.lastname !== '') {
+        if (req.body.lastname !== undefined && req.body.lastname !== ''&& (req.body.lastname.length > 2 && req.body.lastname.length < 12)) {
             modif.lastname = req.body.lastname
             bool = true
         }
-        if (req.body.email !== undefined && req.body.email !== '') {
+        if (req.body.email !== undefined && req.body.email !== '' && module.exports.regexEmail(req.body.email)) {
             modif.email = req.body.email
             bool = true
         }
-        if (req.body.bio !== undefined && req.body.bio !== '') {
+        if (req.body.bio !== undefined && req.body.bio !== '' && (req.body.bio.length > 0 && req.body.bio.length < 250)) {
             modif.bio = req.body.bio
             bool = true
         }
-        if (req.body.city !== undefined && req.body.city !== '') {
+        if (req.body.city !== undefined && req.body.city !== '' && (req.body.city.length > 0 && req.body.city.length < 20)) {
             modif.city = req.body.city
             bool = true
         }
-        if (req.body.orientation !== undefined && req.body.orientation !== '') {
+        if (req.body.orientation !== undefined && req.body.orientation !== '' && (req.body.orientation === '1' || req.body.orientation === '0' || req.body.orientation === '2')) {
             modif.orientation = req.body.orientation
             bool = true
         }
         let id = (req.session.user._id ? req.session.user._id : req.session.userId)
         if (modif !== '' && modif !== undefined && bool === true) {
             mongoUtil.connectToServer(err => {
-                if (err) return res.sendStatus(500)
+                if (err) return res.render('error', {message:" Error,, please retry"})
                 let dbUser = mongoUtil.getDb().collection('Users')
                 dbUser.findOneAndUpdate({
                         _id: objectId(id)
@@ -64,31 +73,30 @@ module.exports = {
                     },
                     out,
                     (err, result) => {
-                        if (err) return res.sendStatus(500)
+                        if (err) return res.render('error', {message:" Error,, please retry"})
                         else if (result && result.ok === 1) {
                             req.session.user = result.value
                             req.session.userId = result.value._id
                             res.render('profile', {
                                 user: req.session.user,
-                                message: result.value + " are modified with sucess!"
+                                message: "Your Info are modified with sucess!"
                             })
-
                         }
-                        else{
+                        else {
                             req.session.user = user
                             return res.render('profile', {
                                 user: req.session.user,
-                                message:"Invalid Input type"
+                                message: "Invalid Input type"
                             })
                         }
                     }
                 )
             })
-        }else {
+        } else {
             req.session.user = user
             return res.render('profile', {
                 user: req.session.user,
-                message:"Invalid Input type"
+                message: "Invalid Input type"
             })
         }
     },
@@ -109,7 +117,7 @@ module.exports = {
                     },
                     out,
                     (err, result) => {
-                        if (err) return res.sendStatus(500)
+                        if (err) return res.render('error', {message:" Error,, please retry"})
                         else {
                             req.session.user = result.value
                             req.session.userId = result.value.id
@@ -131,17 +139,14 @@ module.exports = {
         let email = req.body.email
         if (email !== undefined && regex.test(email)) {
             mongoUtil.connectToServer(err => {
-                if (err) return res.sendStatus(500)
+                if (err) return res.render('error', {message:" Error,, please retry"})
                 else {
                     let dbUser = mongoUtil.getDb().collection('Users')
                     dbUser.findOne({
                             'email': email
                         },
                         (err, retMyProfile) => {
-                            if (err) return res.sendStatus(500)
-                            else if (retMyProfile === undefined || retMyProfile === '' && retMyProfile._id !== undefined || retMyProfile._id !== '') return res.render('index', {
-                                message: "Sorry this mail doesn't exist"
-                            })
+                             if (err) return res.render('error', {message:" Error,, please retry"})
                             else {
                                 transporter.verify(error => {
                                     if (error) return console.log(error)
@@ -177,52 +182,78 @@ module.exports = {
     },
 
     verifyAndSetAge: (req, res) => {
-        let birthday = req.body.birthday
-        let user = req.session.user
-        let tmp = birthday.split('-')
-        let today = new Date()
-        let birthDate = new Date(tmp)
-        let age = today.getFullYear() - birthDate.getFullYear()
-        let month = today.getMonth() - birthDate.getMonth()
-        if(birthDate === undefined){
+        try {
+            let birthday = req.body.birthday
+            let user = req.session.user
+            if (birthday !== '') {
+                let tmp = birthday.split('-')
+                let today = new Date()
+
+                try {
+                    let birthDate = new Date(tmp)
+                    let age = today.getFullYear() - birthDate.getFullYear()
+                    let month = today.getMonth() - birthDate.getMonth()
+                    if (birthDate === undefined || birthDate === '' || String(birthDate) === "Invalid Date") {
+                        req.session.user = user
+                        return res.render('profile', {
+                            user: user,
+                            message: "Invalid Input"
+                        })
+                    }
+                    else if ((month < 0 || (month === 0 && today.getDate() < birthDate.getDate())) ? age - 1 : age) {
+                        if (age > 17 && age < 100) {
+                            let ret = {}
+                            ret.birthday = birthDate
+                            ret.age = age
+                            mongoUtil.connectToServer((err) => {
+                                if (err) return res.render('error', {message:" Error,, please retry"})
+                                let dbUser = mongoUtil.getDb().collection('Users')
+                                dbUser.findOneAndUpdate({
+                                        _id: objectId(req.session.userId)
+                                    },
+                                    {
+                                        $set: ret
+                                    },
+                                    out,
+                                    (err, resul) => {
+                                        if (err) return res.render('error', {message:" Error,, please retry"})
+                                        if (resul) {
+                                            req.session.user = resul.value
+                                            return res.render('profile', {user: req.session.user})
+                                        }
+                                    })
+
+                            })
+                        } else {
+                            req.session.user = user
+                            return res.render('profile', {
+                                user: user,
+                                message: "Sorry this is not the age for our service"
+                            })
+                        }
+                    }
+                } catch (e) {
+                    req.session.user = user
+                    return res.render('profile', {
+                        user: user,
+                        message: "Sorry this is not the age for our service"
+                    })
+                }
+            }else{
+                req.session.user = user
+                return res.render('profile', {
+                    user: user,
+                    message: "Invalid Input"
+                })
+            }
+        } catch (e) {
             req.session.user = user
             return res.render('profile', {
                 user: user,
                 message: "Sorry this is not the age for our service"
             })
         }
-        else if ((month < 0 || (month === 0 && today.getDate() < birthDate.getDate())) ? age - 1 : age) {
-            if (age > 17 && age < 100) {
-                let ret = {}
-                ret.birthday = birthDate
-                ret.age = age
-                mongoUtil.connectToServer((err) => {
-                    if (err) return res.sendStatus(500)
-                    let dbUser = mongoUtil.getDb().collection('Users')
-                    dbUser.findOneAndUpdate({
-                            _id: objectId(req.session.userId)
-                        },
-                        {
-                            $set: ret
-                        },
-                        out,
-                        (err, resul) => {
-                            if (err) return res.sendStatus(500)
-                            if (resul) {
-                                req.session.user = user
-                                return res.render('profile', {user: user})
-                            }
-                        })
 
-                })
-            } else {
-                req.session.user = user
-                return res.render('profile', {
-                    user: user,
-                    message: "Sorry this is not the age for our service"
-                })
-            }
-        }
     },
 
     AddTags: (req, res) => {
@@ -230,9 +261,9 @@ module.exports = {
         let id = req.session.user._id
         let user = req.session.user
         let tag = req.body.tags
-        if (tag !== undefined && tag !== "") {
+        if (tag !== undefined && tag !== "" && tag.length < 12) {
             mongoUtil.connectToServer(err => {
-                if (err) return res.sendStatus(500)
+                if (err) return res.render('error', {message:" Error,, please retry"})
                 let dbUser = mongoUtil.getDb().collection('Users')
                 dbUser.findOneAndUpdate({
                         _id: objectId(id)
@@ -244,7 +275,7 @@ module.exports = {
                     },
                     out,
                     (err, result) => {
-                        if (err) return res.sendStatus(500)
+                        if (err) return res.render('error', {message:" Error,, please retry"})
                         if (result) {
                             console.log(result)
                             req.session.user = result.value ? result.value : user
@@ -258,7 +289,7 @@ module.exports = {
             req.session.user = user
             return res.render('profile', {
                 user: user,
-                message:"Invalid Input tags"
+                message: "Invalid Input tags"
             })
         }
     },
@@ -270,7 +301,7 @@ module.exports = {
         let tag = req.body.info
         if (tag !== undefined && tag !== "") {
             mongoUtil.connectToServer(err => {
-                if (err) return res.sendStatus(500)
+                if (err) return res.render('error', {message:" Error,, please retry"})
                 let dbUser = mongoUtil.getDb().collection('Users')
                 dbUser.findOneAndUpdate({
                         _id: objectId(id)
@@ -280,8 +311,9 @@ module.exports = {
                             "tags": tag
                         }
                     },
+                    out,
                     (err, result) => {
-                        if (err) return res.sendStatus(500)
+                        if (err) return res.render('error', {message:" Error,, please retry"})
                         if (result) {
                             req.session.user = result.value ? result.value : user
                             console.log('lol')
@@ -305,28 +337,27 @@ module.exports = {
 
     CheckLocation: req => {
         if (req.session.user.location === undefined || req.session.user.location === '') {
-            console.log("Hello")
             let id = req.session.user._id
             let ipToFind = req.ip
             if (ipToFind === "::1") {
                 ipToFind = "62.210.32.10"
             }
             ipLoc.satelize({ip: ipToFind}, (err, payload) => {
-                if (err) return res.sendStatus(500)
+                if (err) return res.render('error', {message:" Error,, please retry"})
                 else if (payload) {
                     NodeGeocoder.reverse({
                             lat: payload.latitude,
                             lon: payload.longitude
                         },
                         (err, resu) => {
-                            if (err) return res.sendStatus(500)
+                            if (err) return res.render('error', {message:" Error,, please retry"})
                             else {
                                 let location = {}
                                 location.coordinates = [resu[0].longitude, resu[0].latitude]
                                 location.type = 'Point'
                                 mongoUtil.connectToServer(err => {
                                     console.log("Hello1")
-                                    if (err) return res.sendStatus(500)
+                                    if (err) return res.render('error', {message:" Error,, please retry"})
                                     let dbUser = mongoUtil.getDb().collection('Users')
                                     dbUser.findOneAndUpdate({
                                             _id: objectId(id)
@@ -352,30 +383,27 @@ module.exports = {
     },
 
     FindAdressWithIP: (req, res) => {
-        let id = req.session.userId
+        let id = req.session.user._id
+        let user = req.session.user
         let ipToFind = req.ip
         if (ipToFind === "::1") {
-            ipToFind = "62.210.32.10"
+            ipToFind = "62.210.32.118"
         }
         ipLoc.satelize({ip: ipToFind}, (err, payload) => {
-            if (err) return res.sendStatus(500)
+            if (err) return res.render('error', {message:" Error,, please retry"})
             else if (payload) {
                 NodeGeocoder.reverse({
                         lat: payload.latitude,
                         lon: payload.longitude
                     },
                     (err, resu) => {
-                        if (err) return res.sendStatus(500)
+                        if (err) return res.render('error', {message:" Error,, please retry"})
                         else {
-                            if(resu[0].longitude === user.location.coordinates[0] && resu[0].latitude === user.location.coordinates[1]) {
-                                req.session.user = user
-                                return res.render('profile', {user: req.session.user})
-                            }
                             let location = {}
                             location.coordinates = [resu[0].longitude, resu[0].latitude]
                             location.type = 'Point'
                             mongoUtil.connectToServer(err => {
-                                if (err) return res.sendStatus(500)
+                                if (err) return res.render('error', {message:" Error,, please retry"})
                                 let dbUser = mongoUtil.getDb().collection('Users')
                                 dbUser.findOneAndUpdate({
                                         _id: objectId(id)
@@ -390,7 +418,7 @@ module.exports = {
                                     },
                                     out,
                                     (err, result) => {
-                                        if (err) return res.sendStatus(500)
+                                        if (err) return res.render('error', {message:" Error,, please retry"})
                                         else {
                                             req.session.user = result.value
                                             req.session.userId = result.value.id
@@ -412,14 +440,13 @@ module.exports = {
         if (city !== undefined || city !== "") {
             NodeGeocoder.geocode(city, (err, resu) => {
                 if (err) res.sendStatus(500)
-                console.log(resu)
                 if (resu.length === 0) return module.exports.FindAdressWithIP(req, res)
                 else if (resu[0].location !== '' && resu[0].latitude !== '' && resu.length !== 0) {
                     let location = {}
                     location.type = 'Point'
                     location.coordinates = [resu[0].longitude, resu[0].latitude]
                     mongoUtil.connectToServer((err) => {
-                        if (err) return res.sendStatus(500)
+                        if (err) return res.render('error', {message:" Error,, please retry"})
                         let dbUser = mongoUtil.getDb().collection('Users')
                         dbUser.findOneAndUpdate({
                                 _id: objectId(id)
@@ -434,7 +461,7 @@ module.exports = {
                             },
                             out,
                             (err, result) => {
-                                if (err) return res.sendStatus(500)
+                                if (err) return res.render('error', {message:" Error,, please retry"})
                                 if (result && result.ok === 1) {
                                     req.session.user = result.value
                                     req.session.userId = result.value.id
@@ -465,7 +492,7 @@ module.exports = {
                 },
                 out,
                 (err, ret) => {
-                    if (err) return res.sendStatus(500)
+                    if (err) return res.render('error', {message:" Error,, please retry"})
                     else {
                         req.session.user = ret.value
                         return res.render('profile', {
@@ -479,11 +506,11 @@ module.exports = {
 
     GuestPic: (req, res) => {
         let {idForGuestPic, guestPic} = req.body
-        user = req.session.user
+        const user = req.session.user
         if (idForGuestPic !== undefined && guestPic !== undefined && idForGuestPic !== '' && guestPic !== '') {
-           // let oldGuestPic = req.session.user.guestPic
+            // let oldGuestPic = req.session.user.guestPic
             mongoUtil.connectToServer(err => {
-                if (err) return res.sendStatus(500)
+                if (err) return res.render('error', {message:" Error,, please retry"})
                 else {
                     let dbUser = mongoUtil.getDb().collection("Users")
                     dbUser.findOneAndUpdate({
@@ -502,7 +529,7 @@ module.exports = {
                         },
                         out,
                         (err, resUpdateMe) => {
-                            if (err) return res.sendStatus(500)
+                            if (err) return res.render('error', {message:" Error,, please retry"})
                             else {
                                 req.session.user = resUpdateMe.value
                                 res.render('profile', {
@@ -524,26 +551,43 @@ module.exports = {
 
     DellPics: (req, res) => {
         let {idForDelPic, delpics} = req.body
-        user = req.session.user
+        const user = req.session.user
         if (idForDelPic !== undefined && delpics !== undefined) {
             mongoUtil.connectToServer(err => {
-                if (err) return res.sendStatus(500)
+                if (err) return res.render('error', {message:" Error,, please retry"})
                 else {
                     let dbUser = mongoUtil.getDb().collection('Users')
-                    dbUser.findOneAndUpdate({
-                            _id: objectId(idForDelPic)
-                        },
-                        {
+                    let dell = {}
+                    if(idForDelPic === user.guestPic)
+                    {
+                        dell = {
+
                             $pull: {
                                 'pics': delpics
                             },
                             $unset: {
                                 'guestPic': delpics
                             },
+                            $addToSet: {
+                                'pics': user.guestPic
+                            }
+
+                        }
+
+                    }else{
+                        dell = {
+                            $pull: {
+                                'pics': delpics
+                            }
+                        }
+                    }
+                    dbUser.findOneAndUpdate({
+                            _id: objectId(idForDelPic)
                         },
+                        dell,
                         out,
                         (err, resDellPics) => {
-                            if (err) return res.sendStatus(500)
+                            if (err) return res.render('error', {message:" Error,, please retry"})
                             else {
                                 return res.render('profile', {
                                     user: resDellPics.value,
@@ -563,7 +607,6 @@ module.exports = {
             })
         }
     },
-
 
 
 }
